@@ -5,7 +5,7 @@ from typing import Literal
 
 from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -30,7 +30,21 @@ async def lifespan(_):
 
 
 app = FastAPI(title="AI Mock Interview Coach", version="0.2.0", lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=FRONTEND_ORIGINS, allow_methods=["*"], allow_headers=["*"])
+
+
+@app.middleware("http")
+async def json_errors(request, call_next):
+    """Turn unexpected errors into a JSON 500 *inside* the CORS layer, so the browser shows the
+    real message instead of a bare "Failed to fetch"."""
+    try:
+        return await call_next(request)
+    except Exception:
+        logging.exception("Unhandled error on %s %s", request.method, request.url.path)
+        return JSONResponse({"detail": "Something went wrong on the server. Please try again."}, status_code=500)
+
+
+# Added after the error middleware, so CORS wraps it and every response gets CORS headers.
+app.add_middleware(CORSMiddleware, allow_origins=[o.rstrip("/") for o in FRONTEND_ORIGINS], allow_methods=["*"], allow_headers=["*"])
 
 
 # ---------- schemas ----------
@@ -309,7 +323,14 @@ def update_me(body: ProfileIn, user: User = Depends(current_user), db: Session =
     if body.fields is not None:  # past scores are kept: they live on interviews, not on this list
         for f in body.fields:
             check_field_role(f.field, f.role)
-        user.fields = [UserField(field=f.field, role=f.role) for f in {(f.field, f.role): f for f in body.fields}.values()]
+        # Update the list in place: deleting and re-adding the same (field, role) in one save
+        # breaks the unique constraint on Postgres, because inserts are flushed before deletes.
+        wanted = {(f.field, f.role) for f in body.fields}
+        for uf in list(user.fields):
+            if (uf.field, uf.role) not in wanted:
+                user.fields.remove(uf)
+        have = {(uf.field, uf.role) for uf in user.fields}
+        user.fields.extend(UserField(field=f, role=r) for f, r in sorted(wanted - have))
     db.commit()
     return me_out(user)
 

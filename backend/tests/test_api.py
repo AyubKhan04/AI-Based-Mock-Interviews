@@ -63,3 +63,24 @@ def test_voice_pace_affects_tone_only():
     calm = tone_score({**base, "wpm": 140, "long_pauses": 0})
     rushed = tone_score({**base, "wpm": 230, "long_pauses": 4, "too_quiet": True})
     assert calm > rushed
+
+
+def test_saving_profile_twice_keeps_roles():
+    with TestClient(app) as c:
+        r = c.post("/auth/signup", json={"name": "Twice", "email": "twice@example.com", "password": "secret123"})
+        h = {"Authorization": f"Bearer {r.json()['token']}"}
+        body = {"fields": [{"field": "tech", "role": "Data Analyst"}, {"field": "hr", "role": "HR Generalist"}]}
+        assert c.put("/me", headers=h, json=body).status_code == 200
+        assert c.put("/me", headers=h, json=body).status_code == 200  # used to hit the unique constraint
+        r = c.put("/me", headers=h, json={"fields": [{"field": "hr", "role": "HR Generalist"}]})
+        assert r.json()["fields"] == [{"field": "hr", "role": "HR Generalist"}]
+
+
+def test_errors_keep_cors_headers():
+    from app import main as m
+    with TestClient(app, raise_server_exceptions=False) as c:
+        @m.app.get("/_boom")
+        def boom():
+            raise RuntimeError("x")
+        r = c.get("/_boom", headers={"Origin": "http://localhost:5173"})
+        assert r.status_code == 500 and r.headers.get("access-control-allow-origin") == "http://localhost:5173"
