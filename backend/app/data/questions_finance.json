@@ -894,7 +894,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "case",
   "field": "finance"
  },
  {
@@ -974,7 +974,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "case",
   "field": "finance"
  },
  {
@@ -1073,7 +1073,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "case",
   "field": "finance"
  },
  {
@@ -1113,7 +1113,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "case",
   "field": "finance"
  },
  {
@@ -1148,6 +1148,426 @@
    "stress"
   ],
   "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "A company has current assets of 800, current liabilities of 500 and inventory of 200. Work out the current ratio and the quick ratio, and comment.",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "1.6",
+   "1.2",
+   "liquidity",
+   "inventory",
+   "current"
+  ],
+  "followups": [
+   "What would worry you if the quick ratio fell below 1?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "case",
+  "field": "finance"
+ },
+ {
+  "text": "You invest 1,00,000 at 8% a year, compounded annually. Roughly what is it worth after 9 years? Show your shortcut.",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "rule of 72",
+   "double",
+   "2,00,000",
+   "compound",
+   "interest"
+  ],
+  "followups": [
+   "How would you check the exact figure in Excel?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "case",
+  "field": "finance"
+ },
+ {
+  "text": "Estimate the EMI on a loan of 10 lakh at 10% a year for 5 years, and explain how you would build it in Excel.",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "pmt",
+   "21,000",
+   "monthly",
+   "rate",
+   "principal"
+  ],
+  "followups": [
+   "How much of the first EMI is interest?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "case",
+  "field": "finance"
+ },
+ {
+  "text": "Case: a borrower has EBITDA of 120, yearly interest of 30 and principal repayments of 50. Work out the DSCR and say whether you would lend.",
+  "round_type": "technical",
+  "role": "Credit Analyst",
+  "difficulty": "medium",
+  "keywords": [
+   "1.5",
+   "dscr",
+   "coverage",
+   "risk",
+   "collateral"
+  ],
+  "followups": [
+   "What else would you check before approving?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "case",
+  "field": "finance"
+ },
+ {
+  "text": "Case: a customer pays 1,20,000 in advance in April for a 12-month service. How do you record it at the end of June?",
+  "round_type": "technical",
+  "role": "Accountant",
+  "difficulty": "medium",
+  "keywords": [
+   "deferred",
+   "revenue",
+   "30,000",
+   "liability",
+   "accrual"
+  ],
+  "followups": [
+   "What happens if the contract is cancelled in August?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "case",
+  "field": "finance"
+ },
+ {
+  "text": "Explain the time value of money with an everyday example.",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "present value",
+   "future value",
+   "interest",
+   "discount",
+   "inflation"
+  ],
+  "followups": [
+   "How does this link to a DCF?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "What does a high debt-to-equity ratio tell you about a company?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "leverage",
+   "risk",
+   "interest",
+   "industry",
+   "equity"
+  ],
+  "followups": [
+   "When can high leverage be a good thing?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "What is the difference between NPV and IRR, and which do you trust more?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "npv",
+   "irr",
+   "cash flow",
+   "discount rate",
+   "decision"
+  ],
+  "followups": [
+   "When can the two give conflicting answers?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "Why finance, and why this area of finance in particular?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "interest",
+   "numbers",
+   "markets",
+   "career",
+   "goal"
+  ],
+  "followups": [
+   "What first got you interested?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "Which financial tools and Excel functions do you use most?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "excel",
+   "vlookup",
+   "pivot",
+   "model",
+   "tool"
+  ],
+  "followups": [
+   "Tell me about the most complex sheet you've built."
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "Tell me about a financial analysis you did that changed a decision.",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "analysis",
+   "data",
+   "insight",
+   "decision",
+   "result"
+  ],
+  "followups": [
+   "How did you present it?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "Are you working towards a certification such as CA, CFA or FRM?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "certification",
+   "level",
+   "plan",
+   "learning",
+   "career"
+  ],
+  "followups": [
+   "How do you balance it with work?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "Tell me about a time you found an error in the numbers. What did you do?",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "error",
+   "check",
+   "root cause",
+   "fix",
+   "process"
+  ],
+  "followups": [
+   "How did you stop it from happening again?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "Describe a time you explained financial results to someone without a finance background.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "simple",
+   "audience",
+   "visual",
+   "example",
+   "result"
+  ],
+  "followups": [
+   "How did you check they understood?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "Tell me about a tight month-end or reporting deadline and how you met it.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "deadline",
+   "plan",
+   "priority",
+   "team",
+   "result"
+  ],
+  "followups": [
+   "What would you automate next time?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "Describe a time you pushed back on a number or assumption you disagreed with.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "assumption",
+   "evidence",
+   "discussion",
+   "outcome",
+   "respect"
+  ],
+  "followups": [
+   "What happened to the relationship afterwards?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "How do you handle long hours during closing or audit season?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "planning",
+   "priority",
+   "energy",
+   "team",
+   "balance"
+  ],
+  "followups": [
+   "How do you recover after a busy season?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "How do you protect confidential financial information?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "access",
+   "confidential",
+   "policy",
+   "data",
+   "trust"
+  ],
+  "followups": [
+   "What would you do if a colleague shared figures too widely?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "What would you do if a senior asked you to adjust a figure so the results look better?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "integrity",
+   "policy",
+   "escalate",
+   "evidence",
+   "ethics"
+  ],
+  "followups": [
+   "What if they said everyone does it?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "finance"
+ },
+ {
+  "text": "Which area of finance do you want to grow into over the next few years?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "goal",
+   "skills",
+   "plan",
+   "role",
+   "growth"
+  ],
+  "followups": [
+   "What are you doing now to get there?"
+  ],
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",

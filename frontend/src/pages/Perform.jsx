@@ -36,7 +36,7 @@ export default function Perform() {
           <b>Your availability:</b> {av.days.map((d) => DAYS[d]).join(', ')}, {av.start}–{av.end} ({av.tz}).{' '}
           <Link className="text-indigo-600" to="/profile">Change it</Link>
         </div>
-        <RULES counts={{ screening: 12, technical: '4 coding + 8 concept', behavioural: 12, hr: 12 }} />
+        <RULES field={form.field} mode="full" />
         <p className="text-xs text-slate-400">Follow-up questions come on top. If a round is not started within a day of its slot, the interview ends as incomplete.</p>
         {err && <p className="text-sm text-red-600">{err}</p>}
         <button className="btn w-full" onClick={start} disabled={busy || !form.role}>{busy ? 'Booking your first round…' : 'Book my interview'}</button>

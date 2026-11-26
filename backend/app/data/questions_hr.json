@@ -873,7 +873,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "scenario",
   "field": "hr"
  },
  {
@@ -892,7 +892,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "scenario",
   "field": "hr"
  },
  {
@@ -913,7 +913,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "scenario",
   "field": "hr"
  },
  {
@@ -989,7 +989,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "scenario",
   "field": "hr"
  },
  {
@@ -1084,7 +1084,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "scenario",
   "field": "hr"
  },
  {
@@ -1122,7 +1122,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "scenario",
   "field": "hr"
  },
  {
@@ -1138,6 +1138,447 @@
    "honest"
   ],
   "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "scenario",
+  "field": "hr"
+ },
+ {
+  "text": "What are the main stages of the employee life cycle, and where does HR add the most value?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "attract",
+   "hire",
+   "onboard",
+   "develop",
+   "exit"
+  ],
+  "followups": [
+   "Which stage is weakest in most companies?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What is the difference between employee engagement and employee satisfaction?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "engagement",
+   "satisfaction",
+   "commitment",
+   "effort",
+   "survey"
+  ],
+  "followups": [
+   "How would you measure engagement?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Which HR metrics would you report to leadership every month, and why?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "attrition",
+   "time to hire",
+   "engagement",
+   "cost",
+   "absenteeism"
+  ],
+  "followups": [
+   "Which one would you act on first?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you design a fair performance appraisal process?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "goals",
+   "criteria",
+   "calibration",
+   "feedback",
+   "bias"
+  ],
+  "followups": [
+   "How do you handle a manager who rates everyone highly?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Explain the key points of the POSH Act and an employer's duties under it.",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "internal committee",
+   "complaint",
+   "policy",
+   "training",
+   "timeline"
+  ],
+  "followups": [
+   "What makes an internal committee effective?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What is the difference between CTC, gross salary and take-home pay?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "ctc",
+   "gross",
+   "deductions",
+   "pf",
+   "net"
+  ],
+  "followups": [
+   "How would you explain it to a new joiner?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How would you build a competency framework for a role?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "skills",
+   "behaviours",
+   "levels",
+   "interviews",
+   "managers"
+  ],
+  "followups": [
+   "How would you keep it up to date?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Scenario: a top performer resigns and says it's because of their manager. What do you do?",
+  "round_type": "technical",
+  "role": "Talent Acquisition Specialist",
+  "difficulty": "medium",
+  "keywords": [
+   "exit interview",
+   "listen",
+   "manager",
+   "pattern",
+   "action"
+  ],
+  "followups": [
+   "Would you try to counter-offer?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "scenario",
+  "field": "hr"
+ },
+ {
+  "text": "Scenario: a new joiner says onboarding was so confusing they are thinking of leaving after two weeks. What do you do?",
+  "round_type": "technical",
+  "role": "Learning & Development Specialist",
+  "difficulty": "medium",
+  "keywords": [
+   "listen",
+   "buddy",
+   "plan",
+   "feedback",
+   "fix"
+  ],
+  "followups": [
+   "How would you fix onboarding for future joiners?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "scenario",
+  "field": "hr"
+ },
+ {
+  "text": "Why did you choose a career in HR?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "people",
+   "impact",
+   "interest",
+   "experience",
+   "goal"
+  ],
+  "followups": [
+   "What part of HR surprised you most?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Which HR tools or HRMS systems have you used?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "hrms",
+   "ats",
+   "payroll",
+   "excel",
+   "reports"
+  ],
+  "followups": [
+   "How did the tool improve your work?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Which part of HR do you enjoy most: hiring, people development or employee relations?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "hiring",
+   "development",
+   "relations",
+   "reason",
+   "example"
+  ],
+  "followups": [
+   "What would you like to learn next?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Tell me about an HR process you improved.",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "process",
+   "problem",
+   "change",
+   "result",
+   "feedback"
+  ],
+  "followups": [
+   "How did you get people to adopt it?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Tell me about a time you had to deliver difficult news to an employee.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "prepare",
+   "empathy",
+   "clear",
+   "support",
+   "outcome"
+  ],
+  "followups": [
+   "How did they react, and how did you respond?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Describe a time you handled a conflict between two employees.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "listen",
+   "both sides",
+   "neutral",
+   "agreement",
+   "follow up"
+  ],
+  "followups": [
+   "How did you check it was really resolved?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Tell me about a time you had to say no to a senior manager.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "policy",
+   "reason",
+   "alternative",
+   "respect",
+   "outcome"
+  ],
+  "followups": [
+   "How did the relationship hold up?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Describe a hiring drive you ran under time pressure.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "plan",
+   "sourcing",
+   "screening",
+   "numbers",
+   "quality"
+  ],
+  "followups": [
+   "What would you do differently next time?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you keep employee information confidential?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "access",
+   "need to know",
+   "policy",
+   "data",
+   "trust"
+  ],
+  "followups": [
+   "What if a manager asks for details they shouldn't see?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you stay neutral when you personally like one side in a dispute?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "facts",
+   "process",
+   "bias",
+   "fair",
+   "document"
+  ],
+  "followups": [
+   "When would you hand the case to someone else?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you handle the emotional load of difficult HR conversations?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "boundaries",
+   "support",
+   "reflect",
+   "self-care",
+   "learn"
+  ],
+  "followups": [
+   "Who supports you at work?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What does a great employee experience look like to you?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "onboarding",
+   "growth",
+   "recognition",
+   "manager",
+   "culture"
+  ],
+  "followups": [
+   "How would you measure it?"
+  ],
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",

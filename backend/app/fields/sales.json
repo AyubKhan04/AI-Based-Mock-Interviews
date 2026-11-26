@@ -49,9 +49,19 @@
   },
   "full_counts": {
     "screening": 12,
-    "technical": 12,
+    "technical": {
+      "roleplay": 4,
+      "concept": 8
+    },
     "behavioural": 12,
     "hr": 12
   },
-  "example_answer_style": "Customer-focused and confident. Ask questions before pitching, link features to the customer's need, handle objections calmly, and close with a clear next step. Behavioural and HR answers use STAR with numbers (quota, deals, revenue)."
+  "example_answer_style": "Customer-focused and confident. Ask questions before pitching, link features to the customer's need, handle objections calmly, and close with a clear next step. Behavioural and HR answers use STAR with numbers (quota, deals, revenue).",
+  "round_labels": {
+    "technical": "Sales Skills"
+  },
+  "special_kind": {
+    "key": "roleplay",
+    "label": "role-play"
+  }
 }

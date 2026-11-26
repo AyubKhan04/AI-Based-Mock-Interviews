@@ -37,7 +37,7 @@ export default function Dashboard() {
             <tbody>{items.map((i) => (
               <tr key={i.id} className="border-t border-slate-100">
                 <td className="p-2">{new Date(i.created_at).toLocaleDateString()}</td><td className="p-2">{i.role}</td>
-                <td className="p-2">{i.mode === 'practice' ? <span className="capitalize">Practice · {i.round_type}</span> : `${i.mode === 'mock' ? 'Mock' : '⭐ Perform'} · ${i.rounds_passed}/4 passed`}</td><td className="p-2">{i.company}</td>
+                <td className="p-2">{i.mode === 'practice' ? <span className="capitalize">Practice · {i.round_label || i.round_type}</span> : `${i.mode === 'mock' ? 'Mock' : '⭐ Perform'} · ${i.rounds_passed}/4 passed`}</td><td className="p-2">{i.company}</td>
                 <td className="p-2">{i.score != null ? <Stars rating={i.rating} score={i.score} /> : <span className="text-slate-400">{i.status.replace('_', ' ')}</span>}</td>
                 <td className="whitespace-nowrap p-2 text-right">
                   <Link className="text-indigo-600 hover:underline" to={i.status === 'in_progress' ? `/interview/${i.id}` : `/report/${i.id}`}>{i.status === 'in_progress' ? 'Continue' : 'Report'}</Link>
@@ -92,7 +92,7 @@ function SummaryModal({ id, onClose }) {
             {s.mode !== 'practice' && (
               <div className="mt-2 flex flex-wrap gap-2">{s.rounds.map((r) => (
                 <span key={r.round_type} className={`rounded px-2 py-0.5 text-xs capitalize ${r.passed ? 'bg-emerald-100 text-emerald-700' : r.passed === false ? 'bg-red-100 text-red-700' : 'bg-slate-200 text-slate-600'}`}>
-                  {r.round_type}{r.score != null ? ` ${r.score}` : ''}</span>))}</div>
+                  {r.label || r.round_type}{r.score != null ? ` ${r.score}` : ''}</span>))}</div>
             )}
           </div>
           {s.strengths.length > 0 && <div><h3 className="mb-1 font-semibold text-emerald-700">Strengths</h3>

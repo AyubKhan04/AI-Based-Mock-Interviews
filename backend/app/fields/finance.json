@@ -49,9 +49,19 @@
   },
   "full_counts": {
     "screening": 12,
-    "technical": 12,
+    "technical": {
+      "case": 4,
+      "concept": 8
+    },
     "behavioural": 12,
     "hr": 12
   },
-  "example_answer_style": "Concise and numerate. Show the formula or logic, do the arithmetic step by step, state assumptions, and finish with a recommendation. Behavioural and HR answers use STAR with a measurable result."
+  "example_answer_style": "Concise and numerate. Show the formula or logic, do the arithmetic step by step, state assumptions, and finish with a recommendation. Behavioural and HR answers use STAR with a measurable result.",
+  "round_labels": {
+    "technical": "Finance Technical"
+  },
+  "special_kind": {
+    "key": "case",
+    "label": "case / calculation"
+  }
 }
