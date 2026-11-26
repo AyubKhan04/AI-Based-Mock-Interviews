@@ -160,6 +160,8 @@ def state(iv: Interview) -> dict:
     return {
         "interview_id": iv.id, "mode": iv.mode, "status": iv.status, "field": iv.field, "role": iv.role,
         "company": iv.company, "expires_at": iso(iv.expires_at),
+        "proctored": iv.mode != "practice", "disqualified_reason": iv.disqualified_reason,
+        "integrity": {"tab": (iv.integrity or {}).get("tab", 0), "camera": (iv.integrity or {}).get("camera", 0), "chances": flow.CHANCES},
         "rounds": [{"order": r.order, "round_type": r.round_type, "status": r.status, "score": r.score,
                     "rating": scoring.rating(r.score) if r.score is not None else None, "passed": r.passed,
                     "pass_mark": r.pass_mark, "scheduled_at": iso(r.scheduled_at), "questions": len(r.question_ids),
@@ -399,6 +401,21 @@ def hidden_tests(iid: int, user: User = Depends(current_user), db: Session = Dep
     return {"function": q.coding["function"], "tests": q.coding["visible"] + q.coding["hidden"]}
 
 
+class ViolationIn(BaseModel):
+    kind: Literal["tab", "camera"]
+    timed_out: bool = False
+
+
+@app.post("/interviews/{iid}/integrity")
+def integrity(iid: int, body: ViolationIn, bg: BackgroundTasks, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    """Record a proctoring warning (tab/fullscreen left, camera off) for a Mock or Perform round."""
+    iv = get_interview(db, iid, user)
+    res = flow.record_violation(db, iv, body.kind, body.timed_out)
+    if res["disqualified"]:
+        queue(bg, iv.id, [("disqualified", 0)])
+    return res
+
+
 @app.post("/interviews/{iid}/answer")
 def answer(iid: int, body: AnswerIn, bg: BackgroundTasks, user: User = Depends(current_user), db: Session = Depends(get_db)):
     iv = get_interview(db, iid, user)
@@ -490,6 +507,8 @@ def summary(iid: int, user: User = Depends(current_user), db: Session = Depends(
     main_answered = sum(1 for a in answered if not a.is_followup)
     if iv.status == "in_progress":
         result = f"In progress: {main_answered} of {total_q} questions answered."
+    elif iv.disqualified_reason:
+        result = iv.disqualified_reason
     elif iv.mode == "practice":
         result = f"Completed: {iv.overall_score}/10 ({scoring.rating(iv.overall_score)['label']})."
     else:
@@ -549,7 +568,8 @@ def email_report(iid: int, user: User = Depends(current_user), db: Session = Dep
         raise HTTPException(409, "Finish the interview first")
     if not emailer.enabled():
         raise HTTPException(503, "Email is not set up on this server yet")
-    kind = {"practice": "practice"}.get(iv.mode) or {"completed": "final", "failed": "failed", "expired": "expired"}[iv.status]
+    kind = {"practice": "practice"}.get(iv.mode) or ("disqualified" if iv.disqualified_reason else
+                                                    {"completed": "final", "failed": "failed", "expired": "expired"}[iv.status])
     order = max((r.order for r in iv.rounds if r.status == "completed"), default=0)
     if not notify.send(iv.id, kind, order):
         raise HTTPException(502, "The email could not be sent. Check that email notifications are on in your profile.")

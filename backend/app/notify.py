@@ -35,7 +35,7 @@ def _link(iv: Interview, label: str = "Open your interview") -> str:
 
 
 def send(iid: int, kind: str, order: int | None = None) -> bool:
-    """kind: practice | passed | failed | final | expired | scheduled | reminder"""
+    """kind: practice | passed | failed | final | expired | disqualified | scheduled | reminder"""
     with SessionLocal() as db:
         iv = db.get(Interview, iid)
         user = db.get(User, iv.user_id)
@@ -80,6 +80,12 @@ def send(iid: int, kind: str, order: int | None = None) -> bool:
             reason = "the one-day limit passed" if iv.mode == "mock" else "a round was not started within a day of its slot"
             body = (f"<h2>Your interview has ended as incomplete</h2><p>It ended because {reason}. "
                     "Feedback on the rounds you finished is attached. You can start a new one any time.</p>")
+            pdf = True
+        elif kind == "disqualified":
+            subject = f"Interview ended: disqualified ({title})"
+            body = (f"<h2>Your interview has ended</h2><p>{escape(iv.disqualified_reason or 'Disqualified.')}</p>"
+                    "<p>Mock and Perform rounds need the interview tab in fullscreen and the camera on the whole time, "
+                    "with 3 chances for each. Feedback on any rounds you finished is attached. You can start a new interview any time.</p>")
             pdf = True
         elif kind == "scheduled":
             subject = f"Your Perform Mock Interview: {ROUND_NAME[rnd.round_type]} round booked"

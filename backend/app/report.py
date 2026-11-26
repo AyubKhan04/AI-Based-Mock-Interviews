@@ -109,6 +109,7 @@ def build(db: Session, iv: Interview) -> dict:
         "difficulty": iv.difficulty, "status": iv.status, "created_at": iv.created_at.isoformat(),
         "overall_score": iv.overall_score, "overall_rating": rating(iv.overall_score), "rounds": rounds,
         "expires_at": iv.expires_at.isoformat() if iv.expires_at else None,
+        "disqualified_reason": iv.disqualified_reason,
         "final": final_summary(iv) if iv.mode != "practice" else None,
         "disclaimer": "Practice questions only. Not affiliated with, or endorsed by, any company named.",
     }
@@ -139,6 +140,8 @@ def pdf(rep: dict, candidate: str) -> bytes:
     line("Mock Interview Report", 18, "B", 9)
     line(f"{candidate}  |  {rep['field'].title()} - {rep['role']}  |  {rep['company']}  |  {rep['mode'].title()} mode", 10)
     line(rep["disclaimer"], 8, "I")
+    if rep.get("disqualified_reason"):
+        line(rep["disqualified_reason"], 11, "B")
     f = rep.get("final")
     if f:
         p.ln(3)

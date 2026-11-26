@@ -1,18 +1,26 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api } from '../api'
-import { Loading } from '../App'
+import { Loading, useApp } from '../App'
 import { ROUND_LABEL } from '../FieldRole'
 import CodeAnswer from '../CodeAnswer'
 import Stars from '../Stars'
 import { Camera, MicButton, useVoice } from '../Voice'
+import { BigCamera, ProctorOverlay, RulesGate, proctorSession, useProctor } from '../Proctor'
+import { SpeakerControls, useSpeaker } from '../Speaker'
+import { closing, preface } from '../interviewer'
 
 export default function Interview() {
   const { id } = useParams()
   const nav = useNavigate()
+  const { user } = useApp()
+  const name = (user?.name || '').split(' ')[0]
   const [st, setSt] = useState(null)
   const [err, setErr] = useState('')
   const [banner, setBanner] = useState(null)
+  const [gate, setGate] = useState(null) // round order waiting on the rules screen
+  const [stream, setStreamState] = useState(() => proctorSession.get(id))
+  const speaker = useSpeaker()
 
   const load = useCallback(() => api(`/interviews/${id}`).then((s) => {
     if (s.mode === 'practice' && s.status !== 'in_progress') nav(`/report/${id}`)
@@ -20,13 +28,43 @@ export default function Interview() {
   }).catch((e) => setErr(e.message)), [id, nav])
   useEffect(() => { load() }, [load])
 
+  const setStream = (s) => { proctorSession.set(id, s); setStreamState(s) }
+  const watching = !!(st?.proctored && st.question && st.status === 'in_progress' && stream)
+  const setIntegrity = (res) => setSt((s) => s && { ...s, integrity: { ...s.integrity, tab: res.tab, camera: res.camera } })
+  const proctor = useProctor({
+    id, stream, setStream, active: watching, onUpdate: setIntegrity,
+    onDisqualified: (reason) => { endProctor(); speaker.speak(`${reason} I'm sorry, this interview has ended. Your report explains what happened.`); load() },
+  })
+  function endProctor() { proctor.pause(); proctorSession.end(); setStreamState(null) }
+  useEffect(() => () => { proctor.pause(); proctorSession.end() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   if (err && !st) return <p className="text-red-600">{err}</p>
   if (!st) return <Loading />
-  if (st.question) return <Answering st={st} setSt={setSt} id={id} onRoundDone={(r) => {
-    if (r.mode === 'practice') return nav(`/report/${id}`)
-    setBanner(r.rounds.find((x) => x.order === r.finished_round)); setSt(r)
+
+  if (gate != null) return <RulesGate integrity={st.integrity} onCancel={() => setGate(null)} onStart={async (s) => {
+    const r = await api(`/interviews/${id}/rounds/${gate}/start`, { method: 'POST' })
+    setStream(s); setBanner(null); setGate(null); setSt(r)
   }} />
-  return <Hub st={st} id={id} banner={banner} reload={load} setSt={setSt} />
+
+  if (st.question && st.proctored && !stream) return <RulesGate resumed integrity={st.integrity} onStart={async (s) => {
+    const res = await api(`/interviews/${id}/integrity`, { method: 'POST', body: { kind: 'tab', timed_out: false } })
+    if (res.disqualified) { s.getTracks().forEach((t) => t.stop()); proctorSession.end(); return load() }
+    setIntegrity(res); setStream(s)
+  }} />
+
+  if (st.question) return (
+    <>
+      {watching && <ProctorOverlay {...proctor} integrity={st.integrity} />}
+      <Answering st={st} setSt={setSt} id={id} name={name} speaker={speaker} stream={watching ? stream : null} onRoundDone={(r) => {
+        if (r.mode === 'practice') return nav(`/report/${id}`)
+        if (st.proctored) endProctor()
+        const done = r.rounds.find((x) => x.order === r.finished_round)
+        speaker.speak(closing({ round: done, status: r.status, name }))
+        setBanner(done); setSt(r)
+      }} />
+    </>
+  )
+  return <Hub st={st} id={id} banner={banner} setSt={setSt} onProctoredStart={setGate} />
 }
 
 function fmt(iso) {
@@ -44,21 +82,22 @@ function Countdown({ to }) {
 
 const STATUS = {
   locked: ['🔒 Locked', 'text-slate-400'], ready: ['Ready to start', 'text-indigo-700'], scheduled: ['Booked', 'text-indigo-700'],
-  in_progress: ['In progress', 'text-amber-700'], completed: ['Done', 'text-slate-700'], missed: ['Missed', 'text-red-600'], incomplete: ['Incomplete', 'text-red-600'],
+  in_progress: ['In progress', 'text-amber-700'], completed: ['Done', 'text-slate-700'], disqualified: ['⛔ Disqualified', 'text-red-600'], missed: ['Missed', 'text-red-600'], incomplete: ['Incomplete', 'text-red-600'],
 }
 
-function Hub({ st, id, banner, setSt }) {
+function Hub({ st, id, banner, setSt, onProctoredStart }) {
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
   const over = st.status !== 'in_progress'
   async function start(order) {
+    if (st.proctored) return onProctoredStart(order)
     setErr(''); setBusy(true)
     try { setSt(await api(`/interviews/${id}/rounds/${order}/start`, { method: 'POST' })) } catch (e) { setErr(e.message) } finally { setBusy(false) }
   }
   const title = st.mode === 'perform' ? '⭐ Perform Mock Interview' : `Mock interview · ${st.company === 'Any company' ? 'general' : st.company} style`
   const END = {
     completed: ['bg-emerald-50 text-emerald-800', '🎉 You passed all four rounds. Your final report is ready and on its way to your email.'],
-    failed: ['bg-red-50 text-red-800', 'You cannot proceed to the next round this time. Your feedback report shows exactly why, and what to fix first.'],
+    failed: ['bg-red-50 text-red-800', st.disqualified_reason ? `⛔ ${st.disqualified_reason} The interview has ended.` : 'You cannot proceed to the next round this time. Your feedback report shows exactly why, and what to fix first.'],
     expired: ['bg-slate-100 text-slate-700', 'This interview ended as incomplete. You have feedback on the rounds you finished. Start a new one any time.'],
   }
   return (
@@ -67,6 +106,7 @@ function Hub({ st, id, banner, setSt }) {
         <div><h1 className="text-2xl font-bold">{title}</h1><p className="text-slate-500">{st.role}</p></div>
         {st.mode === 'mock' && !over && st.expires_at && <p className="text-sm text-slate-600">Time left to finish: <b><Countdown to={st.expires_at} /></b></p>}
       </div>
+      {st.proctored && !over && <p className="rounded-lg bg-slate-50 p-3 text-sm text-slate-600">🛡 Proctored: each round runs in fullscreen with your camera on. Warnings used so far: tab {st.integrity.tab}/{st.integrity.chances}, camera {st.integrity.camera}/{st.integrity.chances}.</p>}
       {banner && !over && (
         <div className="rounded-lg bg-emerald-50 p-4 text-emerald-800">
           ✅ You passed the {ROUND_LABEL[banner.round_type]} round with {banner.score}/10. You are selected for the next round.
@@ -98,7 +138,7 @@ function Hub({ st, id, banner, setSt }) {
   )
 }
 
-function Answering({ st, setSt, id, onRoundDone }) {
+function Answering({ st, setSt, id, name, speaker, stream, onRoundDone }) {
   const [log, setLog] = useState([])
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
@@ -107,6 +147,8 @@ function Answering({ st, setSt, id, onRoundDone }) {
   const note = sessionStorage.getItem(`note-${id}`)
   const voice = useVoice((t) => setText((x) => (x ? x + ' ' : '') + t))
   useEffect(() => { box.current?.focus() }, [st])
+  const intro = useMemo(() => preface({ st, name, first: log.length === 0 }), [st.question]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { speaker.speak(`${intro} ${st.question}`) }, [st.question]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function submit() {
     if (!text.trim()) return
@@ -127,16 +169,8 @@ function Answering({ st, setSt, id, onRoundDone }) {
   }
 
   const words = text.trim() ? text.trim().split(/\s+/).length : 0
-  return (
-    <div className="mx-auto max-w-3xl space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">{ROUND_LABEL[st.round_type]} round · question {st.question_number} of {st.total}</h1>
-        <Camera defaultOn={st.round_type === 'behavioural' && st.mode !== 'practice'} />
-        {st.mode === 'practice' && <button className="btn-ghost text-sm" onClick={endEarly} disabled={busy || log.length === 0}>End and see report</button>}
-      </div>
-      <div className="h-2 overflow-hidden rounded-full bg-slate-200"><div className="h-full bg-indigo-500 transition-all" style={{ width: `${((st.question_number - 1) / st.total) * 100}%` }} /></div>
-      {note && st.mode === 'practice' && <p className="text-xs text-slate-400">{note}</p>}
-
+  const main = (
+    <div className="space-y-4">
       {log.map((m, i) => (
         <div key={i} className="space-y-2 opacity-80">
           <Bubble who="ai" followup={m.followup}>{m.q}</Bubble>
@@ -145,7 +179,10 @@ function Answering({ st, setSt, id, onRoundDone }) {
         </div>
       ))}
 
-      <Bubble who="ai" followup={st.is_followup}>{st.kind === 'coding' ? <><span className="mr-1 rounded bg-amber-100 px-1.5 text-xs text-amber-800">Coding</span>{st.question}</> : st.question}</Bubble>
+      <Bubble who="ai" followup={st.is_followup} speaking={speaker.speaking} controls={<SpeakerControls speaker={speaker} text={`${intro} ${st.question}`} />}>
+        {intro && <span className="mb-1 block text-sm italic text-slate-500">{intro}</span>}
+        {st.kind === 'coding' ? <><span className="mr-1 rounded bg-amber-100 px-1.5 text-xs text-amber-800">Coding</span>{st.question}</> : st.question}
+      </Bubble>
       {st.kind === 'coding' ? (
         <CodeAnswer id={id} st={st} onAnswered={(r, summary) => {
           setLog([...log, { q: st.question, a: summary, followup: false, score: r.last_score, rating: r.last_rating }])
@@ -155,21 +192,41 @@ function Answering({ st, setSt, id, onRoundDone }) {
         <textarea ref={box} className="input min-h-40" placeholder="Type your answer, or press 🎤 and speak it…" value={text} onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submit() }} />
         <div className="flex items-center justify-between text-sm text-slate-500">
-          <span className="flex items-center gap-3"><MicButton voice={voice} /> {words} words · aim for about 80–200</span>
+          <span className="flex items-center gap-3" onClickCapture={() => speaker.stop()}><MicButton voice={voice} /> {words} words · aim for about 80–200</span>
           <button className="btn" onClick={submit} disabled={busy || !text.trim()}>{busy ? 'Scoring…' : 'Submit answer'}</button>
         </div>
         {err && <p className="text-sm text-red-600">{err}</p>}
       </div>}
     </div>
   )
+  return (
+    <div className={`mx-auto space-y-4 ${stream ? 'max-w-6xl' : 'max-w-3xl'}`}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-xl font-bold">{ROUND_LABEL[st.round_type]} round · question {st.question_number} of {st.total}</h1>
+        {!stream && <Camera defaultOn={st.round_type === 'behavioural' && st.mode !== 'practice'} />}
+        {st.mode === 'practice' && <button className="btn-ghost text-sm" onClick={endEarly} disabled={busy || log.length === 0}>End and see report</button>}
+      </div>
+      <div className="h-2 overflow-hidden rounded-full bg-slate-200"><div className="h-full bg-indigo-500 transition-all" style={{ width: `${((st.question_number - 1) / st.total) * 100}%` }} /></div>
+      {note && st.mode === 'practice' && <p className="text-xs text-slate-400">{note}</p>}
+      {stream ? (
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_400px]">
+          <div className="order-2 lg:order-1">{main}</div>
+          <aside className="order-1 space-y-2 lg:order-2 lg:sticky lg:top-4 lg:self-start">
+            <BigCamera stream={stream} />
+            <p className="text-xs text-slate-500">🛡 Warnings used: tab {st.integrity.tab}/{st.integrity.chances} · camera {st.integrity.camera}/{st.integrity.chances}</p>
+          </aside>
+        </div>
+      ) : main}
+    </div>
+  )
 }
 
-export function Bubble({ who, followup, children }) {
+export function Bubble({ who, followup, speaking, controls, children }) {
   const ai = who === 'ai'
   return (
     <div className={`flex ${ai ? '' : 'justify-end'}`}>
       <div className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 ${ai ? 'bg-white ring-1 ring-slate-200' : 'bg-indigo-600 text-white'}`}>
-        {ai && <div className="mb-1 text-xs font-semibold text-indigo-600">{followup ? 'Interviewer · follow-up' : 'Interviewer'}</div>}
+        {ai && <div className="mb-1 flex flex-wrap items-center text-xs font-semibold text-indigo-600">{speaking && controls ? '🗣 ' : ''}{followup ? 'Interviewer · follow-up' : 'Interviewer'}{controls}</div>}
         {children}
       </div>
     </div>
