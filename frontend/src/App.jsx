@@ -13,6 +13,7 @@ import Practice from './pages/Practice'
 import Profile from './pages/Profile'
 import Progress from './pages/Progress'
 import Report from './pages/Report'
+import ThemeToggle from './Theme'
 
 const Ctx = createContext(null)
 export const useApp = () => useContext(Ctx)
@@ -31,7 +32,7 @@ export default function App() {
   if (!ready) return <Loading text="Waking up the server… free hosting can take up to a minute." />
   return (
     <Ctx.Provider value={{ user, setUser, catalog }}>
-      {user && <Header />}
+      {user ? <Header /> : <div className="mx-auto flex max-w-6xl justify-end px-4 pt-3"><ThemeToggle /></div>}
       {user?.is_guest && (
         <div className="bg-amber-50 px-4 py-2 text-center text-sm text-amber-900">
           You're trying the app as a guest. Your progress is kept for 3 days. <Link className="font-semibold underline" to="/profile#save">Save it with a free account</Link>
@@ -90,6 +91,7 @@ function Header() {
           ))}
         </div>
         <Link to="/perform" className="btn py-1.5 text-sm">⭐ Perform Mock Interview</Link>
+        <ThemeToggle />
         <button className="text-sm text-slate-500 hover:text-slate-800" onClick={() => { token.set(null); setUser(null); nav('/login') }}>Log out</button>
       </div>
     </header>

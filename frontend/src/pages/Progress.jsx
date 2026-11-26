@@ -79,14 +79,14 @@ function LineChart({ points }) {
     <div className="relative">
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Round scores over time">
         {[0, 2, 4, 6, 8, 10].map((g) => (
-          <g key={g}><line x1={L} x2={W - R} y1={y(g)} y2={y(g)} stroke="#e2e8f0" strokeWidth="1" />
-            <text x={L - 8} y={y(g) + 4} textAnchor="end" fontSize="11" fill="#64748b">{g}</text></g>
+          <g key={g}><line x1={L} x2={W - R} y1={y(g)} y2={y(g)} stroke="var(--chart-grid)" strokeWidth="1" />
+            <text x={L - 8} y={y(g) + 4} textAnchor="end" fontSize="11" fill="var(--chart-label)">{g}</text></g>
         ))}
-        <path d={d} fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinejoin="round" />
+        <path d={d} fill="none" stroke="var(--chart-line)" strokeWidth="2" strokeLinejoin="round" />
         {points.map((p, i) => (
           <g key={i} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}>
             <circle cx={x(i)} cy={y(p.score)} r="12" fill="transparent" />
-            <circle cx={x(i)} cy={y(p.score)} r={hover === i ? 6 : 4} fill="#4f46e5" stroke="#fff" strokeWidth="2" />
+            <circle cx={x(i)} cy={y(p.score)} r={hover === i ? 6 : 4} fill="var(--chart-line)" stroke="var(--chart-dot-ring)" strokeWidth="2" />
           </g>
         ))}
       </svg>
