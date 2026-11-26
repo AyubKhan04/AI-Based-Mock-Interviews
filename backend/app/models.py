@@ -69,7 +69,7 @@ class Interview(Base):
     role: Mapped[str] = mapped_column(String(80))
     company: Mapped[str] = mapped_column(String(80))
     difficulty: Mapped[str] = mapped_column(String(10), default="medium")
-    status: Mapped[str] = mapped_column(String(20), default="in_progress")  # in_progress | completed | expired | failed
+    status: Mapped[str] = mapped_column(String(20), default="in_progress")  # in_progress | completed | failed | expired
     overall_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)  # Mock mode: 1 day
@@ -83,7 +83,8 @@ class Round(Base):
     interview_id: Mapped[int] = mapped_column(ForeignKey("interviews.id"), index=True)
     round_type: Mapped[str] = mapped_column(String(20))
     order: Mapped[int] = mapped_column(Integer, default=1)
-    status: Mapped[str] = mapped_column(String(20), default="in_progress")  # locked | scheduled | in_progress | completed
+    # locked | ready (mock: start any time) | scheduled (perform) | in_progress | completed | missed
+    status: Mapped[str] = mapped_column(String(20), default="in_progress")
     question_ids: Mapped[list] = mapped_column(JSON, default=list)
     current_index: Mapped[int] = mapped_column(Integer, default=0)
     scheduled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -93,6 +94,8 @@ class Round(Base):
     pass_mark: Mapped[float | None] = mapped_column(Float, nullable=True)  # None in Practice mode
     passed: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    reminder_sent: Mapped[bool] = mapped_column(Boolean, default=False)
 
     interview: Mapped[Interview] = relationship(back_populates="rounds")
     answers: Mapped[list["Answer"]] = relationship(back_populates="round", cascade="all, delete-orphan", order_by="Answer.id")

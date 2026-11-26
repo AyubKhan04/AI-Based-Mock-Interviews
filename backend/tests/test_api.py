@@ -1,16 +1,7 @@
-import os
-import sys
-from pathlib import Path
+from fastapi.testclient import TestClient
 
-os.environ["DATABASE_URL"] = "sqlite:///./test.db"
-os.environ["GEMINI_API_KEY"] = ""
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-Path("test.db").unlink(missing_ok=True)
-
-from fastapi.testclient import TestClient  # noqa: E402
-
-from app.main import app  # noqa: E402
-from app.scoring import rating, remove_injection, text_metrics, tone_score  # noqa: E402
+from app.main import app
+from app.scoring import rating, remove_injection, text_metrics, tone_score
 
 GOOD = ("In my last project the situation was a slow report. My task was to cut load time. First I profiled the "
         "query, then I added an index and a cache because most reads repeated. As a result load time fell from "

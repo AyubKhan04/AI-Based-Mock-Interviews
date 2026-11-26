@@ -19,8 +19,10 @@ An AI interview coach that trains candidates for interviews in their own field. 
 | PDF download and emailed PDF | ✅ |
 | Dashboard with history | ✅ |
 | Tech field (Software Engineer, Data Analyst, Data Scientist, ML/AI Engineer) | ✅ |
-| Mock mode (4 rounds, ¼ questions, pass/fail, 1 day) | 🔜 next |
-| ⭐ Perform Mock Interview (4 days, scheduled slots, reminder emails) | 🔜 |
+| **Mock mode**: one company, all 4 rounds, ¼ of the questions, pass marks, finish within 1 day, as many as you like | ✅ |
+| **⭐ Perform Mock Interview**: common questions, full count, one round a day in your preferred slot, booking and reminder emails | ✅ |
+| Pass/fail emails that say exactly why, "selected for next round", "not selected", incomplete reports | ✅ |
+| Final report: overall band, band per skill, top 3 strengths and weaknesses, 7 → 10 roadmap, practice plan | ✅ |
 | Coding round in the browser (Pyodide), voice, camera | 🔜 |
 | Finance, Sales and HR field profiles | 🔜 |
 
@@ -129,6 +131,14 @@ Render's free plan blocks normal email ports (SMTP), so Gmail App Passwords won'
 
 ### 6. Connect the two
 On Render → your service → **Environment** → change `FRONTEND_ORIGINS` to your Vercel URL → **Save changes**. Render restarts, and the site is live.
+
+### 7. Turn on reminders (GitHub Actions, free)
+Perform Mock Interview sends a reminder an hour before each round, and Mock interviews close after a day. A small scheduled job in `.github/workflows/tick.yml` does this every 30 minutes.
+1. On Render → your service → **Environment**, copy the value of `CRON_SECRET` (Render generated it).
+2. On GitHub → this repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**. Add `API_URL` (your Render URL) and `CRON_SECRET` (the value you copied).
+3. **Actions** tab → **Reminders** → **Run workflow** to test it. It should print `{"reminders":0,"expired":0}`.
+
+> Free minutes: public repos have unlimited Actions minutes. A private repo gets 2,000 free minutes a month, and this job uses about 1,500. If you need fewer, change `*/30` to `0 * * * *` (hourly).
 
 **Live demo:** _add your Vercel URL here_
 

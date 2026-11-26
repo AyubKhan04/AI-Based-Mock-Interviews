@@ -27,6 +27,58 @@ def _progress(db: Session, rnd: Round, user_id: int) -> list[dict]:
     return out
 
 
+ROADMAP = {
+    "Communication": ["Lead with a one-line answer, then 2-3 supporting points.", "Record yourself and cut anything that does not support the main point."],
+    "Technical": ["Revise the core concepts for your role and explain each one in 3 sentences with an example.", "For every concept, name one trade-off or limitation."],
+    "Problem-solving": ["Think aloud: state the goal, the options you considered, and why you chose one.", "Close with how you would check the result."],
+    "Structure": ["Use STAR for every story: Situation, Task, Action, Result.", "End each answer with a measurable result and what you learned."],
+    "Delivery": ["Pause instead of saying 'um' or 'basically'.", "Keep answers to 1-2 minutes (about 120-250 words)."],
+    "Questions asked": ["Prepare two thoughtful questions about the team, success in the role, or challenges.", "Link your questions to your own goals."],
+}
+
+
+def _avg(vals):
+    vals = [v for v in vals if v is not None]
+    return round(sum(vals) / len(vals), 1) if vals else None
+
+
+def band(x: float | None) -> float | None:
+    """IELTS-style band: nearest 0.5."""
+    return None if x is None else round(x * 2) / 2
+
+
+def final_summary(iv: Interview) -> dict | None:
+    done = [r for r in iv.rounds if r.status == "completed" and r.subscores]
+    if not done:
+        return None
+    answers = [a for r in done for a in r.answers if a.subscores]
+    sub = lambda k, rs=None: _avg([a.subscores.get(k) for a in answers if rs is None or a.round.round_type in rs])
+    skills = {
+        "Communication": sub("communication"),
+        "Technical": sub("content", {"technical"}),
+        "Problem-solving": sub("thought_process"),
+        "Structure": _avg([sub("communication", {"behavioural", "hr"}), sub("thought_process", {"behavioural", "hr"})]),
+        "Delivery": sub("tone"),
+        "Questions asked": sub("attitude", {"hr"}),
+    }
+    bands = [{"skill": k, "band": band(v), "rating": rating(v)} for k, v in skills.items() if v is not None]
+    ranked = sorted(bands, key=lambda b: b["band"], reverse=True)
+    weak = [b for b in sorted(bands, key=lambda b: b["band"]) if b["band"] < 9][:3]
+    worst_answers = sorted([a for a in answers if a.example_answer], key=lambda a: a.score or 0)
+    roadmap = []
+    for i, b in enumerate(weak):
+        ex = worst_answers[i] if i < len(worst_answers) else None
+        roadmap.append({"skill": b["skill"], "from": b["band"], "actions": ROADMAP[b["skill"]],
+                        "example": {"question": ex.question_text, "answer": ex.example_answer} if ex else None})
+    weakest_rounds = sorted(done, key=lambda r: r.score or 0)[:2]
+    plan = [f"Practise the {r.round_type.title()} round in Practice mode ({r.score}/10 last time), on Medium then Hard, "
+            f"with two different company styles." for r in weakest_rounds]
+    plan.append("Then take a new Mock interview to check your progress.")
+    overall = _avg([r.score for r in done])
+    return {"complete": iv.status == "completed", "band": band(overall), "rating": rating(overall), "skills": bands,
+            "strengths": ranked[:3], "weaknesses": weak or ranked[-3:], "roadmap": roadmap, "practice_plan": plan}
+
+
 def build(db: Session, iv: Interview) -> dict:
     rounds = []
     for r in iv.rounds:
@@ -45,7 +97,8 @@ def build(db: Session, iv: Interview) -> dict:
                 "flags": a.flags or [], "metrics": a.metrics,
             })
         rounds.append({
-            "round_type": r.round_type, "status": r.status, "score": r.score, "rating": rating(r.score),
+            "order": r.order, "round_type": r.round_type, "status": r.status,
+            "scheduled_at": r.scheduled_at.isoformat() if r.scheduled_at else None, "score": r.score, "rating": rating(r.score),
             "subscores": [{"key": k, "label": SUBSCORE_LABELS[k], "score": v, "rating": rating(v)}
                           for k, v in (r.subscores or {}).items()],
             "improvements": r.improvements or [], "progress": _progress(db, r, iv.user_id) if r.status == "completed" else [],
@@ -55,6 +108,8 @@ def build(db: Session, iv: Interview) -> dict:
         "id": iv.id, "mode": iv.mode, "field": iv.field, "role": iv.role, "company": iv.company,
         "difficulty": iv.difficulty, "status": iv.status, "created_at": iv.created_at.isoformat(),
         "overall_score": iv.overall_score, "overall_rating": rating(iv.overall_score), "rounds": rounds,
+        "expires_at": iv.expires_at.isoformat() if iv.expires_at else None,
+        "final": final_summary(iv) if iv.mode != "practice" else None,
         "disclaimer": "Practice questions only. Not affiliated with, or endorsed by, any company named.",
     }
 
@@ -84,9 +139,30 @@ def pdf(rep: dict, candidate: str) -> bytes:
     line("Mock Interview Report", 18, "B", 9)
     line(f"{candidate}  |  {rep['field'].title()} - {rep['role']}  |  {rep['company']}  |  {rep['mode'].title()} mode", 10)
     line(rep["disclaimer"], 8, "I")
-    for r in rep["rounds"]:
+    f = rep.get("final")
+    if f:
         p.ln(3)
-        line(f"{r['round_type'].title()} round: {r['score']}/10, {_stars(r['rating'])}", 14, "B", 8)
+        line(("Final report" if f["complete"] else "Report on completed rounds (incomplete)")
+             + f": overall band {f['band']}/10, {_stars(f['rating'])}", 14, "B", 8)
+        for s in f["skills"]:
+            line(f"- {s['skill']}: band {s['band']}")
+        line("Top strengths: " + ", ".join(s["skill"] for s in f["strengths"]))
+        line("Top weaknesses: " + ", ".join(s["skill"] for s in f["weaknesses"]))
+        if f["roadmap"]:
+            line("7 -> 10 roadmap", 12, "B", 7)
+            for item in f["roadmap"]:
+                line(f"{item['skill']} (now {item['from']}): " + " ".join(item["actions"]))
+                if item["example"]:
+                    line(f"Example. Q: {item['example']['question']}  A: {item['example']['answer']}", 9, "I")
+        line("Suggested practice plan", 12, "B", 7)
+        for step in f["practice_plan"]:
+            line(f"- {step}")
+    for r in rep["rounds"]:
+        if not r["questions"]:
+            continue
+        p.ln(3)
+        verdict = "" if r["passed"] is None else (" - PASSED" if r["passed"] else f" - not passed (pass mark {r['pass_mark']:g})")
+        line(f"{r['round_type'].title()} round: {r['score'] if r['score'] is not None else '-'}/10, {_stars(r['rating'])}{verdict}", 14, "B", 8)
         line(r["rating"]["meaning"], 9, "I")
         for s in r["subscores"]:
             line(f"- {s['label']}: {s['score']}/10")

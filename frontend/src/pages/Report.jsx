@@ -28,8 +28,8 @@ export default function Report() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Feedback report</h1>
-          <p className="text-slate-500">{rep.role} · {rep.company} style · {rep.difficulty} · {new Date(rep.created_at).toLocaleString()}</p>
+          <h1 className="text-2xl font-bold">{rep.mode === 'practice' ? 'Feedback report' : rep.final?.complete ? 'Final report' : 'Interview report'}</h1>
+          <p className="text-slate-500">{rep.role} · {rep.mode === 'perform' ? 'Perform Mock Interview' : `${rep.company} style`}{rep.mode === 'mock' && ' · Mock mode'} · {new Date(rep.created_at).toLocaleString()}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button className="btn-ghost" onClick={() => downloadPdf(id).catch((e) => setMsg(e.message))}>Download PDF</button>
@@ -39,11 +39,15 @@ export default function Report() {
       </div>
       {msg && <p className="text-sm text-slate-600">{msg}</p>}
 
-      {rep.rounds.map((r) => (
-        <div key={r.round_type} className="space-y-5">
+      {rep.final && <Final f={rep.final} />}
+
+      {rep.rounds.filter((r) => r.questions.length).map((r) => (
+        <div key={r.order} className="space-y-5">
           <section className="card flex flex-wrap items-center gap-6">
             <div>
-              <div className="text-sm uppercase tracking-wide text-slate-400">{r.round_type} round</div>
+              <div className="text-sm uppercase tracking-wide text-slate-400">{r.round_type} round
+                {r.passed != null && <span className={`ml-2 rounded px-1.5 py-0.5 text-xs normal-case ${r.passed ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>{r.passed ? 'Passed' : `Not passed · pass mark ${r.pass_mark}`}</span>}
+                {r.status === 'incomplete' && <span className="ml-2 rounded bg-slate-100 px-1.5 py-0.5 text-xs normal-case">Incomplete, not scored</span>}</div>
               <div className="text-5xl font-bold text-indigo-700">{r.score ?? '–'}<span className="text-2xl text-slate-400">/10</span></div>
               <Stars rating={r.rating} />
               <p className="mt-1 text-sm text-slate-500">{r.rating.meaning}</p>
@@ -111,5 +115,41 @@ export default function Report() {
       ))}
       <p className="text-xs text-slate-400">{rep.disclaimer} Tone is judged only on measurable things such as filler words and answer length. Accent and appearance are never judged.</p>
     </div>
+  )
+}
+
+function Final({ f }) {
+  return (
+    <section className="card space-y-5 ring-2 ring-indigo-200">
+      <div className="flex flex-wrap items-center gap-6">
+        <div>
+          <div className="text-sm uppercase tracking-wide text-slate-400">{f.complete ? 'Overall band' : 'Band so far (incomplete)'}</div>
+          <div className="text-5xl font-bold text-indigo-700">{f.band}<span className="text-2xl text-slate-400">/10</span></div>
+          <Stars rating={f.rating} />
+        </div>
+        <div className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-3">
+          {f.skills.map((s) => (
+            <div key={s.skill} className="rounded-lg bg-slate-50 p-2"><div className="text-xs text-slate-500">{s.skill}</div><div className="text-lg font-semibold">{s.band}</div></div>
+          ))}
+        </div>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div><h3 className="mb-1 font-semibold text-emerald-700">Top strengths</h3><ul className="list-disc pl-5 text-sm">{f.strengths.map((s) => <li key={s.skill}>{s.skill} ({s.band})</li>)}</ul></div>
+        <div><h3 className="mb-1 font-semibold text-red-700">Top weaknesses</h3><ul className="list-disc pl-5 text-sm">{f.weaknesses.map((s) => <li key={s.skill}>{s.skill} ({s.band})</li>)}</ul></div>
+      </div>
+      {f.roadmap.length > 0 && (
+        <div>
+          <h3 className="mb-2 font-semibold">Your 7 → 10 roadmap</h3>
+          <div className="space-y-3">{f.roadmap.map((r) => (
+            <div key={r.skill} className="rounded-lg p-3 ring-1 ring-slate-200">
+              <div className="font-medium">{r.skill} <span className="text-sm text-slate-400">now {r.from}</span></div>
+              <ul className="list-disc pl-5 text-sm">{r.actions.map((a) => <li key={a}>{a}</li>)}</ul>
+              {r.example && <div className="mt-2 text-sm text-slate-600"><b>Example.</b> {r.example.question}<br /><i>{r.example.answer}</i></div>}
+            </div>
+          ))}</div>
+        </div>
+      )}
+      <div><h3 className="mb-1 font-semibold">Suggested practice plan</h3><ol className="list-decimal pl-5 text-sm">{f.practice_plan.map((p) => <li key={p}>{p}</li>)}</ol></div>
+    </section>
   )
 }
