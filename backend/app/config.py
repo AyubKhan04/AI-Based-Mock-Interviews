@@ -20,6 +20,8 @@ GEMINI_API_KEY = _env("GEMINI_API_KEY")
 GEMINI_MODEL = _env("GEMINI_MODEL", "gemini-2.5-flash")
 
 FRONTEND_ORIGINS = [o.strip() for o in _env("FRONTEND_ORIGINS", "http://localhost:5173").split(",") if o.strip()]
+FRONTEND_URL = (_env("FRONTEND_URL") or FRONTEND_ORIGINS[0]).rstrip("/")  # used for links in emails
+CRON_SECRET = _env("CRON_SECRET")  # protects /tasks/tick, called by the GitHub Actions schedule
 
 # Email: Gmail SMTP (App Password) or Brevo's free HTTP API. Leave blank to switch email off.
 SMTP_HOST = _env("SMTP_HOST", "smtp.gmail.com")
