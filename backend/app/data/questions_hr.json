@@ -1,0 +1,1147 @@
+[
+ {
+  "text": "Tell me about yourself.",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "experience",
+   "skills",
+   "project",
+   "role",
+   "goal"
+  ],
+  "followups": [
+   "Which one project best shows why you fit this role?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Why are you interested in this role?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "skills",
+   "interest",
+   "impact",
+   "learn",
+   "team"
+  ],
+  "followups": [
+   "What specifically about our product or team draws you?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Walk me through your resume and the most relevant experience for this job.",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "experience",
+   "project",
+   "result",
+   "responsibility"
+  ],
+  "followups": [
+   "What was your exact contribution in that project?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What do you know about our company?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "product",
+   "customers",
+   "mission",
+   "research"
+  ],
+  "followups": [
+   "How would your work connect to that?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What are your key skills for this role, and how have you used them?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "project",
+   "tools",
+   "result",
+   "examples"
+  ],
+  "followups": [
+   "Give one example where that skill solved a real problem."
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Why are you looking for a new opportunity right now?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "growth",
+   "learn",
+   "challenge",
+   "goal"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Where do you see yourself in three to five years?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "goal",
+   "growth",
+   "skills",
+   "lead"
+  ],
+  "followups": [
+   "What steps are you taking now toward that?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What is your notice period and when could you start?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "notice",
+   "weeks",
+   "available"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Describe a project you are proud of.",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "problem",
+   "approach",
+   "result",
+   "impact",
+   "learned"
+  ],
+  "followups": [
+   "What would you do differently if you built it again?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you keep your technical skills up to date?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "course",
+   "project",
+   "reading",
+   "practice",
+   "community"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What kind of team and work environment helps you do your best work?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "team",
+   "feedback",
+   "ownership",
+   "collaboration"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What are your salary expectations?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "range",
+   "research",
+   "market",
+   "flexible"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What makes you a strong fit for this role compared with other candidates?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "skills",
+   "experience",
+   "result",
+   "unique"
+  ],
+  "followups": [
+   "Can you back that up with a concrete example?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Tell me about a gap or a change of direction in your career or studies.",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "reason",
+   "learned",
+   "skills",
+   "decision"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How would your previous manager or teacher describe you?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "strength",
+   "example",
+   "feedback"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Tell me about a time you faced a difficult problem at work or in a project. How did you solve it?",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "situation",
+   "task",
+   "action",
+   "result",
+   "learned"
+  ],
+  "followups": [
+   "What was the measurable result?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Describe a time you disagreed with a teammate. What happened?",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "listen",
+   "data",
+   "compromise",
+   "result",
+   "respect"
+  ],
+  "followups": [
+   "How did the relationship work out afterwards?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Tell me about a time you missed a deadline or made a mistake.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "ownership",
+   "fix",
+   "communicate",
+   "learned",
+   "prevent"
+  ],
+  "followups": [
+   "What did you change so it would not happen again?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Give an example of when you took ownership of something outside your role.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "initiative",
+   "ownership",
+   "action",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Describe a time you had to learn something new very quickly.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "learn",
+   "plan",
+   "resources",
+   "result",
+   "time"
+  ],
+  "followups": [
+   "How long did it take and how did you check you had learned it well?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Tell me about a time you used data to make a decision.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "data",
+   "analysis",
+   "decision",
+   "result",
+   "metric"
+  ],
+  "followups": [
+   "What did the numbers show exactly?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Describe a situation where you had to work with a difficult stakeholder.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "listen",
+   "expectations",
+   "communicate",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Tell me about a time you received critical feedback. How did you respond?",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "feedback",
+   "listen",
+   "improve",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Give an example of a goal you set and how you achieved it.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "goal",
+   "plan",
+   "steps",
+   "result",
+   "metric"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Tell me about a time you had to juggle several priorities.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "prioritise",
+   "plan",
+   "communicate",
+   "deadline",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Describe a time you helped a teammate who was struggling.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "help",
+   "team",
+   "support",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Tell me about a time you simplified a complex process or system.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "problem",
+   "simplify",
+   "action",
+   "result",
+   "impact"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Describe a failure and what you learned from it.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "failure",
+   "ownership",
+   "learned",
+   "change"
+  ],
+  "followups": [
+   "How have you applied that lesson since?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Tell me about a time you went above and beyond for a user or customer.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "customer",
+   "need",
+   "action",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Describe a time you had to persuade others to accept your idea.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "idea",
+   "data",
+   "persuade",
+   "listen",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What are your greatest strengths?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "strength",
+   "example",
+   "result"
+  ],
+  "followups": [
+   "Give an example where that strength made a difference."
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What is a weakness you are working on?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "weakness",
+   "improve",
+   "action",
+   "progress"
+  ],
+  "followups": [
+   "What progress have you made so far?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Why should we hire you?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "skills",
+   "fit",
+   "value",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you handle pressure and stress?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "plan",
+   "prioritise",
+   "calm",
+   "example"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Are you comfortable with relocation, shifts or travel if the role needs it?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "flexible",
+   "open",
+   "conditions"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What motivates you at work?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "impact",
+   "learn",
+   "team",
+   "growth"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you handle conflict with your manager?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "listen",
+   "respect",
+   "discuss",
+   "data",
+   "resolve"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What does a good company culture look like to you?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "respect",
+   "feedback",
+   "growth",
+   "team"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "If you got two offers, how would you decide between them?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "growth",
+   "role",
+   "team",
+   "values",
+   "learning"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What would you do in your first 90 days here?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "learn",
+   "people",
+   "goals",
+   "deliver",
+   "plan"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you prefer to receive feedback?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "direct",
+   "regular",
+   "specific",
+   "improve"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Tell me about a time you showed integrity at work or college.",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "honest",
+   "right",
+   "action",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you balance work and personal life?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "boundaries",
+   "plan",
+   "health",
+   "productive"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What questions do you have for us?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "team",
+   "success",
+   "challenge",
+   "growth",
+   "culture"
+  ],
+  "followups": [
+   "Is there anything else you would like to know about the role?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Is there anything that would stop you from accepting an offer?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "honest",
+   "expectations",
+   "clear"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Case: an employee complains that their manager is bullying them. What do you do?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "listen",
+   "confidential",
+   "investigate",
+   "policy",
+   "document"
+  ],
+  "followups": [
+   "The manager is a top performer. Does that change anything?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Case: two strong candidates, one internal and one external, apply for the same role. How do you decide?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "criteria",
+   "fair",
+   "evidence",
+   "development",
+   "communicate"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Case: attrition in one team doubled this quarter. How would you investigate?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "exit interviews",
+   "data",
+   "manager",
+   "workload",
+   "pay"
+  ],
+  "followups": [
+   "What would you do in the first 30 days?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you write a job description that attracts the right people?",
+  "round_type": "technical",
+  "role": "Talent Acquisition Specialist",
+  "difficulty": "easy",
+  "keywords": [
+   "outcomes",
+   "skills",
+   "inclusive",
+   "clear",
+   "benefits"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you reduce bias in hiring?",
+  "round_type": "technical",
+  "role": "Talent Acquisition Specialist",
+  "difficulty": "medium",
+  "keywords": [
+   "structured interview",
+   "scorecard",
+   "diverse panel",
+   "criteria",
+   "blind"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "What hiring metrics do you track?",
+  "round_type": "technical",
+  "role": "Talent Acquisition Specialist",
+  "difficulty": "medium",
+  "keywords": [
+   "time to hire",
+   "quality",
+   "cost per hire",
+   "source",
+   "offer acceptance"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Case: a manager wants to fire someone immediately after one mistake. How do you advise them?",
+  "round_type": "technical",
+  "role": "HR Business Partner",
+  "difficulty": "hard",
+  "keywords": [
+   "process",
+   "policy",
+   "evidence",
+   "improvement plan",
+   "risk"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How would you support a business leader through a team restructure?",
+  "round_type": "technical",
+  "role": "HR Business Partner",
+  "difficulty": "medium",
+  "keywords": [
+   "plan",
+   "communicate",
+   "consultation",
+   "law",
+   "wellbeing"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you measure whether a training programme worked?",
+  "round_type": "technical",
+  "role": "Learning & Development Specialist",
+  "difficulty": "medium",
+  "keywords": [
+   "kirkpatrick",
+   "behaviour",
+   "results",
+   "feedback",
+   "metrics"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How would you design onboarding for new graduates?",
+  "round_type": "technical",
+  "role": "Learning & Development Specialist",
+  "difficulty": "easy",
+  "keywords": [
+   "first week",
+   "buddy",
+   "goals",
+   "feedback",
+   "culture"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Explain the difference between performance management and performance appraisal.",
+  "round_type": "technical",
+  "role": "HR Generalist",
+  "difficulty": "medium",
+  "keywords": [
+   "continuous",
+   "goals",
+   "feedback",
+   "annual",
+   "review"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Case: an employee shares a mental-health concern in confidence. What do you do?",
+  "round_type": "technical",
+  "role": "HR Generalist",
+  "difficulty": "medium",
+  "keywords": [
+   "listen",
+   "confidential",
+   "support",
+   "adjustments",
+   "referral"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you keep HR policies compliant with changing labour law?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "monitor",
+   "legal",
+   "update",
+   "communicate",
+   "training"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "Case: survey results show low engagement. What are your next steps?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "analyse",
+   "focus groups",
+   "action plan",
+   "managers",
+   "follow up"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ },
+ {
+  "text": "How do you handle a salary negotiation with a candidate who asks for 30% more than the budget?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "understand",
+   "total package",
+   "market",
+   "budget",
+   "honest"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "hr"
+ }
+]

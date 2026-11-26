@@ -190,7 +190,7 @@ def pdf(rep: dict, candidate: str) -> bytes:
 
 def email_html(rep: dict, name: str) -> str:
     parts = [f"<p>Hi {escape(name)},</p><p>Here is your feedback for <b>{escape(rep['role'])}</b> "
-             f"({escape(rep['company'])}-style practice). The full report is attached as a PDF.</p>"]
+             f"({escape(rep['company'])}-style practice). The full report is attached as PDF and Excel.</p>"]
     for r in rep["rounds"]:
         stars = "&#9733;" * r["rating"]["stars"] + "&#9734;" * (5 - r["rating"]["stars"])
         parts.append(f"<h3>{escape(r['round_type'].title())} round: {r['score']}/10 {stars} {escape(r['rating']['label'])}</h3><ul>")
@@ -198,3 +198,73 @@ def email_html(rep: dict, name: str) -> str:
         parts.append("</ul>")
     parts.append(f"<p style='color:#777;font-size:12px'>{escape(rep['disclaimer'])}</p>")
     return "".join(parts)
+
+
+def xlsx(rep: dict, candidate: str) -> bytes:
+    """Excel version of the report: Summary, Questions and (for Mock/Perform) Final sheets."""
+    from io import BytesIO
+
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Font, PatternFill
+
+    wb = Workbook()
+    head = Font(bold=True, color="FFFFFF")
+    fill = PatternFill("solid", fgColor="4F46E5")
+
+    def table(ws, headers, rows, widths):
+        ws.append(headers)
+        for c in ws[ws.max_row]:
+            c.font, c.fill = head, fill
+        for r in rows:
+            ws.append(r)
+        for i, w in enumerate(widths):
+            ws.column_dimensions[chr(65 + i)].width = w
+        for row in ws.iter_rows(min_row=2):
+            for c in row:
+                c.alignment = Alignment(wrap_text=True, vertical="top")
+        ws.freeze_panes = "A2"
+
+    ws = wb.active
+    ws.title = "Summary"
+    ws.append([f"Mock Interview Report: {candidate}"])
+    ws["A1"].font = Font(bold=True, size=14)
+    ws.append([f"{rep['field'].title()} · {rep['role']} · {rep['company']} · {rep['mode'].title()} mode · {rep['status']}"])
+    ws.append([rep["disclaimer"]])
+    ws.append([])
+    subs = sorted({s["label"] for r in rep["rounds"] for s in r["subscores"]})
+    rows = []
+    for r in rep["rounds"]:
+        if not r["questions"]:
+            continue
+        sd = {s["label"]: s["score"] for s in r["subscores"]}
+        verdict = "" if r["passed"] is None else ("Passed" if r["passed"] else "Not passed")
+        rows.append([r["round_type"].title(), r["score"], f"{r['rating']['stars']}/5 {r['rating']['label']}", verdict, *[sd.get(k) for k in subs]])
+    table(ws, ["Round", "Score", "Rating", "Result", *subs], rows, [16, 8, 20, 12] + [16] * len(subs))
+
+    q = wb.create_sheet("Questions")
+    qrows = [[r["round_type"].title(), x["number"], x["question"], x["answer"], x["score"],
+              f"{x['rating']['stars']}/5", x["went_well"], x["to_improve"], x["example_answer"] or ""]
+             for r in rep["rounds"] for x in r["questions"]]
+    table(q, ["Round", "#", "Question", "What you said", "Score", "Stars", "What went well", "How to improve", "Example answer"],
+          qrows, [13, 5, 40, 50, 7, 7, 30, 35, 50])
+
+    imp = wb.create_sheet("Improvements")
+    table(imp, ["Round", "Priority", "Area", "Tip"],
+          [[r["round_type"].title(), i["priority"].title(), i["area"], i["tip"]] for r in rep["rounds"] for i in r["improvements"]],
+          [13, 10, 24, 80])
+
+    f = rep.get("final")
+    if f:
+        fs = wb.create_sheet("Final")
+        table(fs, ["Skill", "Band"], [[s["skill"], s["band"]] for s in f["skills"]] + [["Overall", f["band"]]], [24, 10])
+        fs.append([])
+        fs.append(["7 → 10 roadmap"])
+        for item in f["roadmap"]:
+            fs.append([item["skill"], " ".join(item["actions"])])
+        fs.append([])
+        fs.append(["Practice plan"])
+        for step in f["practice_plan"]:
+            fs.append([step])
+    buf = BytesIO()
+    wb.save(buf)
+    return buf.getvalue()

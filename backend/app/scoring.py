@@ -75,6 +75,13 @@ def tone_score(m: dict) -> float:
         s += 1.0
     elif wc < 15:
         s -= 2.0
+    # Spoken answers: pace, long pauses and volume (never accent).
+    if m.get("wpm"):
+        if m["wpm"] < 90 or m["wpm"] > 185:
+            s -= 1.0
+        s -= min(1.5, 0.3 * m.get("long_pauses", 0))
+        if m.get("too_quiet"):
+            s -= 0.5
     return round(max(1.0, min(10.0, s)), 1)
 
 
@@ -142,7 +149,7 @@ def ranked_improvements(sub: dict, metrics: list[dict], round_type: str) -> list
         "content": "Answers need more depth and accuracy. Name the key concepts and give one concrete example each time.",
         "communication": "Answers lack structure. Lead with the main point, then 2-3 supporting points"
         + (", using STAR." if round_type in ("behavioural", "hr") else "."),
-        "tone": "Delivery is distracting. Cut filler words and keep answers to 1-2 minutes.",
+        "tone": "Delivery is distracting. Cut filler words, keep a steady pace (about 120-160 words a minute) and keep answers to 1-2 minutes.",
         "thought_process": "Show your reasoning: say why you chose an approach and what trade-off you considered.",
         "attitude": "Show more curiosity: ask a thoughtful question and connect your goals to the team's.",
     }

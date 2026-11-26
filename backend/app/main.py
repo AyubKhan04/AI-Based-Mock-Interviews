@@ -71,7 +71,8 @@ class PracticeIn(BaseModel):
     company: str = "Any company"
     round_type: Literal["screening", "technical", "behavioural", "hr"]
     difficulty: Literal["easy", "medium", "hard"] = "medium"
-    count: Literal[5, 10, 15] = 5
+    count: Literal[1, 2, 3, 5, 10, 15] = 5
+    kind: Literal["concept", "coding"] = "concept"  # coding: Tech field, Technical round
 
 
 class InterviewIn(BaseModel):
@@ -81,8 +82,27 @@ class InterviewIn(BaseModel):
     company: str = "Any company"  # Mock mode only
 
 
+class CodeResult(BaseModel):
+    """Coding answers run in the candidate's browser with Pyodide; these are the results."""
+    code: str = Field("", max_length=20000)
+    tests_passed: int = Field(0, ge=0)
+    tests_total: int = Field(0, ge=0)
+    runs: int = Field(0, ge=0)
+    seconds: int = Field(0, ge=0)
+    skipped: bool = False
+
+
+class VoiceMetrics(BaseModel):
+    """Measured in the browser while the candidate speaks. Audio is never uploaded."""
+    seconds: float = Field(ge=0, le=3600)
+    long_pauses: int = Field(0, ge=0, le=500)  # silences longer than 3 seconds
+    too_quiet: bool = False
+
+
 class AnswerIn(BaseModel):
-    text: str = Field(max_length=6000)
+    text: str = Field("", max_length=6000)  # for coding: the explanation of the approach
+    code: CodeResult | None = None
+    voice: VoiceMetrics | None = None
 
 
 # ---------- helpers ----------
@@ -136,15 +156,20 @@ def state(iv: Interview) -> dict:
         "question": cur.question_text if cur else None,
         "is_followup": bool(cur and cur.is_followup),
         "kind": "coding" if (q and q.kind == "coding" and not cur.is_followup) else "concept",
+        "coding": {k: q.coding[k] for k in ("function", "starter", "visible")} if (q and q.kind == "coding" and q.coding and not cur.is_followup) else None,
     }
 
 
-def evaluate(a: Answer, q: Question | None, iv: Interview, rnd: Round, raw: str) -> tuple[bool, str | None]:
+def evaluate(a: Answer, q: Question | None, iv: Interview, rnd: Round, raw: str,
+             voice: "VoiceMetrics | None" = None) -> tuple[bool, str | None]:
     """Score one answer. Returns (is_vague, follow_up_question)."""
     prof = questions.field_profile(iv.field)
     weights = prof["rounds"][rnd.round_type]["weights"]
     clean, flags = scoring.remove_injection(raw)
     metrics = scoring.text_metrics(clean)
+    if voice and voice.seconds > 0:
+        a.modality = "voice"
+        metrics.update(voice.model_dump(), wpm=round(metrics["word_count"] / (voice.seconds / 60)))
     kw = (q.keywords if q else []) or []
     args = dict(question=a.question_text, answer=clean or "(no answer)", keywords=kw, round_type=rnd.round_type,
                 include_attitude="attitude" in weights)
@@ -164,6 +189,41 @@ def evaluate(a: Answer, q: Question | None, iv: Interview, rnd: Round, raw: str)
     followup = res.get("followup") or ((q.followups or [None])[0] if q else None) \
         or "Could you be more specific? Give one real example: what you did and what the result was."
     return bool(res["vague"]), followup
+
+
+def evaluate_code(a: Answer, iv: Interview, rnd: Round, body: "AnswerIn") -> None:
+    """Coding: tests passed, attempts, time taken and the explanation of the approach."""
+    prof = questions.field_profile(iv.field)
+    weights = prof["rounds"][rnd.round_type]["weights"]
+    c = body.code
+    explanation, flags = scoring.remove_injection(body.text)
+    m = scoring.text_metrics(explanation)
+    ratio = (c.tests_passed / c.tests_total) if c.tests_total and not c.skipped else 0.0
+    content = 1 + 9 * ratio - min(1.5, 0.25 * max(0, c.runs - 3)) - (1.0 if c.seconds > 25 * 60 else 0)
+    ex = scoring.heuristic_eval(question=a.question_text, answer=explanation or "-", keywords=[], round_type=rnd.round_type,
+                                include_attitude=False, example_style="")
+    sub = {"content": round(max(1.0, min(10.0, content)), 1),
+           "communication": ex["communication"] if m["word_count"] >= 8 else 2.0,
+           "thought_process": round(max(1.0, min(10.0, 0.5 * ex["thought_process"] + 5 * ratio)), 1) if m["word_count"] >= 8 else round(1 + 4 * ratio, 1),
+           "tone": scoring.tone_score(m) if m["word_count"] >= 8 else 5.0}
+    if "attitude" in weights:
+        sub["attitude"] = 6.0
+    a.subscores = sub
+    a.score = scoring.weighted(sub, weights)
+    a.modality = "code"
+    a.answer_text = (explanation or "(no explanation)") + "\n\n" + (c.code.strip() or "(no code)")
+    a.metrics = {**m, "tests_passed": c.tests_passed, "tests_total": c.tests_total, "runs": c.runs, "seconds": c.seconds, "skipped": c.skipped}
+    a.flags = flags + (["skipped"] if c.skipped else []) + ["code_run_in_browser"]
+    a.went_well = "Skipped." if c.skipped else (f"Passed {c.tests_passed} of {c.tests_total} hidden tests." + (" Clear explanation." if m["word_count"] >= 25 else ""))
+    tips = []
+    if ratio < 1 and not c.skipped:
+        tips.append("Test edge cases (empty input, one item, duplicates) before submitting.")
+    if m["word_count"] < 25:
+        tips.append("Explain your approach and its time complexity in 2-3 sentences.")
+    if c.runs > 5:
+        tips.append("Plan the solution before coding to need fewer attempts.")
+    a.to_improve = " ".join(tips) or "Mention the time and space complexity and one alternative approach."
+    a.example_answer = None
 
 
 def score_round(iv: Interview, rnd: Round) -> None:
@@ -259,7 +319,9 @@ def start_practice(body: PracticeIn, user: User = Depends(current_user), db: Ses
     check_field_role(body.field, body.role)
     if body.company not in questions.companies():
         raise HTTPException(422, "Unknown company")
-    kind = "concept"
+    kind = body.kind
+    if kind == "coding" and (body.round_type != "technical" or "coding" not in str(questions.field_profile(body.field).get("special_round"))):
+        raise HTTPException(422, "Coding problems are part of the Tech field's Technical round")
     qs, note = questions.pick(db, field=body.field, role=body.role, company=body.company,
                               round_type=body.round_type, difficulty=body.difficulty, n=body.count, kind=kind)
     if not qs:
@@ -267,7 +329,7 @@ def start_practice(body: PracticeIn, user: User = Depends(current_user), db: Ses
     iv = Interview(user_id=user.id, mode="practice", field=body.field, role=body.role,
                    company=body.company, difficulty=body.difficulty)
     rnd = Round(round_type=body.round_type, order=1, question_ids=[q.id for q in qs], status="in_progress", started_at=now())
-    rnd.answers.append(Answer(question_id=qs[0].id, question_text=qs[0].text))
+    rnd.answers.append(Answer(question_id=qs[0].id, question_text=qs[0].text, modality="code" if kind == "coding" else "text"))
     iv.rounds.append(rnd)
     db.add(iv)
     db.commit()
@@ -304,6 +366,18 @@ def start_round(iid: int, order: int, bg: BackgroundTasks, user: User = Depends(
     return state(iv)
 
 
+@app.get("/interviews/{iid}/hidden-tests")
+def hidden_tests(iid: int, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    """Hidden tests for the open coding problem, fetched only when the candidate presses Submit."""
+    iv = get_interview(db, iid, user)
+    rnd = flow.active_round(iv)
+    a = open_answer(rnd) if rnd else None
+    q = db.get(Question, a.question_id) if a and a.question_id else None
+    if not q or q.kind != "coding" or a.is_followup:
+        raise HTTPException(409, "No coding problem is open")
+    return {"function": q.coding["function"], "tests": q.coding["visible"] + q.coding["hidden"]}
+
+
 @app.post("/interviews/{iid}/answer")
 def answer(iid: int, body: AnswerIn, bg: BackgroundTasks, user: User = Depends(current_user), db: Session = Depends(get_db)):
     iv = get_interview(db, iid, user)
@@ -314,9 +388,18 @@ def answer(iid: int, body: AnswerIn, bg: BackgroundTasks, user: User = Depends(c
     if iv.status != "in_progress" or not rnd:
         raise HTTPException(409, "No round is in progress")
     a = open_answer(rnd)
-    a.answer_text = body.text.strip()
     q = db.get(Question, a.question_id) if a.question_id else None
-    vague, followup = evaluate(a, q, iv, rnd, a.answer_text)
+    is_code = bool(q and q.kind == "coding" and not a.is_followup)
+    if is_code != (body.code is not None):
+        raise HTTPException(422, "This question needs a code answer" if is_code else "This question needs a text answer")
+    if not is_code and not body.text.strip():
+        raise HTTPException(422, "Please type an answer")
+    if is_code:
+        evaluate_code(a, iv, rnd, body)
+        vague, followup = False, None
+    else:
+        a.answer_text = body.text.strip()
+        vague, followup = evaluate(a, q, iv, rnd, a.answer_text, body.voice)
     events = []
     if vague and not a.is_followup and followup:
         rnd.answers.append(Answer(question_id=a.question_id, question_text=followup, is_followup=True))
@@ -362,6 +445,40 @@ def get_pdf(iid: int, user: User = Depends(current_user), db: Session = Depends(
     rep = report.build(db, get_interview(db, iid, user))
     return Response(report.pdf(rep, user.name), media_type="application/pdf",
                     headers={"Content-Disposition": f'attachment; filename="interview-{iid}.pdf"'})
+
+
+@app.get("/interviews/{iid}/report.xlsx")
+def get_xlsx(iid: int, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    rep = report.build(db, get_interview(db, iid, user))
+    return Response(report.xlsx(rep, user.name),
+                    media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    headers={"Content-Disposition": f'attachment; filename="interview-{iid}.xlsx"'})
+
+
+@app.get("/progress")
+def progress(user: User = Depends(current_user), db: Session = Depends(get_db)):
+    """Everything the progress dashboard needs, from completed rounds."""
+    rounds = list(db.scalars(select(Round).join(Interview).where(Interview.user_id == user.id, Round.status == "completed")
+                             .order_by(Round.finished_at)))
+    timeline = [{"date": iso(r.finished_at), "interview_id": r.interview_id, "mode": r.interview.mode, "field": r.interview.field,
+                 "round_type": r.round_type, "score": r.score, "passed": r.passed} for r in rounds]
+    skills = []
+    for key, label in scoring.SUBSCORE_LABELS.items():
+        vals = [r.subscores[key] for r in rounds if r.subscores and key in r.subscores]
+        if vals:
+            k = min(3, len(vals))
+            first, recent = round(sum(vals[:k]) / k, 1), round(sum(vals[-k:]) / k, 1)
+            skills.append({"key": key, "label": label, "first": first, "recent": recent, "change": round(recent - first, 1), "count": len(vals)})
+    by_round = {}
+    for rt in ROUNDS:
+        s = [r.score for r in rounds if r.round_type == rt]
+        if s:
+            by_round[rt] = {"count": len(s), "average": round(sum(s) / len(s), 1), "best": max(s), "last": s[-1]}
+    ivs = list(db.scalars(select(Interview).where(Interview.user_id == user.id, Interview.mode != "practice")))
+    funnel = {m: {"started": sum(1 for i in ivs if i.mode == m),
+                  "passed": [sum(1 for i in ivs if i.mode == m and any(r.order == o and r.passed for r in i.rounds)) for o in (1, 2, 3, 4)]}
+              for m in ("mock", "perform")}
+    return {"timeline": timeline, "skills": skills, "by_round": by_round, "funnel": funnel}
 
 
 @app.post("/interviews/{iid}/email")

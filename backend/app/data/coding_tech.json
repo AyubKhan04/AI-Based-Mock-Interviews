@@ -1,0 +1,794 @@
+[
+ {
+  "text": "Two Sum: Return the indices [i, j] (i < j) of the two numbers in nums that add up to target. Exactly one answer exists.",
+  "field": "tech",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "easy",
+  "kind": "coding",
+  "keywords": [
+   "hash map",
+   "o(n)"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "coding": {
+   "function": "two_sum",
+   "starter": "def two_sum(nums, target):\n    # write your solution here\n    pass\n",
+   "visible": [
+    [
+     [
+      [
+       2,
+       7,
+       11,
+       15
+      ],
+      9
+     ],
+     [
+      0,
+      1
+     ]
+    ],
+    [
+     [
+      [
+       3,
+       2,
+       4
+      ],
+      6
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   ],
+   "hidden": [
+    [
+     [
+      [
+       3,
+       3
+      ],
+      6
+     ],
+     [
+      0,
+      1
+     ]
+    ],
+    [
+     [
+      [
+       1,
+       5,
+       9,
+       13
+      ],
+      22
+     ],
+     [
+      2,
+      3
+     ]
+    ],
+    [
+     [
+      [
+       -1,
+       4,
+       8,
+       -3
+      ],
+      1
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   ]
+  }
+ },
+ {
+  "text": "Palindrome check: Return True if s reads the same forwards and backwards, ignoring case and anything that is not a letter or digit.",
+  "field": "tech",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "easy",
+  "kind": "coding",
+  "keywords": [
+   "two pointers"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "coding": {
+   "function": "is_palindrome",
+   "starter": "def is_palindrome(s):\n    # write your solution here\n    pass\n",
+   "visible": [
+    [
+     [
+      "Racecar"
+     ],
+     true
+    ],
+    [
+     [
+      "hello"
+     ],
+     false
+    ]
+   ],
+   "hidden": [
+    [
+     [
+      "A man, a plan, a canal: Panama"
+     ],
+     true
+    ],
+    [
+     [
+      ""
+     ],
+     true
+    ],
+    [
+     [
+      "ab_a"
+     ],
+     true
+    ],
+    [
+     [
+      "0P"
+     ],
+     false
+    ]
+   ]
+  }
+ },
+ {
+  "text": "FizzBuzz list: Return a list of strings for 1..n: 'Fizz' for multiples of 3, 'Buzz' for 5, 'FizzBuzz' for both, else the number.",
+  "field": "tech",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "easy",
+  "kind": "coding",
+  "keywords": [],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "coding": {
+   "function": "fizzbuzz",
+   "starter": "def fizzbuzz(n):\n    # write your solution here\n    pass\n",
+   "visible": [
+    [
+     [
+      5
+     ],
+     [
+      "1",
+      "2",
+      "Fizz",
+      "4",
+      "Buzz"
+     ]
+    ]
+   ],
+   "hidden": [
+    [
+     [
+      15
+     ],
+     [
+      "1",
+      "2",
+      "Fizz",
+      "4",
+      "Buzz",
+      "Fizz",
+      "7",
+      "8",
+      "Fizz",
+      "Buzz",
+      "11",
+      "Fizz",
+      "13",
+      "14",
+      "FizzBuzz"
+     ]
+    ],
+    [
+     [
+      1
+     ],
+     [
+      "1"
+     ]
+    ],
+    [
+     [
+      0
+     ],
+     []
+    ]
+   ]
+  }
+ },
+ {
+  "text": "Valid brackets: Return True if every bracket in s ((), [], {}) is closed in the right order.",
+  "field": "tech",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "kind": "coding",
+  "keywords": [
+   "stack"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "coding": {
+   "function": "valid_brackets",
+   "starter": "def valid_brackets(s):\n    # write your solution here\n    pass\n",
+   "visible": [
+    [
+     [
+      "()[]{}"
+     ],
+     true
+    ],
+    [
+     [
+      "(]"
+     ],
+     false
+    ]
+   ],
+   "hidden": [
+    [
+     [
+      "{[()]}"
+     ],
+     true
+    ],
+    [
+     [
+      "(("
+     ],
+     false
+    ],
+    [
+     [
+      ""
+     ],
+     true
+    ],
+    [
+     [
+      "([)]"
+     ],
+     false
+    ],
+    [
+     [
+      "]"
+     ],
+     false
+    ]
+   ]
+  }
+ },
+ {
+  "text": "Most frequent word: Return the most common word in text (lower-case, words are runs of letters). On a tie, return the word that comes first alphabetically.",
+  "field": "tech",
+  "round_type": "technical",
+  "role": "Data Analyst",
+  "difficulty": "medium",
+  "kind": "coding",
+  "keywords": [
+   "counter",
+   "dictionary"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "coding": {
+   "function": "most_frequent_word",
+   "starter": "def most_frequent_word(text):\n    # write your solution here\n    pass\n",
+   "visible": [
+    [
+     [
+      "the cat and the hat"
+     ],
+     "the"
+    ]
+   ],
+   "hidden": [
+    [
+     [
+      "B b a A"
+     ],
+     "a"
+    ],
+    [
+     [
+      "Hello, hello! World."
+     ],
+     "hello"
+    ],
+    [
+     [
+      "one two three"
+     ],
+     "one"
+    ]
+   ]
+  }
+ },
+ {
+  "text": "Merge intervals: Given a list of [start, end] intervals, merge all overlapping ones and return them sorted by start.",
+  "field": "tech",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "hard",
+  "kind": "coding",
+  "keywords": [
+   "sort"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "coding": {
+   "function": "merge_intervals",
+   "starter": "def merge_intervals(intervals):\n    # write your solution here\n    pass\n",
+   "visible": [
+    [
+     [
+      [
+       [
+        1,
+        3
+       ],
+       [
+        2,
+        6
+       ],
+       [
+        8,
+        10
+       ]
+      ]
+     ],
+     [
+      [
+       1,
+       6
+      ],
+      [
+       8,
+       10
+      ]
+     ]
+    ]
+   ],
+   "hidden": [
+    [
+     [
+      [
+       [
+        1,
+        4
+       ],
+       [
+        4,
+        5
+       ]
+      ]
+     ],
+     [
+      [
+       1,
+       5
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       [
+        5,
+        6
+       ],
+       [
+        1,
+        2
+       ]
+      ]
+     ],
+     [
+      [
+       1,
+       2
+      ],
+      [
+       5,
+       6
+      ]
+     ]
+    ],
+    [
+     [
+      []
+     ],
+     []
+    ],
+    [
+     [
+      [
+       [
+        1,
+        10
+       ],
+       [
+        2,
+        3
+       ],
+       [
+        4,
+        5
+       ]
+      ]
+     ],
+     [
+      [
+       1,
+       10
+      ]
+     ]
+    ]
+   ]
+  }
+ },
+ {
+  "text": "Moving average: Return the list of averages of each window of k consecutive numbers, rounded to 2 decimals.",
+  "field": "tech",
+  "round_type": "technical",
+  "role": "Data Scientist",
+  "difficulty": "medium",
+  "kind": "coding",
+  "keywords": [
+   "sliding window"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "coding": {
+   "function": "moving_average",
+   "starter": "def moving_average(nums, k):\n    # write your solution here\n    pass\n",
+   "visible": [
+    [
+     [
+      [
+       1,
+       2,
+       3,
+       4,
+       5
+      ],
+      3
+     ],
+     [
+      2.0,
+      3.0,
+      4.0
+     ]
+    ]
+   ],
+   "hidden": [
+    [
+     [
+      [
+       10,
+       20
+      ],
+      1
+     ],
+     [
+      10.0,
+      20.0
+     ]
+    ],
+    [
+     [
+      [
+       1,
+       2
+      ],
+      3
+     ],
+     []
+    ],
+    [
+     [
+      [
+       1,
+       1,
+       2,
+       3
+      ],
+      2
+     ],
+     [
+      1.0,
+      1.5,
+      2.5
+     ]
+    ]
+   ]
+  }
+ },
+ {
+  "text": "Group anagrams: Group the words that are anagrams of each other. Sort each group, and return the groups sorted by their first word.",
+  "field": "tech",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "kind": "coding",
+  "keywords": [
+   "sorted key",
+   "dictionary"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "coding": {
+   "function": "group_anagrams",
+   "starter": "def group_anagrams(words):\n    # write your solution here\n    pass\n",
+   "visible": [
+    [
+     [
+      [
+       "eat",
+       "tea",
+       "tan",
+       "ate",
+       "nat",
+       "bat"
+      ]
+     ],
+     [
+      [
+       "ate",
+       "eat",
+       "tea"
+      ],
+      [
+       "bat"
+      ],
+      [
+       "nat",
+       "tan"
+      ]
+     ]
+    ]
+   ],
+   "hidden": [
+    [
+     [
+      [
+       ""
+      ]
+     ],
+     [
+      [
+       ""
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       "abc",
+       "cba",
+       "xyz"
+      ]
+     ],
+     [
+      [
+       "abc",
+       "cba"
+      ],
+      [
+       "xyz"
+      ]
+     ]
+    ],
+    [
+     [
+      []
+     ],
+     []
+    ]
+   ]
+  }
+ },
+ {
+  "text": "Binary search: Return the index of target in the sorted list nums, or -1 if it is not there. Aim for O(log n).",
+  "field": "tech",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "easy",
+  "kind": "coding",
+  "keywords": [
+   "o(log n)"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "coding": {
+   "function": "binary_search",
+   "starter": "def binary_search(nums, target):\n    # write your solution here\n    pass\n",
+   "visible": [
+    [
+     [
+      [
+       1,
+       3,
+       5,
+       7,
+       9
+      ],
+      7
+     ],
+     3
+    ],
+    [
+     [
+      [
+       1,
+       3,
+       5
+      ],
+      2
+     ],
+     -1
+    ]
+   ],
+   "hidden": [
+    [
+     [
+      [],
+      1
+     ],
+     -1
+    ],
+    [
+     [
+      [
+       4
+      ],
+      4
+     ],
+     0
+    ],
+    [
+     [
+      [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8
+      ],
+      1
+     ],
+     0
+    ],
+    [
+     [
+      [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8
+      ],
+      8
+     ],
+     7
+    ]
+   ]
+  }
+ },
+ {
+  "text": "Normalise scores: Scale a list of numbers to the range 0-1 with min-max scaling, rounded to 3 decimals. If all values are equal, return all zeros.",
+  "field": "tech",
+  "round_type": "technical",
+  "role": "ML / AI Engineer",
+  "difficulty": "medium",
+  "kind": "coding",
+  "keywords": [
+   "min",
+   "max"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "coding": {
+   "function": "min_max_scale",
+   "starter": "def min_max_scale(values):\n    # write your solution here\n    pass\n",
+   "visible": [
+    [
+     [
+      [
+       1,
+       2,
+       3
+      ]
+     ],
+     [
+      0.0,
+      0.5,
+      1.0
+     ]
+    ]
+   ],
+   "hidden": [
+    [
+     [
+      [
+       5,
+       5
+      ]
+     ],
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    [
+     [
+      [
+       10,
+       0,
+       5
+      ]
+     ],
+     [
+      1.0,
+      0.0,
+      0.5
+     ]
+    ],
+    [
+     [
+      []
+     ],
+     []
+    ]
+   ]
+  }
+ }
+]

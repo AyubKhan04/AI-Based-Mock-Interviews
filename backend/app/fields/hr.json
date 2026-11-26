@@ -1,0 +1,57 @@
+{
+  "field": "hr",
+  "label": "HR",
+  "roles": [
+    "HR Generalist",
+    "Talent Acquisition Specialist",
+    "HR Business Partner",
+    "Learning & Development Specialist"
+  ],
+  "special_round": "situational case",
+  "rounds": {
+    "screening": {
+      "pass_mark": 5,
+      "weights": {
+        "content": 0.3,
+        "communication": 0.35,
+        "tone": 0.2,
+        "thought_process": 0.15
+      }
+    },
+    "technical": {
+      "pass_mark": 6,
+      "weights": {
+        "content": 0.5,
+        "communication": 0.2,
+        "tone": 0.1,
+        "thought_process": 0.2
+      }
+    },
+    "behavioural": {
+      "pass_mark": 7,
+      "weights": {
+        "content": 0.3,
+        "communication": 0.25,
+        "tone": 0.2,
+        "thought_process": 0.25
+      }
+    },
+    "hr": {
+      "pass_mark": 7,
+      "weights": {
+        "content": 0.25,
+        "communication": 0.25,
+        "tone": 0.2,
+        "thought_process": 0.1,
+        "attitude": 0.2
+      }
+    }
+  },
+  "full_counts": {
+    "screening": 12,
+    "technical": 12,
+    "behavioural": 12,
+    "hr": 12
+  },
+  "example_answer_style": "Fair, calm and policy-aware. Gather facts, consider both sides, follow law and policy, protect confidentiality, document, and follow up. Behavioural and HR answers use STAR with a measurable result."
+}
