@@ -7,15 +7,18 @@ export default function Auth() {
   const { user, setUser } = useApp()
   const dest = useRef('/')
   const [signup, setSignup] = useState(true)
-  const [form, setForm] = useState({ name: '', email: '', password: '' })
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' })
+  const [show, setShow] = useState(false)
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
 
   async function submit(e) {
-    e.preventDefault(); setErr(''); setBusy(true)
+    e.preventDefault(); setErr('')
+    if (signup && form.password !== form.confirm) return setErr('The two passwords do not match.')
+    setBusy(true)
     try {
-      const body = signup ? form : { email: form.email, password: form.password }
+      const body = signup ? { name: form.name, email: form.email, password: form.password } : { email: form.email, password: form.password }
       const r = await api(signup ? '/auth/signup' : '/auth/login', { method: 'POST', body })
       token.set(r.token)
       dest.current = signup ? '/profile?welcome=1' : '/'
@@ -32,15 +35,40 @@ export default function Auth() {
         <h2 className="text-xl font-semibold">{signup ? 'Create your account' : 'Welcome back'}</h2>
         {signup && <div><label className="label">Name</label><input className="input" required value={form.name} onChange={set('name')} /></div>}
         <div><label className="label">Email</label><input className="input" type="email" required value={form.email} onChange={set('email')} /></div>
-        <div><label className="label">Password {signup && <span className="text-slate-400">(8+ characters)</span>}</label>
-          <input className="input" type="password" required minLength={signup ? 8 : 1} value={form.password} onChange={set('password')} /></div>
+        <div><label className="label" htmlFor="pw">Password {signup && <span className="text-slate-400">(8+ characters)</span>}</label>
+          <PasswordInput id="pw" show={show} onToggle={() => setShow(!show)} required minLength={signup ? 8 : 1} value={form.password} onChange={set('password')}
+            autoComplete={signup ? 'new-password' : 'current-password'} /></div>
+        {signup && (
+          <div><label className="label" htmlFor="pw2">Confirm password</label>
+            <PasswordInput id="pw2" show={show} onToggle={() => setShow(!show)} required value={form.confirm} onChange={set('confirm')} autoComplete="new-password"
+              invalid={form.confirm.length > 0 && form.confirm !== form.password} />
+            {form.confirm.length > 0 && (form.confirm === form.password
+              ? <p className="mt-1 text-sm text-emerald-600">✓ Passwords match</p>
+              : <p className="mt-1 text-sm text-red-600">Passwords do not match yet</p>)}
+          </div>
+        )}
         {err && <p className="text-sm text-red-600">{err}</p>}
-        <button className="btn w-full" disabled={busy}>{busy ? 'Please wait…' : signup ? 'Sign up' : 'Log in'}</button>
+        <button className="btn w-full" disabled={busy || (signup && form.confirm !== form.password)}>{busy ? 'Please wait…' : signup ? 'Sign up' : 'Log in'}</button>
         <p className="text-center text-sm text-slate-500">
           {signup ? 'Already have an account?' : 'New here?'}{' '}
-          <button type="button" className="text-indigo-600 hover:underline" onClick={() => setSignup(!signup)}>{signup ? 'Log in' : 'Sign up'}</button>
+          <button type="button" className="text-indigo-600 hover:underline" onClick={() => { setSignup(!signup); setErr('') }}>{signup ? 'Log in' : 'Sign up'}</button>
         </p>
       </form>
+    </div>
+  )
+}
+
+function PasswordInput({ show, onToggle, invalid, ...props }) {
+  return (
+    <div className="relative">
+      <input {...props} type={show ? 'text' : 'password'} className={`input pr-11 ${invalid ? 'border-red-400 focus:border-red-500' : ''}`} />
+      <button type="button" onClick={onToggle} aria-label={show ? 'Hide password' : 'Show password'} title={show ? 'Hide password' : 'Show password'}
+        className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-slate-400 hover:text-slate-700">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" />
+          {show && <line x1="3" y1="3" x2="21" y2="21" />}
+        </svg>
+      </button>
     </div>
   )
 }
