@@ -8,6 +8,7 @@ import Mock from './pages/Mock'
 import Perform from './pages/Perform'
 import Practice from './pages/Practice'
 import Profile from './pages/Profile'
+import Progress from './pages/Progress'
 import Report from './pages/Report'
 
 const Ctx = createContext(null)
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="/interview/:id" element={<Private><Interview /></Private>} />
           <Route path="/report/:id" element={<Private><Report /></Private>} />
           <Route path="/profile" element={<Private><Profile /></Private>} />
+          <Route path="/progress" element={<Private><Progress /></Private>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
@@ -66,14 +68,15 @@ function Header() {
   const link = ({ isActive }) => `rounded-md px-3 py-1.5 text-sm ${isActive ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-100'}`
   return (
     <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-2 px-4 py-3">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-1.5 px-4 py-3">
         <Link to="/" className="mr-3 font-bold text-indigo-700">Mock Interview Coach</Link>
         <NavLink to="/" end className={link}>Dashboard</NavLink>
         <NavLink to={user.mode === 'mock' ? '/mock' : '/practice'} className={link}>{user.mode === 'mock' ? 'Mock interviews' : 'Practice'}</NavLink>
+        <NavLink to="/progress" className={link}>Progress</NavLink>
         <NavLink to="/profile" className={link}>Profile</NavLink>
         <div className="ml-auto flex rounded-lg bg-slate-100 p-0.5 text-xs font-medium" title="Switch any time">
           {['practice', 'mock'].map((m) => (
-            <button key={m} onClick={() => switchMode(m)} className={`rounded-md px-2.5 py-1 ${user.mode === m ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500'}`}>{m === 'mock' ? 'Mock mode' : 'Practice mode'}</button>
+            <button key={m} onClick={() => switchMode(m)} className={`rounded-md px-2.5 py-1 ${user.mode === m ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500'}`}>{m === 'mock' ? 'Mock' : 'Practice'}</button>
           ))}
         </div>
         <Link to="/perform" className="btn py-1.5 text-sm">⭐ Perform Mock Interview</Link>

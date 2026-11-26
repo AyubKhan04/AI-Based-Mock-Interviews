@@ -3,7 +3,9 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api } from '../api'
 import { Loading } from '../App'
 import { ROUND_LABEL } from '../FieldRole'
+import CodeAnswer from '../CodeAnswer'
 import Stars from '../Stars'
+import { Camera, MicButton, useVoice } from '../Voice'
 
 export default function Interview() {
   const { id } = useParams()
@@ -103,14 +105,17 @@ function Answering({ st, setSt, id, onRoundDone }) {
   const [err, setErr] = useState('')
   const box = useRef(null)
   const note = sessionStorage.getItem(`note-${id}`)
+  const voice = useVoice((t) => setText((x) => (x ? x + ' ' : '') + t))
   useEffect(() => { box.current?.focus() }, [st])
 
   async function submit() {
     if (!text.trim()) return
     setBusy(true); setErr('')
     try {
-      const r = await api(`/interviews/${id}/answer`, { method: 'POST', body: { text } })
-      setLog([...log, { q: st.question, a: text, followup: st.is_followup, score: r.last_score, rating: r.last_rating }])
+      const vm = voice.metrics()
+      const r = await api(`/interviews/${id}/answer`, { method: 'POST', body: { text, voice: vm } })
+      voice.reset()
+      setLog([...log, { q: st.question, a: (vm ? '🎤 ' : '') + text, followup: st.is_followup, score: r.last_score, rating: r.last_rating }])
       setText('')
       if (r.round_finished) onRoundDone(r)
       else setSt(r)
@@ -126,6 +131,7 @@ function Answering({ st, setSt, id, onRoundDone }) {
     <div className="mx-auto max-w-3xl space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{ROUND_LABEL[st.round_type]} round · question {st.question_number} of {st.total}</h1>
+        <Camera defaultOn={st.round_type === 'behavioural' && st.mode !== 'practice'} />
         {st.mode === 'practice' && <button className="btn-ghost text-sm" onClick={endEarly} disabled={busy || log.length === 0}>End and see report</button>}
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-slate-200"><div className="h-full bg-indigo-500 transition-all" style={{ width: `${((st.question_number - 1) / st.total) * 100}%` }} /></div>
@@ -139,16 +145,21 @@ function Answering({ st, setSt, id, onRoundDone }) {
         </div>
       ))}
 
-      <Bubble who="ai" followup={st.is_followup}>{st.question}</Bubble>
-      <div className="card space-y-3">
-        <textarea ref={box} className="input min-h-40" placeholder="Type your answer as you would say it…" value={text} onChange={(e) => setText(e.target.value)}
+      <Bubble who="ai" followup={st.is_followup}>{st.kind === 'coding' ? <><span className="mr-1 rounded bg-amber-100 px-1.5 text-xs text-amber-800">Coding</span>{st.question}</> : st.question}</Bubble>
+      {st.kind === 'coding' ? (
+        <CodeAnswer id={id} st={st} onAnswered={(r, summary) => {
+          setLog([...log, { q: st.question, a: summary, followup: false, score: r.last_score, rating: r.last_rating }])
+          if (r.round_finished) onRoundDone(r); else setSt(r)
+        }} />
+      ) : <div className="card space-y-3">
+        <textarea ref={box} className="input min-h-40" placeholder="Type your answer, or press 🎤 and speak it…" value={text} onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submit() }} />
         <div className="flex items-center justify-between text-sm text-slate-500">
-          <span>{words} words · aim for about 80–200</span>
+          <span className="flex items-center gap-3"><MicButton voice={voice} /> {words} words · aim for about 80–200</span>
           <button className="btn" onClick={submit} disabled={busy || !text.trim()}>{busy ? 'Scoring…' : 'Submit answer'}</button>
         </div>
         {err && <p className="text-sm text-red-600">{err}</p>}
-      </div>
+      </div>}
     </div>
   )
 }

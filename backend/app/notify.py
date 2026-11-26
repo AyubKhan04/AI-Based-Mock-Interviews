@@ -91,5 +91,6 @@ def send(iid: int, kind: str, order: int | None = None) -> bool:
                     + _link(iv, "Join your round"))
         else:
             raise ValueError(kind)
-        attachment = (f"interview-{iv.id}.pdf", report.pdf(rep, user.name)) if pdf else None
+        attachment = [(f"interview-{iv.id}.pdf", report.pdf(rep, user.name)),
+                      (f"interview-{iv.id}.xlsx", report.xlsx(rep, user.name))] if pdf else None
         return emailer.send(user.email, subject, _wrap(user.name, body) if kind != "practice" else body, attachment)

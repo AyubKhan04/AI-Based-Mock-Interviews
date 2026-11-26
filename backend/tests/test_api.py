@@ -56,3 +56,10 @@ def test_tone_counts_fillers_only():
 def test_rating_scale():
     assert rating(9.2)["stars"] == 5 and rating(7)["stars"] == 4 and rating(5.5)["stars"] == 3
     assert rating(3)["stars"] == 2 and rating(1)["stars"] == 1
+
+
+def test_voice_pace_affects_tone_only():
+    base = text_metrics(GOOD)
+    calm = tone_score({**base, "wpm": 140, "long_pauses": 0})
+    rushed = tone_score({**base, "wpm": 230, "long_pauses": 4, "too_quiet": True})
+    assert calm > rushed

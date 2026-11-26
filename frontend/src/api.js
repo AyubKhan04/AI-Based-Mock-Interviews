@@ -18,10 +18,10 @@ export async function api(path, { method = 'GET', body, raw } = {}) {
   return raw ? res : res.json()
 }
 
-export async function downloadPdf(id) {
-  const res = await api(`/interviews/${id}/report.pdf`, { raw: true })
+export async function downloadPdf(id, ext = 'pdf') {
+  const res = await api(`/interviews/${id}/report.${ext}`, { raw: true })
   const url = URL.createObjectURL(await res.blob())
-  const a = Object.assign(document.createElement('a'), { href: url, download: `interview-${id}.pdf` })
+  const a = Object.assign(document.createElement('a'), { href: url, download: `interview-${id}.${ext}` })
   a.click()
   URL.revokeObjectURL(url)
 }

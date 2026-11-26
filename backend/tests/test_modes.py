@@ -42,10 +42,16 @@ def play_round(c, h, iid, order):
     s = c.post(f"/interviews/{iid}/rounds/{order}/start", headers=h)
     assert s.status_code == 200, s.text
     r = s.json()
-    while True:
-        r = c.post(f"/interviews/{iid}/answer", headers=h, json={"text": ANSWER}).json()
+    for _ in range(40):
+        body = {"text": ANSWER}
+        if r.get("kind") == "coding":
+            body["code"] = {"code": "def f(): pass", "tests_passed": 5, "tests_total": 5, "runs": 1, "seconds": 60}
+        r = c.post(f"/interviews/{iid}/answer", headers=h, json=body)
+        assert r.status_code == 200, r.text
+        r = r.json()
         if r.get("round_finished"):
             return r
+    raise AssertionError("round never finished")
 
 
 def test_mock_mode_passes_all_rounds(client, monkeypatch):
@@ -66,6 +72,10 @@ def test_mock_mode_passes_all_rounds(client, monkeypatch):
     assert len(rep["final"]["strengths"]) == 3 and rep["final"]["practice_plan"]
     assert sum("Selected for" in s for s in SENT) == 3 and any(s.startswith("Final report") for s in SENT)
     assert client.get(f"/interviews/{iid}/report.pdf", headers=h).content[:4] == b"%PDF"
+    assert client.get(f"/interviews/{iid}/report.xlsx", headers=h).content[:2] == b"PK"
+    prog = client.get("/progress", headers=h).json()
+    assert len(prog["timeline"]) == 4 and prog["funnel"]["mock"]["passed"] == [1, 1, 1, 1]
+    assert {s["key"] for s in prog["skills"]} >= {"content", "tone", "attitude"}
 
 
 def test_mock_fail_stops_and_expiry(client, monkeypatch):
@@ -114,3 +124,42 @@ def test_perform_scheduling_reminder_and_next_day(client, monkeypatch):
         db.get(Interview, iid).rounds[1].scheduled_at = now() - timedelta(days=2)
         db.commit()
     assert client.post("/tasks/tick", headers={"X-Cron-Secret": "s3cret"}).json()["expired"] == 1
+
+
+def test_other_fields_work(client):
+    h = login(client, "fields@example.com")
+    cat = client.get("/catalog").json()
+    assert [f["key"] for f in cat["fields"]] == ["tech", "finance", "sales", "hr"]
+    for f in cat["fields"][1:]:
+        r = client.post("/practice", headers=h, json={"field": f["key"], "role": f["roles"][0], "round_type": "technical", "count": 5})
+        assert r.status_code == 200, r.text
+        client.post(f"/interviews/{r.json()['interview_id']}/answer", headers=h, json={"text": "My answer."})
+    r = client.put("/me", headers=h, json={"fields": [{"field": "sales", "role": "Account Manager"}, {"field": "tech", "role": "Data Analyst"}]})
+    assert len(r.json()["fields"]) == 2
+    assert client.put("/me", headers=h, json={"fields": [{"field": "sales", "role": "Data Analyst"}]}).status_code == 422
+
+
+def test_coding_answer(client):
+    h = login(client, "coder@example.com")
+    r = client.post("/practice", headers=h, json={"role": "Software Engineer", "round_type": "technical", "kind": "coding", "count": 2}).json()
+    assert r["kind"] == "coding" and r["coding"]["starter"].startswith("def ") and "hidden" not in r["coding"]
+    iid = r["interview_id"]
+    assert client.post(f"/interviews/{iid}/answer", headers=h, json={"text": "words only"}).status_code == 422
+    tests = client.get(f"/interviews/{iid}/hidden-tests", headers=h).json()["tests"]
+    good = {"code": "def f(): pass", "tests_passed": len(tests), "tests_total": len(tests), "runs": 2, "seconds": 300}
+    r = client.post(f"/interviews/{iid}/answer", headers=h, json={"text": "I used a hash map so it runs in O(n) time because each lookup is O(1).", "code": good}).json()
+    assert r["last_score"] >= 7
+    r = client.post(f"/interviews/{iid}/answer", headers=h, json={"text": "", "code": {"skipped": True}}).json()
+    assert r["status"] == "completed" and r["last_score"] < 4
+    # coding is rejected outside the Tech technical round
+    assert client.post("/practice", headers=h, json={"role": "Software Engineer", "round_type": "hr", "kind": "coding"}).status_code == 422
+
+
+def test_mock_technical_round_has_coding(client):
+    h = login(client, "mockcode@example.com")
+    st = client.post("/interviews", headers=h, json={"mode": "mock", "role": "Software Engineer"}).json()
+    from app.models import Question
+    with SessionLocal() as db:
+        iv = db.get(Interview, st["interview_id"])
+        kinds = [db.get(Question, q).kind for q in iv.rounds[1].question_ids]
+    assert kinds.count("coding") == 1 and kinds.count("concept") == 2

@@ -55,6 +55,8 @@ class Question(Base):
     kind: Mapped[str] = mapped_column(String(20), default="concept")  # concept | coding
     keywords: Mapped[list] = mapped_column(JSON, default=list)
     followups: Mapped[list] = mapped_column(JSON, default=list)
+    # Coding problems: {"function", "starter", "visible": [[args, expected]], "hidden": [[args, expected]]}
+    coding: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     source: Mapped[str] = mapped_column(String(40))  # seed | ai-generated | dataset | user | partner
     license: Mapped[str] = mapped_column(String(60))
     times_seen_across_companies: Mapped[int] = mapped_column(Integer, default=0)  # for "most common" picks later

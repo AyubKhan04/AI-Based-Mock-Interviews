@@ -25,14 +25,16 @@ def companies() -> dict:
 
 
 def all_profiles() -> dict[str, dict]:
-    return {p.stem: json.loads(p.read_text()) for p in sorted(FIELDS.glob("*.json"))}
+    order = ["tech", "finance", "sales", "hr"]
+    paths = sorted(FIELDS.glob("*.json"), key=lambda p: (order.index(p.stem) if p.stem in order else 99, p.stem))
+    return {p.stem: json.loads(p.read_text()) for p in paths}
 
 
 def seed(db: Session) -> None:
     """Add any seed question not yet in the database (safe to run on every start)."""
     have = {(f, t) for f, t in db.execute(select(Question.field, Question.text).where(Question.source == "seed"))}
     added = False
-    for path in DATA.glob("questions_*.json"):
+    for path in [*DATA.glob("questions_*.json"), *DATA.glob("coding_*.json")]:
         for q in json.loads(path.read_text()):
             if (q["field"], q["text"]) not in have:
                 db.add(Question(**q))

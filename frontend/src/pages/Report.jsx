@@ -33,7 +33,8 @@ export default function Report() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button className="btn-ghost" onClick={() => downloadPdf(id).catch((e) => setMsg(e.message))}>Download PDF</button>
-          {catalog?.email_enabled && <button className="btn-ghost" onClick={email}>Email me the PDF</button>}
+          <button className="btn-ghost" onClick={() => downloadPdf(id, 'xlsx').catch((e) => setMsg(e.message))}>Download Excel</button>
+          {catalog?.email_enabled && <button className="btn-ghost" onClick={email}>Email me the report</button>}
           <Link className="btn" to="/practice">Practise again</Link>
         </div>
       </div>
@@ -99,7 +100,7 @@ export default function Report() {
                   <tr key={q.number} className="border-t border-slate-100 align-top">
                     <td className="p-2 font-medium">{q.number}</td>
                     <td className="p-2">{q.is_followup && <span className="mr-1 rounded bg-indigo-50 px-1 text-xs text-indigo-700">follow-up</span>}{q.question}</td>
-                    <td className="max-w-xs p-2 text-slate-600">{q.answer}
+                    <td className={`max-w-xs whitespace-pre-wrap p-2 text-slate-600 ${q.flags.includes("code_run_in_browser") ? "font-mono text-xs" : ""}`}>{q.answer}
                       {q.flags.includes('score_request_ignored') && <div className="mt-1 text-xs text-amber-700">A request to change the score was ignored.</div>}</td>
                     <td className="p-2"><Stars rating={q.rating} score={q.score} /></td>
                     <td className="p-2">{q.went_well}</td>
