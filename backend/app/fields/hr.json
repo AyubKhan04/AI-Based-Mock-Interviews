@@ -49,9 +49,19 @@
   },
   "full_counts": {
     "screening": 12,
-    "technical": 12,
+    "technical": {
+      "scenario": 4,
+      "concept": 8
+    },
     "behavioural": 12,
     "hr": 12
   },
-  "example_answer_style": "Fair, calm and policy-aware. Gather facts, consider both sides, follow law and policy, protect confidentiality, document, and follow up. Behavioural and HR answers use STAR with a measurable result."
+  "example_answer_style": "Fair, calm and policy-aware. Gather facts, consider both sides, follow law and policy, protect confidentiality, document, and follow up. Behavioural and HR answers use STAR with a measurable result.",
+  "round_labels": {
+    "technical": "Functional HR"
+  },
+  "special_kind": {
+    "key": "scenario",
+    "label": "scenario"
+  }
 }

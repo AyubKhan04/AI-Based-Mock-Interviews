@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api } from '../api'
 import { Loading, useApp } from '../App'
-import { ROUND_LABEL } from '../FieldRole'
+import { KIND_LABEL, roundName } from '../FieldRole'
 import CodeAnswer from '../CodeAnswer'
 import Stars from '../Stars'
 import { Camera, MicButton, useVoice } from '../Voice'
@@ -109,7 +109,7 @@ function Hub({ st, id, banner, setSt, onProctoredStart }) {
       {st.proctored && !over && <p className="rounded-lg bg-slate-50 p-3 text-sm text-slate-600">🛡 Proctored: each round runs in fullscreen with your camera on. Warnings used so far: tab {st.integrity.tab}/{st.integrity.chances}, camera {st.integrity.camera}/{st.integrity.chances}.</p>}
       {banner && !over && (
         <div className="rounded-lg bg-emerald-50 p-4 text-emerald-800">
-          ✅ You passed the {ROUND_LABEL[banner.round_type]} round with {banner.score}/10. You are selected for the next round.
+          ✅ You passed the {roundName(banner)} round with {banner.score}/10. You are selected for the next round.
         </div>
       )}
       {over && <div className={`rounded-lg p-4 ${END[st.status][0]}`}>{END[st.status][1]} <Link className="font-semibold underline" to={`/report/${id}`}>Open the report</Link></div>}
@@ -120,7 +120,7 @@ function Hub({ st, id, banner, setSt, onProctoredStart }) {
             <div key={r.order} className={`card flex flex-wrap items-center gap-4 ${r.status === 'locked' ? 'opacity-60' : ''}`}>
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 font-bold text-indigo-700">{r.order}</div>
               <div className="min-w-40 flex-1">
-                <div className="font-semibold">{ROUND_LABEL[r.round_type]} <span className="text-sm font-normal text-slate-400">· {r.questions} questions · pass {r.pass_mark}+</span></div>
+                <div className="font-semibold">{roundName(r)} <span className="text-sm font-normal text-slate-400">· {r.questions} questions · pass {r.pass_mark}+</span></div>
                 <div className={`text-sm ${cls}`}>{label}{r.status === 'scheduled' && r.scheduled_at && <> · {fmt(r.scheduled_at)}</>}</div>
               </div>
               {r.score != null && <div className="text-right"><Stars rating={r.rating} score={r.score} /><div className={`text-xs ${r.passed ? 'text-emerald-600' : 'text-red-600'}`}>{r.passed ? 'Passed' : 'Not passed'}</div></div>}
@@ -181,7 +181,7 @@ function Answering({ st, setSt, id, name, speaker, stream, onRoundDone }) {
 
       <Bubble who="ai" followup={st.is_followup} speaking={speaker.speaking} controls={<SpeakerControls speaker={speaker} text={`${intro} ${st.question}`} />}>
         {intro && <span className="mb-1 block text-sm italic text-slate-500">{intro}</span>}
-        {st.kind === 'coding' ? <><span className="mr-1 rounded bg-amber-100 px-1.5 text-xs text-amber-800">Coding</span>{st.question}</> : st.question}
+        {KIND_LABEL[st.kind] ? <><span className="mr-1 rounded bg-amber-100 px-1.5 text-xs text-amber-800">{KIND_LABEL[st.kind]}</span>{st.question}</> : st.question}
       </Bubble>
       {st.kind === 'coding' ? (
         <CodeAnswer id={id} st={st} onAnswered={(r, summary) => {
@@ -202,7 +202,7 @@ function Answering({ st, setSt, id, name, speaker, stream, onRoundDone }) {
   return (
     <div className={`mx-auto space-y-4 ${stream ? 'max-w-6xl' : 'max-w-3xl'}`}>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-bold">{ROUND_LABEL[st.round_type]} round · question {st.question_number} of {st.total}</h1>
+        <h1 className="text-xl font-bold">{st.round_label || roundName(st)} round · question {st.question_number} of {st.total}</h1>
         {!stream && <Camera defaultOn={st.round_type === 'behavioural' && st.mode !== 'practice'} />}
         {st.mode === 'practice' && <button className="btn-ghost text-sm" onClick={endEarly} disabled={busy || log.length === 0}>End and see report</button>}
       </div>

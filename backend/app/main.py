@@ -86,7 +86,7 @@ class PracticeIn(BaseModel):
     round_type: Literal["screening", "technical", "behavioural", "hr"]
     difficulty: Literal["easy", "medium", "hard"] = "medium"
     count: Literal[1, 2, 3, 5, 10, 15] = 5
-    kind: Literal["concept", "coding"] = "concept"  # coding: Tech field, Technical round
+    kind: Literal["concept", "coding", "roleplay", "case", "scenario"] = "concept"  # non-concept: the field's Technical-round special
 
 
 class InterviewIn(BaseModel):
@@ -162,7 +162,8 @@ def state(iv: Interview) -> dict:
         "company": iv.company, "expires_at": iso(iv.expires_at),
         "proctored": iv.mode != "practice", "disqualified_reason": iv.disqualified_reason,
         "integrity": {"tab": (iv.integrity or {}).get("tab", 0), "camera": (iv.integrity or {}).get("camera", 0), "chances": flow.CHANCES},
-        "rounds": [{"order": r.order, "round_type": r.round_type, "status": r.status, "score": r.score,
+        "round_label": questions.round_label(iv.field, rnd.round_type) if rnd else None,
+        "rounds": [{"order": r.order, "round_type": r.round_type, "label": questions.round_label(iv.field, r.round_type), "status": r.status, "score": r.score,
                     "rating": scoring.rating(r.score) if r.score is not None else None, "passed": r.passed,
                     "pass_mark": r.pass_mark, "scheduled_at": iso(r.scheduled_at), "questions": len(r.question_ids),
                     "can_start": flow.can_start(r)[0]} for r in iv.rounds],
@@ -171,7 +172,7 @@ def state(iv: Interview) -> dict:
         "total": len(rnd.question_ids) if rnd else None,
         "question": cur.question_text if cur else None,
         "is_followup": bool(cur and cur.is_followup),
-        "kind": "coding" if (q and q.kind == "coding" and not cur.is_followup) else "concept",
+        "kind": q.kind if (q and not cur.is_followup) else "concept",
         "coding": {k: q.coding[k] for k in ("function", "starter", "visible")} if (q and q.kind == "coding" and q.coding and not cur.is_followup) else None,
     }
 
@@ -274,7 +275,10 @@ def health():
 def catalog():
     profiles = questions.all_profiles()
     return {"fields": [{"key": k, "label": p["label"], "roles": p["roles"], "special_round": p.get("special_round"),
-                        "live": True} for k, p in profiles.items()],
+                        "special_kind": p.get("special_kind"), "live": True,
+                        "rounds": [{"type": rt, "label": questions.round_label(k, rt), "pass_mark": p["rounds"][rt]["pass_mark"],
+                                    "full": questions.describe_counts(flow.round_counts(p, rt, "perform"), k),
+                                    "mock": questions.describe_counts(flow.round_counts(p, rt, "mock"), k)} for rt in ROUNDS]} for k, p in profiles.items()],
             "companies": list(questions.companies()), "rounds": ROUNDS,
             "pass_marks": {rt: c["pass_mark"] for rt, c in profiles["tech"]["rounds"].items()},
             "difficulties": ["easy", "medium", "hard"], "counts": [5, 10, 15],
@@ -343,8 +347,10 @@ def start_practice(body: PracticeIn, user: User = Depends(current_user), db: Ses
     if body.company not in questions.companies():
         raise HTTPException(422, "Unknown company")
     kind = body.kind
-    if kind == "coding" and (body.round_type != "technical" or "coding" not in str(questions.field_profile(body.field).get("special_round"))):
-        raise HTTPException(422, "Coding problems are part of the Tech field's Technical round")
+    special = questions.special_kind(body.field)
+    if kind != "concept" and (body.round_type != "technical" or kind != special["key"]):
+        raise HTTPException(422, f"{questions.KIND_LABEL.get(kind, kind)} questions are not part of this field and round. "
+                                 f"This field's {questions.round_label(body.field, 'technical')} round uses {special['label']} questions.")
     qs, note = questions.pick(db, field=body.field, role=body.role, company=body.company,
                               round_type=body.round_type, difficulty=body.difficulty, n=body.count, kind=kind)
     if not qs:
@@ -519,7 +525,7 @@ def summary(iid: int, user: User = Depends(current_user), db: Session = Depends(
     return {
         "id": iv.id, "mode": iv.mode, "role": iv.role, "company": iv.company, "status": iv.status, "result": result,
         "score": iv.overall_score if iv.overall_score is not None else avg, "rating": scoring.rating(iv.overall_score or avg) if answered else None,
-        "rounds": [{"round_type": r.round_type, "status": r.status, "score": r.score, "passed": r.passed} for r in iv.rounds],
+        "rounds": [{"round_type": r.round_type, "label": questions.round_label(iv.field, r.round_type), "status": r.status, "score": r.score, "passed": r.passed} for r in iv.rounds],
         "strengths": [{"area": scoring.SUBSCORE_LABELS[k], "score": v} for k, v in ranked[:2] if v >= 6],
         "improvements": improvements[:3],
         "questions": [{"question": a.question_text, "is_followup": a.is_followup, "score": a.score,
@@ -582,7 +588,8 @@ def history(user: User = Depends(current_user), db: Session = Depends(get_db)):
     for i in ivs:
         flow.expire_if_due(db, i)
     return [{"id": i.id, "mode": i.mode, "field": i.field, "role": i.role, "company": i.company, "status": i.status,
-             "round_type": i.rounds[0].round_type if i.mode == "practice" and i.rounds else None, "difficulty": i.difficulty,
+             "round_type": i.rounds[0].round_type if i.mode == "practice" and i.rounds else None,
+             "round_label": questions.round_label(i.field, i.rounds[0].round_type) if i.mode == "practice" and i.rounds else None, "difficulty": i.difficulty,
              "rounds_passed": sum(1 for r in i.rounds if r.passed), "score": i.overall_score,
              "rating": scoring.rating(i.overall_score) if i.overall_score else None,
              "created_at": iso(i.created_at)} for i in ivs]

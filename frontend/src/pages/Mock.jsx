@@ -2,15 +2,15 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
 import { useApp } from '../App'
-import FieldRole, { ROUND_LABEL, defaultFieldRole } from '../FieldRole'
+import FieldRole, { defaultFieldRole, fieldRounds } from '../FieldRole'
 
-export const RULES = ({ counts }) => {
+export const RULES = ({ field, mode }) => {
   const { catalog } = useApp()
   return (
     <table className="w-full text-left text-sm">
       <thead className="text-slate-500"><tr><th className="py-1">Round</th><th>Questions</th><th>Pass mark</th></tr></thead>
-      <tbody>{catalog.rounds.map((r) => (
-        <tr key={r} className="border-t border-slate-100"><td className="py-1.5">{ROUND_LABEL[r]}</td><td>{counts[r]}</td><td>{catalog.pass_marks[r]}+/10</td></tr>
+      <tbody>{fieldRounds(catalog, field).map((r) => (
+        <tr key={r.type} className="border-t border-slate-100"><td className="py-1.5">{r.label}</td><td>{r[mode]}</td><td>{r.pass_mark}+/10</td></tr>
       ))}</tbody>
     </table>
   )
@@ -45,7 +45,7 @@ export default function Mock() {
           <select className="input" value={form.company} onChange={(e) => set({ company: e.target.value })}>{catalog.companies.map((c) => <option key={c}>{c}</option>)}</select>
           <p className="mt-1 text-xs text-slate-400">Company-style practice questions. Not affiliated with any company.</p>
         </div>
-        <RULES counts={{ screening: 3, technical: 3, behavioural: 3, hr: 3 }} />
+        <RULES field={form.field} mode="mock" />
         {err && <p className="text-sm text-red-600">{err}</p>}
         <button className="btn w-full" onClick={start} disabled={busy || !form.role}>{busy ? 'Preparing your interview…' : 'Start mock interview'}</button>
       </div>

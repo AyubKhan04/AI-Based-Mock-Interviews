@@ -20,6 +20,43 @@ def field_profile(field: str) -> dict:
     return json.loads((FIELDS / f"{field}.json").read_text())
 
 
+ROUND_NAME = {"screening": "Screening", "technical": "Technical", "behavioural": "Behavioural", "hr": "HR"}
+KIND_LABEL = {"coding": "Coding", "roleplay": "Role-play", "case": "Case", "scenario": "Scenario"}
+
+
+def round_label(field: str, round_type: str) -> str:
+    """The round's name in this field, e.g. Sales calls its Technical round "Sales Skills"."""
+    try:
+        return field_profile(field).get("round_labels", {}).get(round_type) or ROUND_NAME[round_type]
+    except FileNotFoundError:
+        return ROUND_NAME.get(round_type, round_type.title())
+
+
+def special_kind(field: str) -> dict:
+    """The field's hands-on question type in the Technical round: coding, role-play, case or scenario."""
+    return field_profile(field).get("special_kind") or {"key": "coding", "label": "coding"}
+
+
+def describe_counts(counts: dict, field: str) -> str:
+    """{'roleplay': 4, 'concept': 8} -> '4 role-play + 8 concept'."""
+    if set(counts) == {"concept"}:
+        return str(counts["concept"])
+    label = special_kind(field)["label"]
+    return " + ".join(f"{n} {'concept' if k == 'concept' else label}" for k, n in counts.items() if n)
+
+
+def _shared_texts() -> set[str]:
+    """Generic questions that appear in more than one field's bank. Field-specific ones are asked first."""
+    seen: dict[str, int] = {}
+    for path in DATA.glob("questions_*.json"):
+        for t in {q["text"] for q in json.loads(path.read_text())}:
+            seen[t] = seen.get(t, 0) + 1
+    return {t for t, n in seen.items() if n > 1}
+
+
+SHARED = _shared_texts()
+
+
 def companies() -> dict:
     return {k: v for k, v in json.loads((DATA / "companies.json").read_text()).items() if not k.startswith("_")}
 
@@ -32,12 +69,16 @@ def all_profiles() -> dict[str, dict]:
 
 def seed(db: Session) -> None:
     """Add any seed question not yet in the database (safe to run on every start)."""
-    have = {(f, t) for f, t in db.execute(select(Question.field, Question.text).where(Question.source == "seed"))}
+    have = {(q.field, q.text): q for q in db.scalars(select(Question).where(Question.source == "seed"))}
     added = False
     for path in [*DATA.glob("questions_*.json"), *DATA.glob("coding_*.json")]:
         for q in json.loads(path.read_text()):
-            if (q["field"], q["text"]) not in have:
+            old = have.get((q["field"], q["text"]))
+            if old is None:
                 db.add(Question(**q))
+                added = True
+            elif old.kind != q.get("kind", "concept"):  # e.g. a Sales question re-tagged as a role-play
+                old.kind = q.get("kind", "concept")
                 added = True
     if added:
         db.commit()
@@ -72,8 +113,8 @@ def pick(db: Session, *, field: str, role: str, company: str, round_type: str, d
         Question.field == field, Question.round_type == round_type, Question.kind == kind,
         Question.role.in_([role, "any"]), Question.company.in_(["any", company]))))
     random.shuffle(pool)
-    # Role-specific first, then the most common across companies, then the requested difficulty.
-    pool.sort(key=lambda q: (q.role != role, -(q.times_seen_across_companies or 0) if common else 0, q.difficulty != difficulty))
+    # Role-specific first, then field-specific, then the most common across companies, then the requested difficulty.
+    pool.sort(key=lambda q: (q.role != role, q.text in SHARED, -(q.times_seen_across_companies or 0) if common else 0, q.difficulty != difficulty))
     if common:
         return pool[:n], "Common questions asked across many companies."
     note = "Common questions from the open question bank."

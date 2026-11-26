@@ -873,7 +873,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "roleplay",
   "field": "sales"
  },
  {
@@ -894,7 +894,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "roleplay",
   "field": "sales"
  },
  {
@@ -915,7 +915,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "roleplay",
   "field": "sales"
  },
  {
@@ -934,7 +934,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "roleplay",
   "field": "sales"
  },
  {
@@ -1128,7 +1128,7 @@
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",
-  "kind": "concept",
+  "kind": "roleplay",
   "field": "sales"
  },
  {
@@ -1144,6 +1144,510 @@
    "activity"
   ],
   "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "Role-play: I'm a shop owner who has never heard of your product. Pitch it to me in one minute.",
+  "round_type": "technical",
+  "role": "Sales Executive",
+  "difficulty": "medium",
+  "keywords": [
+   "question",
+   "need",
+   "benefit",
+   "proof",
+   "next step"
+  ],
+  "followups": [
+   "Why should I trust a brand I've never heard of?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "roleplay",
+  "field": "sales"
+ },
+ {
+  "text": "Role-play: I'm your biggest client and I've just heard our renewal price is going up 12%. Convince me to stay.",
+  "round_type": "technical",
+  "role": "Account Manager",
+  "difficulty": "hard",
+  "keywords": [
+   "value",
+   "results",
+   "relationship",
+   "options",
+   "renewal"
+  ],
+  "followups": [
+   "Your competitor offered to match the old price. Why stay?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "roleplay",
+  "field": "sales"
+ },
+ {
+  "text": "Role-play: you've finally got me on the phone after I ignored three emails. Book a meeting with me.",
+  "round_type": "technical",
+  "role": "Business Development Representative",
+  "difficulty": "medium",
+  "keywords": [
+   "permission",
+   "research",
+   "value",
+   "question",
+   "meeting"
+  ],
+  "followups": [
+   "Just send me something by email. How do you respond?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "roleplay",
+  "field": "sales"
+ },
+ {
+  "text": "Role-play: an inbound lead says 'I'm just looking'. Qualify me in under two minutes.",
+  "round_type": "technical",
+  "role": "Inside Sales",
+  "difficulty": "medium",
+  "keywords": [
+   "budget",
+   "need",
+   "timeline",
+   "decision",
+   "question"
+  ],
+  "followups": [
+   "I'm not the decision-maker. What now?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "roleplay",
+  "field": "sales"
+ },
+ {
+  "text": "Role-play: I've seen the demo and I like it, but I need to 'think about it'. Close me.",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "concern",
+   "question",
+   "summary",
+   "urgency",
+   "next step"
+  ],
+  "followups": [
+   "What if I still say I need a week?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "roleplay",
+  "field": "sales"
+ },
+ {
+  "text": "What is the difference between a lead, a prospect and an opportunity?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "lead",
+   "prospect",
+   "opportunity",
+   "qualified",
+   "pipeline"
+  ],
+  "followups": [
+   "How do you decide when to drop a lead?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "How do you build a pipeline that covers three times your target?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "pipeline",
+   "coverage",
+   "conversion",
+   "activity",
+   "forecast"
+  ],
+  "followups": [
+   "Which stage of your pipeline usually leaks the most?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "What is consultative selling, and when does it work better than a hard pitch?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "listen",
+   "need",
+   "trust",
+   "solution",
+   "long-term"
+  ],
+  "followups": [
+   "Give an example where you used it."
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "How do you research a prospect before reaching out?",
+  "round_type": "technical",
+  "role": "Business Development Representative",
+  "difficulty": "easy",
+  "keywords": [
+   "linkedin",
+   "website",
+   "trigger",
+   "personalise",
+   "pain"
+  ],
+  "followups": [
+   "How long do you spend per prospect?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "How do you run an effective discovery call over the phone?",
+  "round_type": "technical",
+  "role": "Inside Sales",
+  "difficulty": "medium",
+  "keywords": [
+   "agenda",
+   "question",
+   "listen",
+   "pain",
+   "next step"
+  ],
+  "followups": [
+   "Which question gives you the most useful answer?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "Your territory's sales have fallen for two quarters. How would you turn it around?",
+  "round_type": "technical",
+  "role": "Sales Executive",
+  "difficulty": "hard",
+  "keywords": [
+   "data",
+   "accounts",
+   "competitor",
+   "plan",
+   "activity"
+  ],
+  "followups": [
+   "What would you do in the first week?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "How do you find upsell opportunities in an existing account?",
+  "round_type": "technical",
+  "role": "Account Manager",
+  "difficulty": "medium",
+  "keywords": [
+   "usage",
+   "review",
+   "need",
+   "relationship",
+   "value"
+  ],
+  "followups": [
+   "How do you upsell without sounding pushy?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "Tell me about your current target and how you did against it last quarter.",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "target",
+   "achieved",
+   "percent",
+   "deals",
+   "revenue"
+  ],
+  "followups": [
+   "What helped most in hitting that number?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "Why did you choose a career in sales?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "people",
+   "targets",
+   "motivation",
+   "growth",
+   "customers"
+  ],
+  "followups": [
+   "What do you find hardest about sales?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "What kinds of products and customers have you sold to so far?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "product",
+   "customer",
+   "b2b",
+   "b2c",
+   "deal size"
+  ],
+  "followups": [
+   "Which of those was the hardest sell, and why?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "What is the biggest deal you've won, and how did you win it?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "deal",
+   "value",
+   "steps",
+   "objection",
+   "close"
+  ],
+  "followups": [
+   "Who else was involved in closing it?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "Tell me about a deal you lost. What would you do differently?",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "situation",
+   "reason",
+   "learned",
+   "change",
+   "result"
+  ],
+  "followups": [
+   "Did you ever win that customer back?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "Describe a time you turned an unhappy customer into a repeat buyer.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "listen",
+   "problem",
+   "action",
+   "follow up",
+   "result"
+  ],
+  "followups": [
+   "How did you make sure it didn't happen again?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "Tell me about a quarter when you were behind target. How did you catch up?",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "gap",
+   "plan",
+   "activity",
+   "pipeline",
+   "result"
+  ],
+  "followups": [
+   "What did you stop doing to make time?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "Describe a time you worked with another team to close a deal.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "team",
+   "role",
+   "communication",
+   "customer",
+   "result"
+  ],
+  "followups": [
+   "What would you do differently next time?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "Are you comfortable with a target-based incentive structure?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "target",
+   "incentive",
+   "motivation",
+   "fair",
+   "performance"
+  ],
+  "followups": [
+   "What target would you consider stretching but fair?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "How do you feel about field travel and meeting clients in person?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "travel",
+   "clients",
+   "flexible",
+   "relationship",
+   "planning"
+  ],
+  "followups": [
+   "How much travel a month is comfortable for you?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "How do you stay motivated after a bad month?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "reset",
+   "review",
+   "learn",
+   "routine",
+   "goal"
+  ],
+  "followups": [
+   "Who do you go to for support?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "sales"
+ },
+ {
+  "text": "What does a fair split between fixed pay and incentives look like to you?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "fixed",
+   "variable",
+   "risk",
+   "earnings",
+   "role"
+  ],
+  "followups": [
+   "Would you take a lower fixed salary for higher incentives?"
+  ],
   "source": "seed",
   "license": "MIT (original, written for this project)",
   "company": "any",

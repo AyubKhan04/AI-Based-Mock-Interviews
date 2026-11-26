@@ -46,7 +46,7 @@ export default function Report() {
         <div key={r.order} className="space-y-5">
           <section className="card flex flex-wrap items-center gap-6">
             <div>
-              <div className="text-sm uppercase tracking-wide text-slate-400">{r.round_type} round
+              <div className="text-sm uppercase tracking-wide text-slate-400">{r.label || r.round_type} round
                 {r.passed != null && <span className={`ml-2 rounded px-1.5 py-0.5 text-xs normal-case ${r.passed ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>{r.passed ? 'Passed' : `Not passed · pass mark ${r.pass_mark}`}</span>}
                 {r.status === 'incomplete' && <span className="ml-2 rounded bg-slate-100 px-1.5 py-0.5 text-xs normal-case">Incomplete, not scored</span>}</div>
               <div className="text-5xl font-bold text-indigo-700">{r.score ?? '–'}<span className="text-2xl text-slate-400">/10</span></div>
@@ -76,8 +76,8 @@ export default function Report() {
               </ul>
             </div>
             <div className="card">
-              <h2 className="mb-3 font-semibold">Progress since your last {r.round_type} round</h2>
-              {r.progress.length === 0 ? <p className="text-sm text-slate-500">This is your first {r.round_type} round. Do another one to see your progress here.</p> : (
+              <h2 className="mb-3 font-semibold">Progress since your last {r.label || r.round_type} round</h2>
+              {r.progress.length === 0 ? <p className="text-sm text-slate-500">This is your first {r.label || r.round_type} round. Do another one to see your progress here.</p> : (
                 <ul className="space-y-1 text-sm">
                   {r.progress.map((p) => (
                     <li key={p.area} className="flex justify-between"><span>{p.area}</span>

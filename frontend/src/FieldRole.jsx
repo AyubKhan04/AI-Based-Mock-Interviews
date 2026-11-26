@@ -25,3 +25,13 @@ export function defaultFieldRole(user, catalog) {
 }
 
 export const ROUND_LABEL = { screening: 'Screening', technical: 'Technical', behavioural: 'Behavioural', hr: 'HR' }
+
+export const KIND_LABEL = { coding: 'Coding', roleplay: 'Role-play', case: 'Case', scenario: 'Scenario' }
+
+/** The field's own round names, question mix and pass marks, from /catalog. */
+export function fieldRounds(catalog, field) {
+  const f = catalog?.fields?.find((x) => x.key === field) || catalog?.fields?.[0]
+  return f?.rounds || (catalog?.rounds || []).map((type) => ({ type, label: ROUND_LABEL[type], pass_mark: catalog.pass_marks?.[type], full: '12', mock: '3' }))
+}
+
+export const roundName = (r) => r?.label || ROUND_LABEL[r?.round_type] || r?.round_type

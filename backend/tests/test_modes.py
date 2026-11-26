@@ -194,3 +194,36 @@ def test_proctoring_strikes_and_disqualification(client, monkeypatch):
     p = client.post("/practice", headers=h, json={"role": "Data Analyst", "round_type": "hr"}).json()
     assert p["proctored"] is False
     assert client.post(f"/interviews/{p['interview_id']}/integrity", headers=h, json={"kind": "tab"}).status_code == 409
+
+
+def test_rounds_are_personalised_per_field(client):
+    from app import questions
+    from app.models import Question
+    cat = client.get("/catalog").json()
+    tech = {f["key"]: {r["type"]: r for r in f["rounds"]} for f in cat["fields"]}
+    assert tech["tech"]["technical"]["full"] == "4 coding + 8 concept" and tech["tech"]["technical"]["label"] == "Technical"
+    assert tech["sales"]["technical"] == {**tech["sales"]["technical"], "label": "Sales Skills", "full": "4 role-play + 8 concept", "mock": "1 role-play + 2 concept"}
+    assert tech["finance"]["technical"]["full"] == "4 case / calculation + 8 concept"
+    assert tech["hr"]["technical"]["label"] == "Functional HR" and tech["hr"]["screening"]["full"] == "12"
+    special = {"tech": "coding", "sales": "roleplay", "finance": "case", "hr": "scenario"}
+    for i, f in enumerate(cat["fields"]):
+        for j, role in enumerate(f["roles"]):
+            h = login(client, f"pf{i}{j}@example.com")
+            iv = client.post("/interviews", json={"mode": "perform", "field": f["key"], "role": role}, headers=h).json()
+            with SessionLocal() as db:
+                obj = db.get(Interview, iv["interview_id"])
+                for rnd in obj.rounds:
+                    assert len(rnd.question_ids) == 12, (f["key"], role, rnd.round_type)
+                    kinds = [db.get(Question, q).kind for q in rnd.question_ids]
+                    if rnd.round_type == "technical":
+                        assert kinds.count(special[f["key"]]) == 4 and kinds.count("concept") == 8, (f["key"], role, kinds)
+                    else:
+                        assert set(kinds) == {"concept"}
+                    if f["key"] != "tech" and rnd.round_type != "technical":  # field-specific questions come first
+                        texts = [db.get(Question, q).text for q in rnd.question_ids]
+                        assert sum(t not in questions.SHARED for t in texts) >= 4
+            client.delete(f"/interviews/{iv['interview_id']}", headers=h)
+    h = login(client, "pfx@example.com")
+    r = client.post("/practice", json={"field": "sales", "role": "Inside Sales", "round_type": "technical", "kind": "roleplay", "count": 3}, headers=h)
+    assert r.status_code == 200 and r.json()["kind"] == "roleplay" and r.json()["coding"] is None
+    assert client.post("/practice", json={"field": "sales", "role": "Inside Sales", "round_type": "technical", "kind": "coding", "count": 1}, headers=h).status_code == 422

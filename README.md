@@ -20,7 +20,7 @@ More screenshots: [Mock interview](docs/screenshots/mock_hub.png) · [Perform Mo
 | Report: per-question table, sub-scores, 🔴🟠🟢 ranked improvements, example answers, progress vs last attempt | ✅ |
 | PDF and Excel reports, on screen and emailed | ✅ |
 | Dashboard with history, and a **progress page** (score chart, skill changes, results by round, how far you get) | ✅ |
-| **4 fields**: Tech (coding round), Finance (numbers and case questions), Sales (role-play sales calls), HR (situational cases) | ✅ |
+| **4 fields, each with its own second round**: Tech *Technical* (4 coding + 8 concept), Sales *Sales Skills* (4 role-play + 8 concept), Finance *Finance Technical* (4 case / calculation + 8 concept), HR *Functional HR* (4 scenario + 8 concept). Coding only appears in Tech. Screening, Behavioural and HR rounds ask field-specific questions first | ✅ |
 | **Coding round**: Python editor, Run to see the real error, fix or Skip, hidden tests on Submit, all in your browser with Pyodide | ✅ |
 | **Voice answers**: press 🎤 and speak; pace, long pauses and volume count toward Tone & delivery | ✅ |
 | **Camera** self-view in Behavioural rounds (never recorded, uploaded or judged) | ✅ |

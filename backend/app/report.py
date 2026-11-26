@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .models import Interview, Round
+from .questions import round_label
 from .scoring import SUBSCORE_LABELS, rating
 
 PRI_LABEL = {"high": "High: fix first", "medium": "Medium", "low": "Low: polish"}
@@ -71,7 +72,7 @@ def final_summary(iv: Interview) -> dict | None:
         roadmap.append({"skill": b["skill"], "from": b["band"], "actions": ROADMAP[b["skill"]],
                         "example": {"question": ex.question_text, "answer": ex.example_answer} if ex else None})
     weakest_rounds = sorted(done, key=lambda r: r.score or 0)[:2]
-    plan = [f"Practise the {r.round_type.title()} round in Practice mode ({r.score}/10 last time), on Medium then Hard, "
+    plan = [f"Practise the {round_label(iv.field, r.round_type)} round in Practice mode ({r.score}/10 last time), on Medium then Hard, "
             f"with two different company styles." for r in weakest_rounds]
     plan.append("Then take a new Mock interview to check your progress.")
     overall = _avg([r.score for r in done])
@@ -97,7 +98,7 @@ def build(db: Session, iv: Interview) -> dict:
                 "flags": a.flags or [], "metrics": a.metrics,
             })
         rounds.append({
-            "order": r.order, "round_type": r.round_type, "status": r.status,
+            "order": r.order, "round_type": r.round_type, "label": round_label(iv.field, r.round_type), "status": r.status,
             "scheduled_at": r.scheduled_at.isoformat() if r.scheduled_at else None, "score": r.score, "rating": rating(r.score),
             "subscores": [{"key": k, "label": SUBSCORE_LABELS[k], "score": v, "rating": rating(v)}
                           for k, v in (r.subscores or {}).items()],
@@ -165,7 +166,7 @@ def pdf(rep: dict, candidate: str) -> bytes:
             continue
         p.ln(3)
         verdict = "" if r["passed"] is None else (" - PASSED" if r["passed"] else f" - not passed (pass mark {r['pass_mark']:g})")
-        line(f"{r['round_type'].title()} round: {r['score'] if r['score'] is not None else '-'}/10, {_stars(r['rating'])}{verdict}", 14, "B", 8)
+        line(f"{r['label']} round: {r['score'] if r['score'] is not None else '-'}/10, {_stars(r['rating'])}{verdict}", 14, "B", 8)
         line(r["rating"]["meaning"], 9, "I")
         for s in r["subscores"]:
             line(f"- {s['label']}: {s['score']}/10")
@@ -196,7 +197,7 @@ def email_html(rep: dict, name: str) -> str:
              f"({escape(rep['company'])}-style practice). The full report is attached as PDF and Excel.</p>"]
     for r in rep["rounds"]:
         stars = "&#9733;" * r["rating"]["stars"] + "&#9734;" * (5 - r["rating"]["stars"])
-        parts.append(f"<h3>{escape(r['round_type'].title())} round: {r['score']}/10 {stars} {escape(r['rating']['label'])}</h3><ul>")
+        parts.append(f"<h3>{escape(r['label'])} round: {r['score']}/10 {stars} {escape(r['rating']['label'])}</h3><ul>")
         parts += [f"<li><b>{escape(i['priority'].title())}</b> &middot; {escape(i['area'])}: {escape(i['tip'])}</li>" for i in r["improvements"]]
         parts.append("</ul>")
     parts.append(f"<p style='color:#777;font-size:12px'>{escape(rep['disclaimer'])}</p>")
@@ -241,11 +242,11 @@ def xlsx(rep: dict, candidate: str) -> bytes:
             continue
         sd = {s["label"]: s["score"] for s in r["subscores"]}
         verdict = "" if r["passed"] is None else ("Passed" if r["passed"] else "Not passed")
-        rows.append([r["round_type"].title(), r["score"], f"{r['rating']['stars']}/5 {r['rating']['label']}", verdict, *[sd.get(k) for k in subs]])
+        rows.append([r["label"], r["score"], f"{r['rating']['stars']}/5 {r['rating']['label']}", verdict, *[sd.get(k) for k in subs]])
     table(ws, ["Round", "Score", "Rating", "Result", *subs], rows, [16, 8, 20, 12] + [16] * len(subs))
 
     q = wb.create_sheet("Questions")
-    qrows = [[r["round_type"].title(), x["number"], x["question"], x["answer"], x["score"],
+    qrows = [[r["label"], x["number"], x["question"], x["answer"], x["score"],
               f"{x['rating']['stars']}/5", x["went_well"], x["to_improve"], x["example_answer"] or ""]
              for r in rep["rounds"] for x in r["questions"]]
     table(q, ["Round", "#", "Question", "What you said", "Score", "Stars", "What went well", "How to improve", "Example answer"],
@@ -253,7 +254,7 @@ def xlsx(rep: dict, candidate: str) -> bytes:
 
     imp = wb.create_sheet("Improvements")
     table(imp, ["Round", "Priority", "Area", "Tip"],
-          [[r["round_type"].title(), i["priority"].title(), i["area"], i["tip"]] for r in rep["rounds"] for i in r["improvements"]],
+          [[r["label"], i["priority"].title(), i["area"], i["tip"]] for r in rep["rounds"] for i in r["improvements"]],
           [13, 10, 24, 80])
 
     f = rep.get("final")

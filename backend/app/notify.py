@@ -5,9 +5,9 @@ from . import emailer, flow, report
 from .config import FRONTEND_URL
 from .db import SessionLocal
 from .models import Interview, User
+from .questions import round_label
 from .scoring import SUBSCORE_LABELS, rating
 
-ROUND_NAME = {"screening": "Screening", "technical": "Technical", "behavioural": "Behavioural", "hr": "HR"}
 
 
 def _stars(score) -> str:
@@ -51,18 +51,18 @@ def send(iid: int, kind: str, order: int | None = None) -> bool:
             body, pdf = report.email_html(rep, user.name), True
         elif kind == "passed":
             nxt = next(r for r in iv.rounds if r.order == rnd.order + 1)
-            when = (f"<p>Your {ROUND_NAME[nxt.round_type]} round is booked for <b>{flow.fmt_local(user, nxt.scheduled_at)}</b>. "
+            when = (f"<p>Your {round_label(iv.field, nxt.round_type)} round is booked for <b>{flow.fmt_local(user, nxt.scheduled_at)}</b>. "
                     "We'll remind you an hour before.</p>") if iv.mode == "perform" else \
-                   (f"<p>The {ROUND_NAME[nxt.round_type]} round is unlocked now. Take a break if you like, but finish all rounds by "
+                   (f"<p>The {round_label(iv.field, nxt.round_type)} round is unlocked now. Take a break if you like, but finish all rounds by "
                     f"<b>{flow.fmt_local(user, iv.expires_at)}</b>.</p>")
-            subject = f"Selected for the {ROUND_NAME[nxt.round_type]} round ({title})"
-            body = (f"<h2>You passed the {ROUND_NAME[rnd.round_type]} round</h2><p>{rnd.score}/10 {_stars(rnd.score)}</p>"
+            subject = f"Selected for the {round_label(iv.field, nxt.round_type)} round ({title})"
+            body = (f"<h2>You passed the {round_label(iv.field, rnd.round_type)} round</h2><p>{rnd.score}/10 {_stars(rnd.score)}</p>"
                     + _why(rnd) + when + _link(iv))
         elif kind == "failed":
             hr = rnd.round_type == "hr"
-            subject = ("Not selected" if hr else f"{ROUND_NAME[rnd.round_type]} round feedback") + f" ({title})"
+            subject = ("Not selected" if hr else f"{round_label(iv.field, rnd.round_type)} round feedback") + f" ({title})"
             body = (f"<h2>{'Not selected' if hr else 'You cannot proceed to the next round this time'}</h2>"
-                    f"<p>{ROUND_NAME[rnd.round_type]} round: {rnd.score}/10 {_stars(rnd.score)}</p>" + _why(rnd)
+                    f"<p>{round_label(iv.field, rnd.round_type)} round: {rnd.score}/10 {_stars(rnd.score)}</p>" + _why(rnd)
                     + "<p><b>What to fix first:</b></p><ul>"
                     + "".join(f"<li>{escape(i['area'])}: {escape(i['tip'])}</li>" for i in (rnd.improvements or [])[:3])
                     + "</ul><p>Your full feedback report is attached. Practise this round again in Practice mode, then try a new interview.</p>")
@@ -88,12 +88,12 @@ def send(iid: int, kind: str, order: int | None = None) -> bool:
                     "with 3 chances for each. Feedback on any rounds you finished is attached. You can start a new interview any time.</p>")
             pdf = True
         elif kind == "scheduled":
-            subject = f"Your Perform Mock Interview: {ROUND_NAME[rnd.round_type]} round booked"
-            body = (f"<h2>Round {rnd.order}: {ROUND_NAME[rnd.round_type]}</h2><p>Date and time: <b>{flow.fmt_local(user, rnd.scheduled_at)}</b></p>"
+            subject = f"Your Perform Mock Interview: {round_label(iv.field, rnd.round_type)} round booked"
+            body = (f"<h2>Round {rnd.order}: {round_label(iv.field, rnd.round_type)}</h2><p>Date and time: <b>{flow.fmt_local(user, rnd.scheduled_at)}</b></p>"
                     "<p>The round opens 15 minutes before. Find a quiet place.</p>" + _link(iv, "Join your round"))
         elif kind == "reminder":
-            subject = f"Reminder: {ROUND_NAME[rnd.round_type]} round in 1 hour"
-            body = (f"<p>Your {ROUND_NAME[rnd.round_type]} round starts at <b>{flow.fmt_local(user, rnd.scheduled_at)}</b>.</p>"
+            subject = f"Reminder: {round_label(iv.field, rnd.round_type)} round in 1 hour"
+            body = (f"<p>Your {round_label(iv.field, rnd.round_type)} round starts at <b>{flow.fmt_local(user, rnd.scheduled_at)}</b>.</p>"
                     + _link(iv, "Join your round"))
         else:
             raise ValueError(kind)
