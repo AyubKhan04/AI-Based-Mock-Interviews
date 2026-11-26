@@ -84,3 +84,18 @@ def test_errors_keep_cors_headers():
             raise RuntimeError("x")
         r = c.get("/_boom", headers={"Origin": "http://localhost:5173"})
         assert r.status_code == 500 and r.headers.get("access-control-allow-origin") == "http://localhost:5173"
+
+
+def test_summary_and_delete():
+    with TestClient(app) as c:
+        r = c.post("/auth/signup", json={"name": "Del", "email": "del@example.com", "password": "secret123"})
+        h = {"Authorization": f"Bearer {r.json()['token']}"}
+        iid = c.post("/practice", headers=h, json={"role": "Data Analyst", "round_type": "hr", "count": 5}).json()["interview_id"]
+        c.post(f"/interviews/{iid}/answer", headers=h, json={"text": GOOD})
+        s = c.get(f"/interviews/{iid}/summary", headers=h).json()
+        assert s["status"] == "in_progress" and "1 of 5" in s["result"] and len(s["questions"]) == 1 and s["improvements"]
+        other = c.post("/auth/signup", json={"name": "O", "email": "o2@example.com", "password": "secret123"}).json()["token"]
+        assert c.delete(f"/interviews/{iid}", headers={"Authorization": f"Bearer {other}"}).status_code == 404
+        assert c.delete(f"/interviews/{iid}", headers=h).json() == {"deleted": True}
+        assert c.get(f"/interviews/{iid}", headers=h).status_code == 404
+        assert all(i["id"] != iid for i in c.get("/interviews", headers=h).json())

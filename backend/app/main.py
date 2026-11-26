@@ -468,6 +468,46 @@ def get_pdf(iid: int, user: User = Depends(current_user), db: Session = Depends(
                     headers={"Content-Disposition": f'attachment; filename="interview-{iid}.pdf"'})
 
 
+@app.delete("/interviews/{iid}")
+def delete_interview(iid: int, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    """Delete a session with its rounds and answers."""
+    db.delete(get_interview(db, iid, user))
+    db.commit()
+    return {"deleted": True}
+
+
+@app.get("/interviews/{iid}/summary")
+def summary(iid: int, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    """Quick overview built from stored scores only (no AI call), including unfinished sessions."""
+    iv = get_interview(db, iid, user)
+    answered = [a for r in iv.rounds for a in r.answers if a.answer_text is not None]
+    keys = sorted({k for a in answered for k in (a.subscores or {})})
+    subs = scoring.average_subscores([a.subscores for a in answered if a.subscores], keys)
+    ranked = sorted(subs.items(), key=lambda kv: kv[1], reverse=True)
+    improvements = next((r.improvements for r in reversed(iv.rounds) if r.improvements), None) \
+        or (scoring.ranked_improvements(subs, [a.metrics or {} for a in answered], iv.rounds[-1].round_type) if subs else [])
+    total_q = sum(len(r.question_ids) for r in iv.rounds)
+    main_answered = sum(1 for a in answered if not a.is_followup)
+    if iv.status == "in_progress":
+        result = f"In progress: {main_answered} of {total_q} questions answered."
+    elif iv.mode == "practice":
+        result = f"Completed: {iv.overall_score}/10 ({scoring.rating(iv.overall_score)['label']})."
+    else:
+        passed = sum(1 for r in iv.rounds if r.passed)
+        result = {"completed": "Passed all 4 rounds.", "failed": f"Stopped after passing {passed} of 4 rounds.",
+                  "expired": f"Ended as incomplete after {passed} of 4 rounds."}.get(iv.status, iv.status)
+    avg = round(sum(a.score for a in answered if a.score) / len(answered), 1) if answered else None
+    return {
+        "id": iv.id, "mode": iv.mode, "role": iv.role, "company": iv.company, "status": iv.status, "result": result,
+        "score": iv.overall_score if iv.overall_score is not None else avg, "rating": scoring.rating(iv.overall_score or avg) if answered else None,
+        "rounds": [{"round_type": r.round_type, "status": r.status, "score": r.score, "passed": r.passed} for r in iv.rounds],
+        "strengths": [{"area": scoring.SUBSCORE_LABELS[k], "score": v} for k, v in ranked[:2] if v >= 6],
+        "improvements": improvements[:3],
+        "questions": [{"question": a.question_text, "is_followup": a.is_followup, "score": a.score,
+                       "rating": scoring.rating(a.score)} for a in answered],
+    }
+
+
 @app.get("/interviews/{iid}/report.xlsx")
 def get_xlsx(iid: int, user: User = Depends(current_user), db: Session = Depends(get_db)):
     rep = report.build(db, get_interview(db, iid, user))
