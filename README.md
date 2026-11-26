@@ -30,6 +30,7 @@ More screenshots: [Mock interview](docs/screenshots/mock_hub.png) · [Perform Mo
 | **Coaching**: STAR check, points missed, model answer or answer structure, and speaking analysis (words per minute, filler words, length, pauses). After every answer in Practice; in the report for Mock and Perform | ✅ |
 | **Answer timer** (optional) in Mock and Perform: the interviewer asks you to wrap up when time is up | ✅ |
 | **Try as guest**, daily **streaks** and **badges**, and a landing page | ✅ |
+| **Dark mode**: 🌙/☀️ toggle in the header; starts from your system setting and remembers your choice (PDFs and emails stay light) | ✅ |
 | **Interviewer personas** (friendly, neutral, tough) and **panel interviews** (Priya, Arjun and Meera take turns, each with their own browser voice); a tough interviewer follows up on anything under 60 words | ✅ |
 | **Job description mode**: paste a job post and questions are tailored to it (sent to Gemini once per post and cached; rule fallback reads its requirements) | ✅ |
 | **"Do you have any questions for us?"** closes every HR round and is scored on the quality of your questions | ✅ |

@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mock Interview Coach</title>
+  <script>
+    // Apply the saved theme, or the system setting, before the page paints (no white flash).
+    (function () {
+      var t = null; try { t = localStorage.getItem('theme') } catch (e) {}
+      var dark = t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+      document.documentElement.classList.toggle('dark', dark)
+      document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+    })()
+  </script>
   </head>
   <body class="bg-slate-50 text-slate-800">
     <div id="root"></div>
