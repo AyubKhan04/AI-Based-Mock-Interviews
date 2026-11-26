@@ -58,7 +58,7 @@ def test_mock_mode_passes_all_rounds(client, monkeypatch):
     fixed_scores(monkeypatch, 9.0)
     h = login(client, "mock@example.com")
     st = client.post("/interviews", headers=h, json={"mode": "mock", "role": "Software Engineer", "company": "Zoho"}).json()
-    assert [r["questions"] for r in st["rounds"]] == [3, 3, 3, 3]          # ¼ of 12
+    assert [r["questions"] for r in st["rounds"]] == [3, 3, 3, 4]          # ¼ of 12, plus "any questions for us?" in HR
     assert st["rounds"][0]["status"] == "ready" and st["expires_at"]
     # only one mock at a time
     assert client.post("/interviews", headers=h, json={"mode": "mock", "role": "Software Engineer"}).status_code == 409
@@ -68,7 +68,7 @@ def test_mock_mode_passes_all_rounds(client, monkeypatch):
         r = play_round(client, h, iid, order)
     assert r["status"] == "completed"
     rep = client.get(f"/interviews/{iid}/report", headers=h).json()
-    assert rep["final"]["complete"] and rep["final"]["band"] == 9.0
+    assert rep["final"]["complete"] and rep["final"]["band"] >= 8.0  # the HR "questions for us" is scored separately
     assert len(rep["final"]["strengths"]) == 3 and rep["final"]["practice_plan"]
     assert sum("Selected for" in s for s in SENT) == 3 and any(s.startswith("Final report") for s in SENT)
     assert client.get(f"/interviews/{iid}/report.pdf", headers=h).content[:4] == b"%PDF"
@@ -102,7 +102,7 @@ def test_perform_scheduling_reminder_and_next_day(client, monkeypatch):
     client.put("/me", headers=h, json={"availability": {"days": [0, 1, 2, 3, 4, 5, 6], "start": "09:00", "end": "11:00", "tz": "Asia/Kolkata"}})
     st = client.post("/interviews", headers=h, json={"mode": "perform", "role": "Data Scientist"}).json()
     iid = st["interview_id"]
-    assert [r["questions"] for r in st["rounds"]] == [12, 12, 12, 12]
+    assert [r["questions"] for r in st["rounds"]] == [12, 12, 12, 13]
     assert st["rounds"][0]["status"] == "scheduled" and st["rounds"][0]["scheduled_at"].endswith("03:30:00+00:00")  # 09:00 IST
     assert any("booked" in s for s in SENT)
     assert client.post(f"/interviews/{iid}/rounds/1/start", headers=h).status_code == 409  # too early
@@ -213,10 +213,12 @@ def test_rounds_are_personalised_per_field(client):
             with SessionLocal() as db:
                 obj = db.get(Interview, iv["interview_id"])
                 for rnd in obj.rounds:
-                    assert len(rnd.question_ids) == 12, (f["key"], role, rnd.round_type)
+                    assert len(rnd.question_ids) == (13 if rnd.round_type == "hr" else 12), (f["key"], role, rnd.round_type)
                     kinds = [db.get(Question, q).kind for q in rnd.question_ids]
                     if rnd.round_type == "technical":
                         assert kinds.count(special[f["key"]]) == 4 and kinds.count("concept") == 8, (f["key"], role, kinds)
+                    elif rnd.round_type == "hr":
+                        assert kinds[-1] == "reverse" and set(kinds[:-1]) == {"concept"}
                     else:
                         assert set(kinds) == {"concept"}
                     if f["key"] != "tech" and rnd.round_type != "technical":  # field-specific questions come first
@@ -276,3 +278,35 @@ def test_resume_questions_guest_streaks_and_coaching(client):
     assert client.post("/interviews", json={"mode": "perform", "field": "tech", "role": "Data Analyst"}, headers=gh).status_code == 403
     up = client.post("/auth/upgrade", json={"name": "Asha", "email": "asha.up@example.com", "password": "secret123"}, headers=gh).json()
     assert up["user"]["is_guest"] is False and up["user"]["email"] == "asha.up@example.com"
+
+
+def test_personas_jd_reverse_letter_and_certificate(client, monkeypatch):
+    from app import scoring as sc
+    # reverse question scoring
+    assert sc.reverse_eval("No, I think you covered everything.", False)["content"] <= 2
+    assert sc.reverse_eval("What does success look like in the first 90 days? What is the team's biggest challenge?", False)["content"] >= 8
+    h = login(client, "jd@example.com")
+    jd = ("We are hiring a Data Analyst. You will build dashboards for the sales team. Experience with SQL and Power BI. "
+          "Knowledge of A/B testing. Ability to explain insights to non-technical stakeholders.")
+    r = client.post("/practice", json={"field": "tech", "role": "Data Analyst", "round_type": "technical", "count": 5, "jd": jd,
+                                       "persona": "tough", "panel": True}, headers=h).json()
+    assert r["style"]["persona"] == "tough" and r["style"]["panel"] is True and "job description" in r["source_note"]
+    with SessionLocal() as db:
+        from app.models import Question
+        texts = [db.get(Question, q).text for q in db.get(Interview, r["interview_id"]).rounds[0].question_ids]
+    assert sum("sql and power bi" in t.lower() or "a/b testing" in t.lower() or "dashboards" in t.lower() for t in texts) >= 2, texts
+    # a tough interviewer follows up on a 40-word answer
+    a = client.post(f"/interviews/{r['interview_id']}/answer", json={"text": " ".join(["I would write a clear query and check it."] * 4)}, headers=h).json()
+    assert a["is_followup"] is True
+    # full mock: certificate + offer letter
+    fixed_scores(monkeypatch, 9.0)
+    iid = client.post("/interviews", json={"mode": "mock", "role": "Software Engineer"}, headers=h).json()["interview_id"]
+    for order in (1, 2, 3, 4):
+        st = play_round(client, h, iid, order)
+    assert st["status"] == "completed" and st["certificate"]
+    pub = client.get(f"/certificates/{st['certificate']}").json()
+    assert pub["valid"] and pub["role"] == "Software Engineer" and "not affiliated" in pub["disclaimer"]
+    assert client.get(f"/certificates/{st['certificate']}.pdf").content[:4] == b"%PDF"
+    assert client.get(f"/certificates/{iid}-0000000000").status_code == 404
+    letter = client.get(f"/interviews/{iid}/letter", headers=h).json()
+    assert letter["kind"] == "offer" and "simulation" in letter["disclaimer"].lower()

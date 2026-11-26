@@ -8,7 +8,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from . import questions
-from .models import Answer, Interview, Round, User, now
+from .models import Answer, Interview, Question, Round, User, now
 
 ROUNDS = ["screening", "technical", "behavioural", "hr"]
 MOCK_HOURS = 24
@@ -62,9 +62,11 @@ def fmt_local(user: User, dt: datetime) -> str:
 
 
 RESUME_QS = {"mock": 1, "perform": 3}
+JD_QS = {"mock": 1, "perform": 4}
 
 
-def create(db: Session, user: User, *, mode: str, field: str, role: str, company: str) -> Interview:
+def create(db: Session, user: User, *, mode: str, field: str, role: str, company: str,
+           style: dict | None = None, jd: str = "") -> Interview:
     active = [i for i in db.query(Interview).filter(Interview.user_id == user.id, Interview.mode == mode,
                                                      Interview.status == "in_progress")]
     for i in active:
@@ -73,7 +75,7 @@ def create(db: Session, user: User, *, mode: str, field: str, role: str, company
         raise HTTPException(409, f"Finish your current {'mock interview' if mode == 'mock' else 'Perform Mock Interview'} first")
     prof = questions.field_profile(field)
     iv = Interview(user_id=user.id, mode=mode, field=field, role=role, company=company if mode == "mock" else "Many companies",
-                   difficulty="medium")
+                   difficulty="medium", style={"persona": "neutral", "panel": False, **(style or {})})
     if mode == "mock":
         iv.expires_at = now() + timedelta(hours=MOCK_HOURS)
     for order, rt in enumerate(ROUNDS, start=1):
@@ -89,6 +91,13 @@ def create(db: Session, user: User, *, mode: str, field: str, role: str, company
         if rt == "screening" and user.resume_text:  # a real interviewer asks about your own resume
             mine = questions.resume_pick(db, user, field=field, role=role, n=RESUME_QS[mode])
             ids = ids[:1] + [q.id for q in mine] + ids[1:len(ids) - len(mine)]
+        if rt == "technical" and jd:  # questions tailored to the pasted job post
+            tailored, title = questions.jd_pick(db, jd=jd, field=field, role=role, n=JD_QS[mode])
+            keep = [i for i in ids if db.get(Question, i).kind == "concept"][len(tailored):]
+            ids = [i for i in ids if db.get(Question, i).kind != "concept"] + [q.id for q in tailored] + keep
+            iv.style = {**(iv.style or {}), "jd_title": title}
+        if rt == "hr":
+            ids = ids + [questions.reverse_question(db, field).id]
         iv.rounds.append(Round(round_type=rt, order=order, question_ids=ids, status="locked",
                                pass_mark=prof["rounds"][rt]["pass_mark"]))
     first = iv.rounds[0]

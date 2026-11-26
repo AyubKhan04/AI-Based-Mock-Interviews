@@ -6,6 +6,7 @@ from .config import FRONTEND_URL
 from .db import SessionLocal
 from .models import Interview, User
 from .questions import round_label
+from .certificates import certificate_code
 from .scoring import SUBSCORE_LABELS, rating
 
 
@@ -67,7 +68,8 @@ def send(iid: int, kind: str, order: int | None = None) -> bool:
                     f"<p>{round_label(iv.field, rnd.round_type)} round: {rnd.score}/10 {_stars(rnd.score)}</p>" + _why(rnd)
                     + "<p><b>What to fix first:</b></p><ul>"
                     + "".join(f"<li>{escape(i['area'])}: {escape(i['tip'])}</li>" for i in (rnd.improvements or [])[:3])
-                    + "</ul><p>Your full feedback report is attached. Practise this round again in Practice mode, then try a new interview.</p>")
+                    + "</ul><p>Your full feedback report is attached. Practise this round again in Practice mode, then try a new interview.</p>"
+                    + (f"<p><a href='{FRONTEND_URL}/letter/{iv.id}'>Open your practice decision letter</a> (a simulation, not a real job decision).</p>" if hr else ""))
             pdf = True
         elif kind == "final":
             f = rep["final"]
@@ -75,7 +77,10 @@ def send(iid: int, kind: str, order: int | None = None) -> bool:
             body = (f"<h2>Congratulations, you passed all four rounds</h2><p>Overall band <b>{f['band']}/10</b> {_stars(f['band'])}</p>"
                     "<p><b>Top strengths:</b> " + ", ".join(escape(s['skill']) for s in f["strengths"]) + "</p>"
                     "<p><b>Work on next:</b> " + ", ".join(escape(s['skill']) for s in f["weaknesses"]) + "</p>"
-                    "<p>Your full final report with the 7 → 10 roadmap is attached.</p>")
+                    "<p>Your full final report with the 7 → 10 roadmap is attached.</p>"
+                    f"<p><a href='{FRONTEND_URL}/letter/{iv.id}'>Open your practice offer letter</a> and "
+                    f"<a href='{FRONTEND_URL}/certificate/{certificate_code(iv.id)}'>your certificate</a>. "
+                    "The letter is a practice simulation, not a real job offer.</p>")
             pdf = True
         elif kind == "expired":
             subject = f"Interview marked incomplete ({title})"

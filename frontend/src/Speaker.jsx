@@ -10,17 +10,21 @@ export function useSpeaker() {
 
   const timer = useRef(null)
   /** text can be a list of parts: each is spoken after a short, natural pause. */
-  const speak = useCallback((text, force = false) => {
+  const speak = useCallback((text, force = false, who = null) => {
     const parts = (Array.isArray(text) ? text : [text]).map((t) => (t || '').trim()).filter(Boolean)
     if (!supported || !parts.length || (muted && !force)) return
     const synth = window.speechSynthesis
     synth.cancel(); clearTimeout(timer.current)
     const voices = synth.getVoices()
-    const voice = voices.find((v) => /en[-_](IN|GB|US)/i.test(v.lang) && /natural|google|microsoft/i.test(v.name)) || voices.find((v) => v.lang?.startsWith('en')) || null
+    const best = voices.find((v) => /en[-_](IN|GB|US)/i.test(v.lang) && /natural|google|microsoft/i.test(v.name)) || voices.find((v) => v.lang?.startsWith('en')) || null
+    // Each interviewer (persona or panel member) gets a different voice where the device has more than one.
+    const english = voices.filter((v) => v.lang?.startsWith('en'))
+    const voice = who?.voice ? (english.length ? english[who.voice % english.length] : best) : best
     const say = (i) => {
       const u = new SpeechSynthesisUtterance(parts[i])
       u.voice = voice
-      u.rate = 0.95
+      u.rate = who?.rate ?? 0.95
+      u.pitch = who?.pitch ?? 1
       u.onstart = () => setSpeaking(true)
       u.onend = () => { if (i + 1 < parts.length) timer.current = setTimeout(() => say(i + 1), 550); else setSpeaking(false) }
       u.onerror = () => setSpeaking(false)
@@ -41,11 +45,11 @@ export function useSpeaker() {
   return { supported, muted, speaking, speak, stop, toggleMute }
 }
 
-export function SpeakerControls({ speaker, text }) {
+export function SpeakerControls({ speaker, text, who }) {
   if (!speaker.supported) return null
   return (
     <span className="ml-2 inline-flex gap-1 align-middle">
-      <button type="button" className="rounded px-1.5 py-0.5 text-xs text-indigo-700 hover:bg-indigo-50" onClick={() => speaker.speak(text, true)} title="Read the question again">🔊 Replay</button>
+      <button type="button" className="rounded px-1.5 py-0.5 text-xs text-indigo-700 hover:bg-indigo-50" onClick={() => speaker.speak(text, true, who)} title="Read the question again">🔊 Replay</button>
       <button type="button" className="rounded px-1.5 py-0.5 text-xs text-slate-500 hover:bg-slate-100" onClick={speaker.toggleMute} title={speaker.muted ? 'Turn the interviewer voice on' : 'Mute the interviewer voice'}>
         {speaker.muted ? '🔇 Voice off' : '🗣 Voice on'}</button>
     </span>

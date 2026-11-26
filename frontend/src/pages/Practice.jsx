@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
 import { useApp } from '../App'
-import FieldRole, { defaultFieldRole, fieldRounds } from '../FieldRole'
+import FieldRole, { StyleOptions, defaultFieldRole, fieldRounds } from '../FieldRole'
 
 export default function Practice() {
   const { user, catalog } = useApp()
   const nav = useNavigate()
   const [form, setForm] = useState(() => ({
-    ...defaultFieldRole(user, catalog), company: 'Any company', round_type: 'screening', difficulty: 'medium', count: 5, kind: 'concept',
+    ...defaultFieldRole(user, catalog), company: 'Any company', round_type: 'screening', difficulty: 'medium', count: 5, kind: 'concept', persona: 'neutral', panel: false, jd: '',
   }))
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
@@ -59,6 +59,7 @@ export default function Practice() {
         )}
         <div><label className="label">Difficulty</label><Chips k="difficulty" options={catalog.difficulties} label={(d) => d[0].toUpperCase() + d.slice(1)} /></div>
         <div><label className="label">Number of questions</label><Chips k="count" options={handsOn ? (form.kind === 'coding' ? [1, 2, 3] : [1, 3, 5]) : catalog.counts} /></div>
+        <StyleOptions form={form} set={set} />
         {err && <p className="text-sm text-red-600">{err}</p>}
         <button className="btn w-full" onClick={start} disabled={busy || !form.role}>{busy ? 'Preparing questions…' : 'Start practice'}</button>
       </div>

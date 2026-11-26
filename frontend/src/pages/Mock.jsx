@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
 import { useApp } from '../App'
-import FieldRole, { defaultFieldRole, fieldRounds } from '../FieldRole'
+import FieldRole, { StyleOptions, defaultFieldRole, fieldRounds } from '../FieldRole'
 
 export const RULES = ({ field, mode }) => {
   const { catalog } = useApp()
@@ -19,7 +19,7 @@ export const RULES = ({ field, mode }) => {
 export default function Mock() {
   const { user, catalog } = useApp()
   const nav = useNavigate()
-  const [form, setForm] = useState(() => ({ ...defaultFieldRole(user, catalog), company: 'Any company' }))
+  const [form, setForm] = useState(() => ({ ...defaultFieldRole(user, catalog), company: 'Any company', persona: 'neutral', panel: false, jd: '' }))
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
   if (!catalog || catalog.error) return null
@@ -45,6 +45,7 @@ export default function Mock() {
           <select className="input" value={form.company} onChange={(e) => set({ company: e.target.value })}>{catalog.companies.map((c) => <option key={c}>{c}</option>)}</select>
           <p className="mt-1 text-xs text-slate-400">Company-style practice questions. Not affiliated with any company.</p>
         </div>
+        <StyleOptions form={form} set={set} />
         <RULES field={form.field} mode="mock" />
         {err && <p className="text-sm text-red-600">{err}</p>}
         <button className="btn w-full" onClick={start} disabled={busy || !form.role}>{busy ? 'Preparing your interview…' : 'Start mock interview'}</button>

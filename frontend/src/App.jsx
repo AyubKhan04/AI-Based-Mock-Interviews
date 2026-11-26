@@ -5,6 +5,8 @@ import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
 import Interview from './pages/Interview'
 import Landing from './pages/Landing'
+import Letter from './pages/Letter'
+import Certificate from './pages/Certificate'
 import Mock from './pages/Mock'
 import Perform from './pages/Perform'
 import Practice from './pages/Practice'
@@ -47,6 +49,8 @@ export default function App() {
           <Route path="/report/:id" element={<Private><Report /></Private>} />
           <Route path="/profile" element={<Private><Profile /></Private>} />
           <Route path="/progress" element={<Private><Progress /></Private>} />
+          <Route path="/letter/:id" element={<Private><Letter /></Private>} />
+          <Route path="/certificate/:code" element={<Certificate />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
