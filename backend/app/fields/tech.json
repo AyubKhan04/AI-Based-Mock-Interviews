@@ -1,0 +1,14 @@
+{
+  "field": "tech",
+  "label": "Tech",
+  "roles": ["Software Engineer", "Data Analyst", "Data Scientist", "ML / AI Engineer"],
+  "special_round": "coding",
+  "rounds": {
+    "screening":   {"pass_mark": 5, "weights": {"content": 0.30, "communication": 0.35, "tone": 0.20, "thought_process": 0.15}},
+    "technical":   {"pass_mark": 6, "weights": {"content": 0.50, "communication": 0.20, "tone": 0.10, "thought_process": 0.20}},
+    "behavioural": {"pass_mark": 7, "weights": {"content": 0.30, "communication": 0.25, "tone": 0.20, "thought_process": 0.25}},
+    "hr":          {"pass_mark": 7, "weights": {"content": 0.25, "communication": 0.25, "tone": 0.20, "thought_process": 0.10, "attitude": 0.20}}
+  },
+  "full_counts": {"screening": 12, "technical": {"coding": 4, "concept": 8}, "behavioural": 12, "hr": 12},
+  "example_answer_style": "Concise and specific. Behavioural and HR answers use STAR (Situation, Task, Action, Result) with a measurable result. Technical answers define the idea, give a small example, and name one trade-off."
+}

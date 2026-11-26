@@ -1,0 +1,13 @@
+{
+  "_note": "Style hints are written from public, general knowledge of each company's hiring style. This app is not affiliated with, endorsed by, or using real internal questions from any company.",
+  "Any company": "General interview style.",
+  "Google": "Structured interviews, open-ended problem solving, scale and data-driven reasoning, 'Googleyness' collaboration questions.",
+  "Amazon": "Behavioural questions tied to leadership principles such as customer obsession, ownership and bias for action; expects STAR answers with metrics.",
+  "Microsoft": "Problem solving with clear communication, growth mindset, collaboration across teams.",
+  "Meta": "Product sense, moving fast, impact at scale, direct communication.",
+  "Flipkart": "E-commerce scale, ownership, practical system design for Indian users.",
+  "Zoho": "Strong fundamentals, practical programming, long-term product thinking, frugality.",
+  "TCS": "Fundamentals, client communication, adaptability, willingness to relocate and learn.",
+  "Infosys": "Fundamentals, learning agility, teamwork, client-facing communication.",
+  "Accenture": "Consulting mindset, client communication, teamwork, adaptability across projects."
+}

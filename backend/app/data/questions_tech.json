@@ -1,0 +1,1673 @@
+[
+ {
+  "text": "Tell me about yourself.",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "experience",
+   "skills",
+   "project",
+   "role",
+   "goal"
+  ],
+  "followups": [
+   "Which one project best shows why you fit this role?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Why are you interested in this role?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "skills",
+   "interest",
+   "impact",
+   "learn",
+   "team"
+  ],
+  "followups": [
+   "What specifically about our product or team draws you?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Walk me through your resume and the most relevant experience for this job.",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "experience",
+   "project",
+   "result",
+   "responsibility"
+  ],
+  "followups": [
+   "What was your exact contribution in that project?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What do you know about our company?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "product",
+   "customers",
+   "mission",
+   "research"
+  ],
+  "followups": [
+   "How would your work connect to that?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What are your key technical skills, and how have you used them?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "python",
+   "sql",
+   "project",
+   "tools",
+   "result"
+  ],
+  "followups": [
+   "Give one example where that skill solved a real problem."
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Why are you looking for a new opportunity right now?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "growth",
+   "learn",
+   "challenge",
+   "goal"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Where do you see yourself in three to five years?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "goal",
+   "growth",
+   "skills",
+   "lead"
+  ],
+  "followups": [
+   "What steps are you taking now toward that?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What is your notice period and when could you start?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "notice",
+   "weeks",
+   "available"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Describe a project you are proud of.",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "problem",
+   "approach",
+   "result",
+   "impact",
+   "learned"
+  ],
+  "followups": [
+   "What would you do differently if you built it again?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How do you keep your technical skills up to date?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "course",
+   "project",
+   "reading",
+   "practice",
+   "community"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What kind of team and work environment helps you do your best work?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "team",
+   "feedback",
+   "ownership",
+   "collaboration"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What are your salary expectations?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "range",
+   "research",
+   "market",
+   "flexible"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What makes you a strong fit for this role compared with other candidates?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "skills",
+   "experience",
+   "result",
+   "unique"
+  ],
+  "followups": [
+   "Can you back that up with a concrete example?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Tell me about a gap or a change of direction in your career or studies.",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "reason",
+   "learned",
+   "skills",
+   "decision"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How would your previous manager or teacher describe you?",
+  "round_type": "screening",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "strength",
+   "example",
+   "feedback"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Tell me about a time you faced a difficult problem at work or in a project. How did you solve it?",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "situation",
+   "task",
+   "action",
+   "result",
+   "learned"
+  ],
+  "followups": [
+   "What was the measurable result?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Describe a time you disagreed with a teammate. What happened?",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "listen",
+   "data",
+   "compromise",
+   "result",
+   "respect"
+  ],
+  "followups": [
+   "How did the relationship work out afterwards?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Tell me about a time you missed a deadline or made a mistake.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "ownership",
+   "fix",
+   "communicate",
+   "learned",
+   "prevent"
+  ],
+  "followups": [
+   "What did you change so it would not happen again?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Give an example of when you took ownership of something outside your role.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "initiative",
+   "ownership",
+   "action",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Describe a time you had to learn something new very quickly.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "learn",
+   "plan",
+   "resources",
+   "result",
+   "time"
+  ],
+  "followups": [
+   "How long did it take and how did you check you had learned it well?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Tell me about a time you used data to make a decision.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "data",
+   "analysis",
+   "decision",
+   "result",
+   "metric"
+  ],
+  "followups": [
+   "What did the numbers show exactly?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Describe a situation where you had to work with a difficult stakeholder.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "listen",
+   "expectations",
+   "communicate",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Tell me about a time you received critical feedback. How did you respond?",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "feedback",
+   "listen",
+   "improve",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Give an example of a goal you set and how you achieved it.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "goal",
+   "plan",
+   "steps",
+   "result",
+   "metric"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Tell me about a time you had to juggle several priorities.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "prioritise",
+   "plan",
+   "communicate",
+   "deadline",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Describe a time you helped a teammate who was struggling.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "help",
+   "team",
+   "support",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Tell me about a time you simplified a complex process or system.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "problem",
+   "simplify",
+   "action",
+   "result",
+   "impact"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Describe a failure and what you learned from it.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "failure",
+   "ownership",
+   "learned",
+   "change"
+  ],
+  "followups": [
+   "How have you applied that lesson since?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Tell me about a time you went above and beyond for a user or customer.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "customer",
+   "need",
+   "action",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Describe a time you had to persuade others to accept your idea.",
+  "round_type": "behavioural",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "idea",
+   "data",
+   "persuade",
+   "listen",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What are your greatest strengths?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "strength",
+   "example",
+   "result"
+  ],
+  "followups": [
+   "Give an example where that strength made a difference."
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What is a weakness you are working on?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "weakness",
+   "improve",
+   "action",
+   "progress"
+  ],
+  "followups": [
+   "What progress have you made so far?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Why should we hire you?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "skills",
+   "fit",
+   "value",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How do you handle pressure and stress?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "plan",
+   "prioritise",
+   "calm",
+   "example"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Are you comfortable with relocation, shifts or travel if the role needs it?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "flexible",
+   "open",
+   "conditions"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What motivates you at work?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "impact",
+   "learn",
+   "team",
+   "growth"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How do you handle conflict with your manager?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "listen",
+   "respect",
+   "discuss",
+   "data",
+   "resolve"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What does a good company culture look like to you?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "respect",
+   "feedback",
+   "growth",
+   "team"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "If you got two offers, how would you decide between them?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "growth",
+   "role",
+   "team",
+   "values",
+   "learning"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What would you do in your first 90 days here?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "learn",
+   "people",
+   "goals",
+   "deliver",
+   "plan"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How do you prefer to receive feedback?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "direct",
+   "regular",
+   "specific",
+   "improve"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Tell me about a time you showed integrity at work or college.",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "honest",
+   "right",
+   "action",
+   "result"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How do you balance work and personal life?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "easy",
+  "keywords": [
+   "boundaries",
+   "plan",
+   "health",
+   "productive"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What questions do you have for us?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "team",
+   "success",
+   "challenge",
+   "growth",
+   "culture"
+  ],
+  "followups": [
+   "Is there anything else you would like to know about the role?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Is there anything that would stop you from accepting an offer?",
+  "round_type": "hr",
+  "role": "any",
+  "difficulty": "hard",
+  "keywords": [
+   "honest",
+   "expectations",
+   "clear"
+  ],
+  "followups": [],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain the difference between a process and a thread.",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "memory",
+   "shared",
+   "independent",
+   "context switch",
+   "concurrency"
+  ],
+  "followups": [
+   "Can you give a small example from your own work?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What is the time complexity of searching in a hash map, and when can it get worse?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "o(1)",
+   "average",
+   "collision",
+   "o(n)",
+   "hash"
+  ],
+  "followups": [
+   "Can you give a small example from your own work?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain how an index speeds up a database query and what it costs.",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "b-tree",
+   "lookup",
+   "write",
+   "storage",
+   "scan"
+  ],
+  "followups": [
+   "Can you give a small example from your own work?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What happens when you type a URL into a browser and press Enter?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "dns",
+   "tcp",
+   "http",
+   "server",
+   "render"
+  ],
+  "followups": [
+   "Can you give a small example from your own work?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain REST APIs and the common HTTP methods.",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "get",
+   "post",
+   "put",
+   "delete",
+   "stateless"
+  ],
+  "followups": [
+   "Can you give a small example from your own work?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What is version control and how do you use Git branches in a team?",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "commit",
+   "branch",
+   "merge",
+   "pull request",
+   "conflict"
+  ],
+  "followups": [
+   "Can you give a small example from your own work?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain the difference between SQL and NoSQL databases and when you would choose each.",
+  "round_type": "technical",
+  "role": "any",
+  "difficulty": "medium",
+  "keywords": [
+   "schema",
+   "relational",
+   "scale",
+   "document",
+   "consistency"
+  ],
+  "followups": [
+   "Can you give a small example from your own work?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain the four pillars of object-oriented programming.",
+  "round_type": "technical",
+  "role": "Software Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "encapsulation",
+   "inheritance",
+   "polymorphism",
+   "abstraction"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How would you design a URL shortener?",
+  "round_type": "technical",
+  "role": "Software Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "hash",
+   "database",
+   "redirect",
+   "scale",
+   "cache"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What is the difference between a stack and a queue? Give a use case for each.",
+  "round_type": "technical",
+  "role": "Software Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "lifo",
+   "fifo",
+   "undo",
+   "bfs",
+   "order"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How do you find and fix a memory leak?",
+  "round_type": "technical",
+  "role": "Software Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "profiler",
+   "references",
+   "heap",
+   "release",
+   "monitor"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain caching and cache invalidation strategies.",
+  "round_type": "technical",
+  "role": "Software Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "ttl",
+   "lru",
+   "stale",
+   "write-through",
+   "invalidate"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How do you write good unit tests?",
+  "round_type": "technical",
+  "role": "Software Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "isolated",
+   "assert",
+   "edge case",
+   "mock",
+   "fast"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain the SOLID principles briefly.",
+  "round_type": "technical",
+  "role": "Software Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "single responsibility",
+   "open closed",
+   "liskov",
+   "interface",
+   "dependency"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How would you make a slow API endpoint faster?",
+  "round_type": "technical",
+  "role": "Software Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "profile",
+   "query",
+   "cache",
+   "index",
+   "pagination"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain the difference between INNER JOIN, LEFT JOIN and FULL OUTER JOIN.",
+  "round_type": "technical",
+  "role": "Data Analyst",
+  "difficulty": "medium",
+  "keywords": [
+   "matching",
+   "all rows",
+   "null",
+   "left",
+   "both"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How do you handle missing values in a dataset?",
+  "round_type": "technical",
+  "role": "Data Analyst",
+  "difficulty": "medium",
+  "keywords": [
+   "drop",
+   "impute",
+   "mean",
+   "median",
+   "reason"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What is the difference between WHERE and HAVING?",
+  "round_type": "technical",
+  "role": "Data Analyst",
+  "difficulty": "medium",
+  "keywords": [
+   "filter",
+   "rows",
+   "group",
+   "aggregate"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How would you design a dashboard for sales performance?",
+  "round_type": "technical",
+  "role": "Data Analyst",
+  "difficulty": "medium",
+  "keywords": [
+   "kpi",
+   "audience",
+   "trend",
+   "filter",
+   "clear"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain what a window function is with an example.",
+  "round_type": "technical",
+  "role": "Data Analyst",
+  "difficulty": "medium",
+  "keywords": [
+   "over",
+   "partition",
+   "rank",
+   "running total",
+   "row_number"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How would you find out why sales dropped last month?",
+  "round_type": "technical",
+  "role": "Data Analyst",
+  "difficulty": "medium",
+  "keywords": [
+   "segment",
+   "compare",
+   "trend",
+   "hypothesis",
+   "data"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain mean, median and mode, and when the median is better.",
+  "round_type": "technical",
+  "role": "Data Analyst",
+  "difficulty": "medium",
+  "keywords": [
+   "average",
+   "middle",
+   "outlier",
+   "skew"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What is A/B testing and how do you read the result?",
+  "round_type": "technical",
+  "role": "Data Analyst",
+  "difficulty": "medium",
+  "keywords": [
+   "control",
+   "variant",
+   "sample",
+   "significance",
+   "p-value"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain the bias-variance trade-off.",
+  "round_type": "technical",
+  "role": "Data Scientist",
+  "difficulty": "medium",
+  "keywords": [
+   "underfit",
+   "overfit",
+   "complexity",
+   "error",
+   "generalise"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How do you choose an evaluation metric for an imbalanced classification problem?",
+  "round_type": "technical",
+  "role": "Data Scientist",
+  "difficulty": "medium",
+  "keywords": [
+   "precision",
+   "recall",
+   "f1",
+   "auc",
+   "imbalance"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain cross-validation and why we use it.",
+  "round_type": "technical",
+  "role": "Data Scientist",
+  "difficulty": "medium",
+  "keywords": [
+   "folds",
+   "train",
+   "validate",
+   "overfit",
+   "estimate"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What is regularisation? Compare L1 and L2.",
+  "round_type": "technical",
+  "role": "Data Scientist",
+  "difficulty": "medium",
+  "keywords": [
+   "penalty",
+   "lasso",
+   "ridge",
+   "sparse",
+   "overfit"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How would you detect and handle outliers?",
+  "round_type": "technical",
+  "role": "Data Scientist",
+  "difficulty": "medium",
+  "keywords": [
+   "iqr",
+   "z-score",
+   "domain",
+   "cap",
+   "remove"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain how a random forest works.",
+  "round_type": "technical",
+  "role": "Data Scientist",
+  "difficulty": "medium",
+  "keywords": [
+   "trees",
+   "bagging",
+   "features",
+   "vote",
+   "variance"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What is a p-value, in plain words?",
+  "round_type": "technical",
+  "role": "Data Scientist",
+  "difficulty": "medium",
+  "keywords": [
+   "probability",
+   "null hypothesis",
+   "evidence",
+   "threshold"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How would you explain a model's prediction to a business user?",
+  "round_type": "technical",
+  "role": "Data Scientist",
+  "difficulty": "medium",
+  "keywords": [
+   "feature importance",
+   "shap",
+   "simple",
+   "example"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How do you take a model from a notebook to production?",
+  "round_type": "technical",
+  "role": "ML / AI Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "api",
+   "container",
+   "monitor",
+   "version",
+   "pipeline"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What is data drift and how would you detect it?",
+  "round_type": "technical",
+  "role": "ML / AI Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "distribution",
+   "monitor",
+   "retrain",
+   "statistic",
+   "alert"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain how a transformer model uses attention.",
+  "round_type": "technical",
+  "role": "ML / AI Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "attention",
+   "tokens",
+   "query",
+   "key",
+   "value"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What is retrieval-augmented generation (RAG) and when would you use it?",
+  "round_type": "technical",
+  "role": "ML / AI Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "retrieve",
+   "embedding",
+   "vector",
+   "context",
+   "grounded"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How do you reduce the cost and latency of serving a large model?",
+  "round_type": "technical",
+  "role": "ML / AI Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "batch",
+   "cache",
+   "quantise",
+   "smaller model",
+   "distil"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "Explain gradient descent and the role of the learning rate.",
+  "round_type": "technical",
+  "role": "ML / AI Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "gradient",
+   "loss",
+   "step",
+   "converge",
+   "learning rate"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "How do you evaluate an LLM-based feature?",
+  "round_type": "technical",
+  "role": "ML / AI Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "test set",
+   "human",
+   "metric",
+   "hallucination",
+   "regression"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ },
+ {
+  "text": "What is overfitting in deep learning and how do you prevent it?",
+  "round_type": "technical",
+  "role": "ML / AI Engineer",
+  "difficulty": "medium",
+  "keywords": [
+   "dropout",
+   "regularisation",
+   "early stopping",
+   "data",
+   "validation"
+  ],
+  "followups": [
+   "What trade-off would you mention to an interviewer here?"
+  ],
+  "source": "seed",
+  "license": "MIT (original, written for this project)",
+  "company": "any",
+  "kind": "concept",
+  "field": "tech"
+ }
+]
