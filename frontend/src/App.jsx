@@ -4,6 +4,7 @@ import { api, token } from './api'
 import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
 import Interview from './pages/Interview'
+import Landing from './pages/Landing'
 import Mock from './pages/Mock'
 import Perform from './pages/Perform'
 import Practice from './pages/Practice'
@@ -29,11 +30,16 @@ export default function App() {
   return (
     <Ctx.Provider value={{ user, setUser, catalog }}>
       {user && <Header />}
+      {user?.is_guest && (
+        <div className="bg-amber-50 px-4 py-2 text-center text-sm text-amber-900">
+          You're trying the app as a guest. Your progress is kept for 3 days. <Link className="font-semibold underline" to="/profile#save">Save it with a free account</Link>
+        </div>
+      )}
       <main className="mx-auto max-w-5xl px-4 py-6">
         {catalog?.error && <p className="mb-4 rounded-lg bg-red-50 p-3 text-red-700">Cannot reach the server. Check VITE_API_URL, or wait a minute while it wakes up.</p>}
         <Routes>
           <Route path="/login" element={<Auth />} />
-          <Route path="/" element={<Private><Dashboard /></Private>} />
+          <Route path="/" element={user ? <Dashboard /> : <Landing />} />
           <Route path="/practice" element={<Private><Practice /></Private>} />
           <Route path="/mock" element={<Private><Mock /></Private>} />
           <Route path="/perform" element={<Private><Perform /></Private>} />

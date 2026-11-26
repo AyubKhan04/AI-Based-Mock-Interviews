@@ -1,12 +1,19 @@
 import { useRef, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { api, token } from '../api'
 import { useApp } from '../App'
+
+export async function startGuest(setUser) {
+  const r = await api('/auth/guest', { method: 'POST' })
+  token.set(r.token)
+  setUser(r.user)
+}
 
 export default function Auth() {
   const { user, setUser } = useApp()
   const dest = useRef('/')
-  const [signup, setSignup] = useState(true)
+  const [params] = useSearchParams()
+  const [signup, setSignup] = useState(params.get('signup') === '1')
   const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' })
   const [show, setShow] = useState(false)
   const [err, setErr] = useState('')
@@ -26,10 +33,15 @@ export default function Auth() {
     } catch (e) { setErr(e.message) } finally { setBusy(false) }
   }
 
+  async function guest() {
+    setBusy(true); setErr('')
+    try { dest.current = '/practice'; await startGuest(setUser) } catch (e) { setErr(e.message); setBusy(false) }
+  }
+
   if (user) return <Navigate to={dest.current} replace />
   return (
     <div className="mx-auto mt-10 max-w-md">
-      <h1 className="mb-1 text-center text-3xl font-bold text-indigo-700">Mock Interview Coach</h1>
+      <h1 className="mb-1 text-center text-3xl font-bold text-indigo-700"><Link to="/">Mock Interview Coach</Link></h1>
       <p className="mb-6 text-center text-slate-500">Practise interviews with an AI interviewer that scores you and tells you how to improve.</p>
       <form onSubmit={submit} className="card space-y-4">
         <h2 className="text-xl font-semibold">{signup ? 'Create your account' : 'Welcome back'}</h2>
@@ -53,6 +65,9 @@ export default function Auth() {
           {signup ? 'Already have an account?' : 'New here?'}{' '}
           <button type="button" className="text-indigo-600 hover:underline" onClick={() => { setSignup(!signup); setErr('') }}>{signup ? 'Log in' : 'Sign up'}</button>
         </p>
+        <div className="border-t border-slate-100 pt-3 text-center">
+          <button type="button" className="text-sm font-medium text-indigo-700 hover:underline" onClick={guest} disabled={busy}>Just looking? Try it as a guest →</button>
+        </div>
       </form>
     </div>
   )

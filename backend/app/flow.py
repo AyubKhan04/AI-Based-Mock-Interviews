@@ -61,6 +61,9 @@ def fmt_local(user: User, dt: datetime) -> str:
     return aware(dt).astimezone(tz).strftime("%A %d %B, %I:%M %p ") + availability(user)["tz"]
 
 
+RESUME_QS = {"mock": 1, "perform": 3}
+
+
 def create(db: Session, user: User, *, mode: str, field: str, role: str, company: str) -> Interview:
     active = [i for i in db.query(Interview).filter(Interview.user_id == user.id, Interview.mode == mode,
                                                      Interview.status == "in_progress")]
@@ -83,6 +86,9 @@ def create(db: Session, user: User, *, mode: str, field: str, role: str, company
             extra, _ = questions.pick(db, field=field, role=role, company=company, round_type=rt, difficulty="medium",
                                       n=sum(round_counts(prof, rt, mode).values()) + len(ids), common=(mode == "perform"))
             ids += [q.id for q in extra if q.id not in ids][: sum(round_counts(prof, rt, mode).values()) - len(ids)]
+        if rt == "screening" and user.resume_text:  # a real interviewer asks about your own resume
+            mine = questions.resume_pick(db, user, field=field, role=role, n=RESUME_QS[mode])
+            ids = ids[:1] + [q.id for q in mine] + ids[1:len(ids) - len(mine)]
         iv.rounds.append(Round(round_type=rt, order=order, question_ids=ids, status="locked",
                                pass_mark=prof["rounds"][rt]["pass_mark"]))
     first = iv.rounds[0]

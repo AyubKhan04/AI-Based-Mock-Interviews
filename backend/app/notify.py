@@ -39,6 +39,8 @@ def send(iid: int, kind: str, order: int | None = None) -> bool:
     with SessionLocal() as db:
         iv = db.get(Interview, iid)
         user = db.get(User, iv.user_id)
+        if user.is_guest:  # guests have no real email address
+            return False
         if not user.email_notifications and kind not in ("scheduled", "reminder"):
             return False
         rnd = next((r for r in iv.rounds if r.order == order), None) if order else None

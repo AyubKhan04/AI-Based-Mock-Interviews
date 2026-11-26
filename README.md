@@ -25,7 +25,11 @@ More screenshots: [Mock interview](docs/screenshots/mock_hub.png) · [Perform Mo
 | **Voice answers**: press 🎤 and speak; pace, long pauses and volume count toward Tone & delivery | ✅ |
 | **Camera** self-view in Behavioural rounds (never recorded, uploaded or judged) | ✅ |
 | **Proctored Mock and Perform rounds**: fullscreen, camera must stay on, 5 s / 10 s countdowns, 3 chances each, then disqualification | ✅ |
-| **AI interviewer voice**: greets you, explains the round, asks each question, follows up and closes, out loud | ✅ |
+| **AI interviewer voice**: greets you, explains the round, acknowledges each answer, pauses to think, asks the next question, follows up and closes, out loud | ✅ |
+| **Resume-based questions**: upload a PDF (read in the browser with pdf.js) and the Screening round asks about your own projects | ✅ |
+| **Coaching**: STAR check, points missed, model answer or answer structure, and speaking analysis (words per minute, filler words, length, pauses). After every answer in Practice; in the report for Mock and Perform | ✅ |
+| **Answer timer** (optional) in Mock and Perform: the interviewer asks you to wrap up when time is up | ✅ |
+| **Try as guest**, daily **streaks** and **badges**, and a landing page | ✅ |
 | **Mock mode**: one company, all 4 rounds, ¼ of the questions, pass marks, finish within 1 day, as many as you like | ✅ |
 | **⭐ Perform Mock Interview**: common questions, full count, one round a day in your preferred slot, booking and reminder emails | ✅ |
 | Pass/fail emails that say exactly why, "selected for next round", "not selected", incomplete reports | ✅ |
@@ -37,6 +41,9 @@ More screenshots: [Mock interview](docs/screenshots/mock_hub.png) · [Perform Mo
 - **Voice** uses the browser's built-in speech recognition (Chrome and Edge; the browser may use its own speech service). The app never uploads audio. It only measures pace (words per minute), silences over 3 seconds and whether you're too quiet. Accent is never judged.
 - **Camera** is a self-view to make the round feel real. Nothing is recorded or analysed.
 - **Proctoring (Mock and Perform only, not Practice).** A rules screen comes first, then the round opens in fullscreen with a large camera view. Leaving the tab, the window or fullscreen starts a 5 second countdown ("Get back to interview tab or you are disqualified"). The camera going off starts a 10 second countdown. You get 3 chances for each; the 4th, or missing a countdown, disqualifies you and ends the interview as a fail with the reason in the report and email. Counts are stored on the server, so reloading the page doesn't reset them (a reload counts as leaving the tab). Only on/off events are saved, never the picture.
+- **Resume**: the PDF is read in your browser; only its text is saved, with emails, phone numbers and links removed. Questions are generated once per resume and role with Gemini and cached; without the AI key they are built from your resume's own bullet points. Resume questions are private to you.
+- **Guests** can practise straight away. Guest data is deleted after 3 days by the scheduled tick unless they create an account, which keeps everything. Perform needs an account because it books rounds by email.
+- **Free-tier safety**: when Gemini says the free quota is used up (HTTP 429), the app rests the AI for a minute and uses the built-in rules, so answers stay fast and nothing is ever billed.
 - **Interviewer voice** uses the browser's built-in, free speechSynthesis with the most natural English voice your device has. There's no paid text-to-speech API. You can mute it or replay a question; the choice is remembered.
 
 ## How scoring works

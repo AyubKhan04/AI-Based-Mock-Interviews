@@ -167,3 +167,39 @@ def ranked_improvements(sub: dict, metrics: list[dict], round_type: str) -> list
     order = {"high": 0, "medium": 1, "low": 2}
     items.sort(key=lambda i: (order[i["priority"]], i["score"] if i["score"] is not None else 99))
     return items
+
+
+# ---------- coaching: STAR check and an answer outline (free, rule-based) ----------
+_STAR_CUES = {
+    "situation": r"\b(when i was|at my (last|previous|current)|in my (last|previous|current|final)|last (year|month|quarter)|during|situation|while (working|studying)|internship|at college|in college|our team was|the company was)\b",
+    "task": r"\b(my (task|role|job|goal|responsibility) (was|is)|i was (responsible|asked|tasked)|i had to|we had to|needed to|(the|our) (task|goal|challenge|problem|aim|target) was|i was asked)\b",
+    "action": r"\bi (\w+ed|built|led|made|set up|wrote|spoke|ran|took|chose|gave|met|began|drove|sold|broke|did|went|found|set|put|got|brought|kept|taught|thought|bought|sought)\b",
+    "result": r"(\d+\s?(%|percent|x|times|hours|days|weeks|lakh|crore|k\b)|\bas a result\b|\bresult(ed)?\b|\boutcome\b|\b(increased|reduced|improved|saved|grew|cut|won|achieved|exceeded|delivered|launched)\b|\bi learned\b)",
+}
+STAR_ROUNDS = ("screening", "behavioural", "hr")
+_OUTLINE = {
+    "star": "Situation: one line on where you were and what was at stake.\nTask: what you were responsible for.\n"
+            "Action: two or three specific steps you took yourself{kw}.\nResult: a number (time saved, % improved, deals won) and what you learned.",
+    "concept": "1. Define the idea in one clear sentence.\n2. Explain how it works{kw}.\n3. Give a real example from a project or job.\n4. Mention one trade-off or limitation.",
+    "roleplay": "1. Open warmly and ask one question about the customer's need.\n2. Link one benefit to that need{kw}.\n"
+                "3. Handle the objection calmly with proof (a number or a customer story).\n4. Close with a clear next step and a date.",
+    "case": "1. Restate the numbers you were given.\n2. Show each calculation step{kw}.\n3. State the answer with units.\n4. Say what it means for the business and one risk.",
+    "scenario": "1. Listen and gather the facts from everyone involved.\n2. Check policy and the law{kw}.\n3. Act fairly, step by step, and keep it confidential.\n4. Follow up and document what was agreed.",
+}
+
+
+def star_check(answer: str) -> dict:
+    low = answer.lower()
+    return {k: bool(re.search(p, low)) for k, p in _STAR_CUES.items()}
+
+
+def coaching(*, answer: str, keywords: list[str], round_type: str, kind: str = "concept") -> dict:
+    """What a coach would point out: STAR parts present or missing, key points missed, and an outline."""
+    star = round_type in STAR_ROUNDS and kind == "concept"
+    missing = [k for k in keywords if k.lower() not in answer.lower()][:4]
+    kw = f", covering {', '.join(missing)}" if missing else ""
+    return {
+        "star": star_check(answer) if star else None,
+        "missing": missing,
+        "outline": _OUTLINE["star" if star else (kind if kind in _OUTLINE else "concept")].format(kw=kw),
+    }

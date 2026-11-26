@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { api, downloadPdf } from '../api'
 import { Loading, useApp } from '../App'
 import Stars from '../Stars'
+import { ModelAnswer, SpeechStats, StarChips } from '../Coaching'
 
 const PRI = {
   high: { dot: '🔴', label: 'High: fix first', cls: 'bg-red-50 ring-red-200' },
@@ -104,8 +105,11 @@ export default function Report() {
                       {q.flags.includes('score_request_ignored') && <div className="mt-1 text-xs text-amber-700">A request to change the score was ignored.</div>}</td>
                     <td className="p-2"><Stars rating={q.rating} score={q.score} /></td>
                     <td className="p-2">{q.went_well}</td>
-                    <td className="p-2">{q.to_improve}</td>
-                    <td className="max-w-xs p-2 text-slate-600">{q.example_answer || <span className="text-slate-400">Example answers appear when the AI key is set.</span>}</td>
+                    <td className="space-y-1.5 p-2">{q.to_improve}<StarChips star={q.coaching?.star} />
+                      {q.coaching?.missing?.length > 0 && <div className="text-xs text-slate-500">Points to cover: {q.coaching.missing.join(', ')}</div>}
+                      {!q.flags.includes('code_run_in_browser') && <SpeechStats m={q.metrics} />}</td>
+                    <td className="max-w-xs p-2 text-slate-600">{q.example_answer || q.coaching?.outline
+                      ? <ModelAnswer example={q.example_answer} coaching={q.coaching} /> : <span className="text-slate-400">Example answers appear when the AI key is set.</span>}</td>
                   </tr>
                 ))}
               </tbody>

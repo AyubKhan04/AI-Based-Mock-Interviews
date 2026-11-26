@@ -94,7 +94,7 @@ def build(db: Session, iv: Interview) -> dict:
                 "number": f"{n}" if not a.is_followup else f"{n}.f",
                 "question": a.question_text, "answer": a.answer_text, "is_followup": a.is_followup,
                 "score": a.score, "rating": rating(a.score), "subscores": a.subscores,
-                "went_well": a.went_well, "to_improve": a.to_improve, "example_answer": a.example_answer,
+                "went_well": a.went_well, "to_improve": a.to_improve, "example_answer": a.example_answer, "coaching": a.coaching,
                 "flags": a.flags or [], "metrics": a.metrics,
             })
         rounds.append({
@@ -187,8 +187,16 @@ def pdf(rep: dict, candidate: str) -> bytes:
                 line("Note: a request to change the score was ignored.", 9, "I")
             line(f"What went well: {q['went_well']}", 9)
             line(f"How to improve: {q['to_improve']}", 9)
+            c, m = q.get("coaching") or {}, q.get("metrics") or {}
+            if c.get("star"):
+                line("STAR check: " + ", ".join(f"{k.title()} {'yes' if v else 'MISSING'}" for k, v in c["star"].items()), 9)
+            if m.get("word_count") is not None and "tests_total" not in m:
+                line(f"Delivery: {m['word_count']} words, {m.get('filler_count', 0)} filler words"
+                     + (f", {m['wpm']} words per minute, {m.get('long_pauses', 0)} long pauses" if m.get("wpm") else ""), 9)
             if q["example_answer"]:
                 line(f"Example answer: {q['example_answer']}", 9, "I")
+            elif c.get("outline"):
+                line("How to structure it: " + c["outline"].replace("\n", " "), 9, "I")
     return bytes(p.output())
 
 
@@ -247,10 +255,12 @@ def xlsx(rep: dict, candidate: str) -> bytes:
 
     q = wb.create_sheet("Questions")
     qrows = [[r["label"], x["number"], x["question"], x["answer"], x["score"],
-              f"{x['rating']['stars']}/5", x["went_well"], x["to_improve"], x["example_answer"] or ""]
+              f"{x['rating']['stars']}/5", x["went_well"], x["to_improve"],
+               " ".join(f"{k[0].upper()}:{'✓' if v else '✗'}" for k, v in ((x.get("coaching") or {}).get("star") or {}).items()),
+               x["example_answer"] or (x.get("coaching") or {}).get("outline", "")]
              for r in rep["rounds"] for x in r["questions"]]
-    table(q, ["Round", "#", "Question", "What you said", "Score", "Stars", "What went well", "How to improve", "Example answer"],
-          qrows, [13, 5, 40, 50, 7, 7, 30, 35, 50])
+    table(q, ["Round", "#", "Question", "What you said", "Score", "Stars", "What went well", "How to improve", "STAR", "Model answer / structure"],
+          qrows, [13, 5, 40, 50, 7, 7, 30, 35, 14, 50])
 
     imp = wb.create_sheet("Improvements")
     table(imp, ["Round", "Priority", "Area", "Tip"],

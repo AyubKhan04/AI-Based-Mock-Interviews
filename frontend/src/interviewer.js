@@ -13,9 +13,18 @@ const ROUND_INTRO = {
   practice: "This is a practice session, so relax. I'll give you feedback after every answer.",
 }
 
-const NEXT = ['Thank you. Next question.', "Got it, thanks. Let's move on.", 'Okay, noted. Here is the next one.', "Alright. Let's go to the next question."]
+const ACK = ['Mm-hm. Thank you.', 'Right, that makes sense.', 'Okay, thanks for walking me through that.', 'Got it. I appreciate the detail.', 'Alright, thank you.', 'Okay. Good to know.']
+const ACK_SHORT = ['Okay.', 'Alright, short and to the point.', 'Okay, noted.']
+const NEXT = ['Next question.', "Let's move on.", 'Here is the next one.', "Let's go to the next question."]
 const FOLLOW = ["Interesting. Let me dig into that a little more.", "Okay. I'd like to follow up on that.", 'Thanks. Can you go a bit deeper on this?']
 const pick = (list, n) => list[Math.abs(n) % list.length]
+
+/** A short acknowledgement of the last answer, said before a pause. Never hints at the score. */
+export function acknowledge(lastAnswer, n) {
+  if (!lastAnswer) return ''
+  const words = lastAnswer.trim().split(/\s+/).length
+  return words < 25 ? pick(ACK_SHORT, n) : pick(ACK, n + words)
+}
 
 export function preface({ st, name, first }) {
   const n = st.question_number || 1
@@ -25,14 +34,14 @@ export function preface({ st, name, first }) {
     case: ' This one is a case. Please show your working, step by step.',
     scenario: ' This one is a workplace scenario. Tell me what you would actually do, in order.',
   }[st.kind] || ''
-  if (st.is_followup) return pick(FOLLOW, n) + coding
+  if (st.is_followup) return pick(FOLLOW, n)
   if (n === 1 && first) {
     const hello = `Hello${name ? ` ${name}` : ''}, thanks for joining. I'll be your interviewer today.`
     const round = st.mode === 'practice' ? ROUND_INTRO.practice : (ROUND_INTRO[`${st.round_type}_${st.field}`] || ROUND_INTRO[st.round_type] || '')
     return `${hello} ${round} We have ${st.total} questions. Take a moment before each answer if you need it. Let's begin. First question.${coding}`
   }
   if (first) return `Welcome back. Let's continue where we left off. Question ${n}.${coding}`
-  if (n === st.total) return `Thank you. This is the last question of this round.${coding}`
+  if (n === st.total) return `This is the last question of this round.${coding}`
   return `${pick(NEXT, n)} Question ${n}.${coding}`
 }
 
@@ -43,3 +52,7 @@ export function closing({ round, status, name }) {
   if (round.passed) return `${thanks} Good news, you have cleared this round with ${round.score} out of 10, and you are selected for the next round.`
   return `${thanks} Unfortunately you did not clear this round this time. Your feedback report explains what went well and what to work on first.`
 }
+
+/** Seconds a candidate gets for each question type in Mock and Perform when the answer timer is on. */
+export const TIME_LIMIT = { concept: 180, roleplay: 150, case: 240, scenario: 180 }
+export const TIME_UP = "We're just about out of time on this one. Could you wrap up your answer?"

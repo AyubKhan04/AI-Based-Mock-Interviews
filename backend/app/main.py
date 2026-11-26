@@ -10,7 +10,7 @@ from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from . import ai, emailer, flow, notify, questions, report, scoring
+from . import achievements, ai, emailer, flow, notify, questions, report, scoring
 from .config import CRON_SECRET, FRONTEND_ORIGINS
 from .db import Base, SessionLocal, add_missing_columns, engine, get_db
 from .models import Answer, Interview, Question, Round, User, UserField, now
@@ -86,7 +86,8 @@ class PracticeIn(BaseModel):
     round_type: Literal["screening", "technical", "behavioural", "hr"]
     difficulty: Literal["easy", "medium", "hard"] = "medium"
     count: Literal[1, 2, 3, 5, 10, 15] = 5
-    kind: Literal["concept", "coding", "roleplay", "case", "scenario"] = "concept"  # non-concept: the field's Technical-round special
+    kind: Literal["concept", "coding", "roleplay", "case", "scenario"] = "concept"
+    use_resume: bool = True  # non-concept: the field's Technical-round special
 
 
 class InterviewIn(BaseModel):
@@ -123,7 +124,8 @@ class AnswerIn(BaseModel):
 def me_out(u: User) -> dict:
     return {"id": u.id, "name": u.name, "email": u.email, "mode": u.mode,
             "email_notifications": u.email_notifications, "availability": flow.availability(u),
-            "fields": [{"field": f.field, "role": f.role} for f in u.fields]}
+            "fields": [{"field": f.field, "role": f.role} for f in u.fields],
+            "is_guest": bool(u.is_guest), "resume": {"chars": len(u.resume_text), "preview": u.resume_text[:400]} if u.resume_text else None}
 
 
 def check_field_role(field: str, role: str) -> dict:
@@ -203,6 +205,8 @@ def evaluate(a: Answer, q: Question | None, iv: Interview, rnd: Round, raw: str,
     a.flags = flags + ([] if used_ai else ["rule_based"])
     a.went_well, a.to_improve = res["went_well"], res["to_improve"]
     a.example_answer = res["example_answer"] or None
+    a.coaching = scoring.coaching(answer=clean, keywords=kw, round_type=rnd.round_type,
+                                  kind=(q.kind if q and not a.is_followup else "concept"))
     followup = res.get("followup") or ((q.followups or [None])[0] if q else None) \
         or "Could you be more specific? Give one real example: what you did and what the result was."
     return bool(res["vague"]), followup
@@ -295,6 +299,30 @@ def signup(body: SignupIn, db: Session = Depends(get_db)):
     return {"token": make_token(u.id), "user": me_out(u)}
 
 
+@app.post("/auth/guest")
+def guest(db: Session = Depends(get_db)):
+    """Try the app without an account. Guest data is deleted after 3 days unless the guest signs up."""
+    import secrets
+    u = User(name="Guest", email=f"guest-{secrets.token_hex(8)}@guest.invalid", password_hash=hash_password(secrets.token_hex(16)),
+             is_guest=True, email_notifications=False)
+    db.add(u)
+    db.commit()
+    return {"token": make_token(u.id), "user": me_out(u)}
+
+
+@app.post("/auth/upgrade")
+def upgrade_guest(body: SignupIn, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    """Turn a guest into a real account, keeping everything they did."""
+    if not user.is_guest:
+        raise HTTPException(409, "This is already a full account")
+    if db.scalar(select(User).where(User.email == body.email.lower())):
+        raise HTTPException(409, "An account with this email already exists")
+    user.name, user.email, user.password_hash = body.name.strip(), body.email.lower(), hash_password(body.password)
+    user.is_guest, user.email_notifications = False, True
+    db.commit()
+    return {"token": make_token(user.id), "user": me_out(user)}
+
+
 @app.post("/auth/login")
 def login(body: LoginIn, db: Session = Depends(get_db)):
     u = db.scalar(select(User).where(User.email == body.email.lower()))
@@ -305,6 +333,28 @@ def login(body: LoginIn, db: Session = Depends(get_db)):
 
 @app.get("/me")
 def me(user: User = Depends(current_user)):
+    return me_out(user)
+
+
+class ResumeIn(BaseModel):
+    text: str = Field(min_length=50, max_length=60000)
+
+
+@app.put("/me/resume")
+def save_resume(body: ResumeIn, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    """Resume text extracted in the browser. Contact details are removed before it is saved."""
+    text = questions.clean_resume(body.text)
+    if len(text) < 50:
+        raise HTTPException(422, "That resume looks empty. Try pasting the text instead.")
+    user.resume_text, user.resume_questions = text, None
+    db.commit()
+    return me_out(user)
+
+
+@app.delete("/me/resume")
+def delete_resume(user: User = Depends(current_user), db: Session = Depends(get_db)):
+    user.resume_text, user.resume_questions = None, None
+    db.commit()
     return me_out(user)
 
 
@@ -355,6 +405,11 @@ def start_practice(body: PracticeIn, user: User = Depends(current_user), db: Ses
                               round_type=body.round_type, difficulty=body.difficulty, n=body.count, kind=kind)
     if not qs:
         raise HTTPException(503, "No questions available for this choice yet")
+    if body.round_type == "screening" and user.resume_text and body.use_resume:
+        mine = questions.resume_pick(db, user, field=body.field, role=body.role, n=max(1, body.count // 3))
+        qs = qs[:1] + mine + qs[1:len(qs) - len(mine)] if len(qs) > 1 else mine + qs
+        if mine:
+            note += " Some questions are about your resume."
     iv = Interview(user_id=user.id, mode="practice", field=body.field, role=body.role,
                    company=body.company, difficulty=body.difficulty)
     rnd = Round(round_type=body.round_type, order=1, question_ids=[q.id for q in qs], status="in_progress", started_at=now())
@@ -371,6 +426,8 @@ def start_interview(body: InterviewIn, bg: BackgroundTasks, user: User = Depends
     check_field_role(body.field, body.role)
     if body.mode == "mock" and body.company not in questions.companies():
         raise HTTPException(422, "Unknown company")
+    if body.mode == "perform" and user.is_guest:
+        raise HTTPException(403, "Perform Mock Interview books rounds by email. Create a free account first (your guest progress is kept).")
     iv = flow.create(db, db.merge(user), mode=body.mode, field=body.field, role=body.role, company=body.company)
     if body.mode == "perform":
         queue(bg, iv.id, [("scheduled", 1)])
@@ -438,6 +495,7 @@ def answer(iid: int, body: AnswerIn, bg: BackgroundTasks, user: User = Depends(c
         raise HTTPException(422, "This question needs a code answer" if is_code else "This question needs a text answer")
     if not is_code and not body.text.strip():
         raise HTTPException(422, "Please type an answer")
+    a.answered_at = now()
     if is_code:
         evaluate_code(a, iv, rnd, body)
         vague, followup = False, None
@@ -456,7 +514,10 @@ def answer(iid: int, body: AnswerIn, bg: BackgroundTasks, user: User = Depends(c
             events = flow.after_round(db, db.merge(user), iv, rnd)
     db.commit()
     queue(bg, iv.id, events)
-    return {**state(iv), "last_score": a.score, "last_rating": scoring.rating(a.score),
+    # Practice coaches you after every answer; Mock and Perform keep it for the report, like a real interview.
+    fb = {"went_well": a.went_well, "to_improve": a.to_improve, "example_answer": a.example_answer,
+          "coaching": a.coaching, "metrics": a.metrics} if iv.mode == "practice" else None
+    return {**state(iv), "last_score": a.score, "last_rating": scoring.rating(a.score), "feedback": fb,
             "round_finished": bool(events), "finished_round": rnd.order if events else None}
 
 
@@ -564,7 +625,12 @@ def progress(user: User = Depends(current_user), db: Session = Depends(get_db)):
     funnel = {m: {"started": sum(1 for i in ivs if i.mode == m),
                   "passed": [sum(1 for i in ivs if i.mode == m and any(r.order == o and r.passed for r in i.rounds)) for o in (1, 2, 3, 4)]}
               for m in ("mock", "perform")}
-    return {"timeline": timeline, "skills": skills, "by_round": by_round, "funnel": funnel}
+    return {"timeline": timeline, "skills": skills, "by_round": by_round, "funnel": funnel, **achievements.summary(db, user)}
+
+
+@app.get("/achievements")
+def get_achievements(user: User = Depends(current_user), db: Session = Depends(get_db)):
+    return achievements.summary(db, user)
 
 
 @app.post("/interviews/{iid}/email")
@@ -612,5 +678,12 @@ def tick(x_cron_secret: str = Header(""), db: Session = Depends(get_db)):
                 notify.send(iv.id, "reminder", r.order)
                 r.reminder_sent = True
                 sent += 1
+    old = list(db.scalars(select(User).where(User.is_guest.is_(True), User.created_at < now() - timedelta(days=3))))
+    for u in old:  # guests who never signed up: remove their data to stay inside the free database
+        for iv in db.scalars(select(Interview).where(Interview.user_id == u.id)):
+            db.delete(iv)
+        db.flush()
+        db.execute(Question.__table__.delete().where(Question.company == f"user:{u.id}"))
+        db.delete(u)
     db.commit()
-    return {"reminders": sent, "expired": expired}
+    return {"reminders": sent, "expired": expired, "guests_removed": len(old)}
