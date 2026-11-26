@@ -1,7 +1,9 @@
 """Question bank: seed questions (original, MIT), AI-generated company-style questions
 (labelled "not affiliated"), and openly licensed datasets imported with scripts/import_questions.py.
 Sites whose terms forbid scraping (Glassdoor, AmbitionBox, LeetCode) are never used."""
+import hashlib
 import json
+import re
 import random
 from pathlib import Path
 
@@ -121,3 +123,71 @@ def pick(db: Session, *, field: str, role: str, company: str, round_type: str, d
     if company != "Any company":
         note += " Company-style questions need the free Gemini key." if not ai.enabled() else " AI was unavailable, so common questions were used."
     return pool[:n], note
+
+
+# ---------- resume-based questions ----------
+_EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
+_PHONE = re.compile(r"(?:\+?\d[\d\s().-]{7,}\d)")
+_URL = re.compile(r"https?://\S+|www\.\S+|linkedin\.com/\S+|github\.com/\S+", re.I)
+_ACTION = re.compile(r"\b(built|developed|designed|led|created|implemented|launched|managed|improved|reduced|increased|"
+                     r"analy[sz]ed|automated|sold|closed|negotiated|hired|trained|organi[sz]ed|audited|prepared|modelled|"
+                     r"modeled|achieved|delivered|won|project|intern(ship)?|worked)\b", re.I)
+_TEMPLATES = [
+    "Your resume mentions: “{line}”. Walk me through what you personally did there, and what the result was.",
+    "Tell me more about “{line}”. What was the hardest part, and how did you handle it?",
+    "About “{line}”: if you did it again today, what would you do differently, and why?",
+    "On your resume I see “{line}”. How would you explain its impact to someone outside your team?",
+]
+
+
+def clean_resume(text: str) -> str:
+    """Remove contact details before storing the resume or sending it to the AI."""
+    text = _URL.sub("", _EMAIL.sub("", text))
+    text = _PHONE.sub(lambda m: m.group(0) if len(re.sub(r"\D", "", m.group(0))) < 9 else "", text)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"([ \t]*[|,\u2022\u00b7][ \t]*){2,}", " | ", text)  # separators left behind by removed details
+    text = re.sub(r"[ \t]*\|[ \t]*$", "", text, flags=re.M)
+    return re.sub(r"\n{3,}", "\n\n", text).strip()[:15000]
+
+
+def _resume_lines(resume: str) -> list[str]:
+    parts = re.split(r"[\n•●▪‣⁃∙·|]+|(?<=\.)\s+(?=[A-Z])", resume)
+    lines = []
+    for p in parts:
+        p = re.sub(r"^\W+", "", p).strip().rstrip(".;,")
+        if 25 <= len(p) <= 160 and _ACTION.search(p) and p not in lines:
+            lines.append(p)
+    # Lines that start with an action and show a result (a number that is not a year) make the best questions.
+    result = re.compile(r"\d+\s?%|\d[\d,]*\s?(hours|days|weeks|users|customers|clients|managers|stores|people|lakh|crore|k\b)|\d+\s?x\b", re.I)
+    return sorted(lines, key=lambda l: (not _ACTION.match(l), not result.search(l), -len(l)))
+
+
+def resume_items(user, field: str, role: str, n: int) -> list[dict]:
+    """n questions about the candidate's own resume, from Gemini when available, else from the resume lines.
+    Cached on the user, so the same resume and role cost one AI call."""
+    if not user.resume_text or n <= 0:
+        return []
+    key = hashlib.sha1(f"{field}|{role}|{user.resume_text}".encode()).hexdigest()[:16]
+    cache = user.resume_questions or {}
+    items = cache.get("items", []) if cache.get("key") == key else []
+    if len(items) < n:
+        items = ai.resume_questions(resume=user.resume_text, field=field, role=role, n=max(n, 4)) or []
+        if not items:
+            items = [{"text": _TEMPLATES[i % len(_TEMPLATES)].format(line=line), "followups": ["What exactly was your part, compared with the rest of the team?"],
+                      "keywords": ["my role", "steps", "result", "learned"]} for i, line in enumerate(_resume_lines(user.resume_text)[:6])]
+        user.resume_questions = {"key": key, "items": items}
+    return random.sample(items, min(n, len(items)))
+
+
+def resume_pick(db: Session, user, *, field: str, role: str, n: int, round_type: str = "screening") -> list[Question]:
+    """Saves resume questions as private rows (company "user:<id>", so they never appear for anyone else)."""
+    out = []
+    for it in resume_items(user, field, role, n):
+        q = Question(field=field, role=role, company=f"user:{user.id}", round_type=round_type, difficulty="medium",
+                     text=it["text"], keywords=it.get("keywords", []), followups=it.get("followups", []),
+                     source="user", license="From your resume")
+        db.add(q)
+        out.append(q)
+    if out:
+        db.flush()
+    return out

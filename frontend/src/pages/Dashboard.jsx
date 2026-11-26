@@ -9,7 +9,9 @@ export default function Dashboard() {
   const [items, setItems] = useState(null)
   const [summaryOf, setSummaryOf] = useState(null)
   const [deleting, setDeleting] = useState(null)
+  const [ach, setAch] = useState(null)
   useEffect(() => { api('/interviews').then(setItems).catch(() => setItems([])) }, [])
+  useEffect(() => { api('/achievements').then(setAch).catch(() => {}) }, [])
   if (!items) return <Loading />
 
   const done = items.filter((i) => i.status === 'completed' && i.score != null)
@@ -29,6 +31,7 @@ export default function Dashboard() {
         <Stat label="Average score" value={avg} />
         <Stat label="Best round" value={Object.keys(best).length ? Object.entries(best).sort((a, b) => b[1] - a[1])[0].join(': ') : '–'} />
       </div>
+      {ach && <Achievements a={ach} resume={!!user.resume} />}
       <section className="card">
         <h2 className="mb-3 font-semibold">Your sessions</h2>
         {items.length === 0 ? <p className="text-slate-500">No sessions yet. Start your first practice round.</p> : (
@@ -137,3 +140,30 @@ function ConfirmDelete({ item, onClose, onDeleted }) {
 }
 
 const Stat = ({ label, value }) => <div className="card"><div className="text-sm text-slate-500">{label}</div><div className="text-2xl font-bold capitalize">{value}</div></div>
+
+function Achievements({ a, resume }) {
+  const { current, best, today_done: today } = a.streak
+  const got = a.badges.filter((b) => b.earned).length
+  return (
+    <section className="grid gap-4 md:grid-cols-[260px_1fr]">
+      <div className="card flex items-center gap-4">
+        <div className={`text-5xl ${current ? '' : 'opacity-30 grayscale'}`} aria-hidden="true">🔥</div>
+        <div>
+          <div className="text-3xl font-bold">{current} day{current === 1 ? '' : 's'}</div>
+          <div className="text-sm text-slate-500">{today ? 'Practised today. See you tomorrow!' : current ? 'Answer one question today to keep your streak.' : 'Answer one question to start a streak.'}</div>
+          <div className="text-xs text-slate-400">Best: {best} day{best === 1 ? '' : 's'}</div>
+        </div>
+      </div>
+      <div className="card">
+        <div className="mb-2 flex items-center justify-between"><h2 className="font-semibold">Badges</h2><span className="text-sm text-slate-500">{got} of {a.badges.length}</span></div>
+        <div className="flex flex-wrap gap-2">
+          {a.badges.map((b) => (
+            <span key={b.key} title={b.how} className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs ${b.earned ? 'bg-amber-100 font-medium text-amber-900' : 'bg-slate-100 text-slate-400'}`}>
+              <span className={b.earned ? '' : 'grayscale'}>{b.icon}</span>{b.label}</span>
+          ))}
+        </div>
+        {!resume && <p className="mt-3 text-sm text-slate-500">Tip: <Link className="text-indigo-600 hover:underline" to="/profile#resume">add your resume</Link> and the interviewer will ask about your own projects.</p>}
+      </div>
+    </section>
+  )
+}

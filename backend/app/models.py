@@ -29,6 +29,10 @@ class User(Base):
     # Availability for Perform Mock Interview (later): {"days": [...], "start": "18:00", "end": "21:00", "tz": "Asia/Kolkata"}
     availability: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    # Resume text (contact details removed) so the interviewer can ask about the candidate's own work.
+    resume_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    resume_questions: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # cache: {"key": hash, "items": [...]}
+    is_guest: Mapped[bool] = mapped_column(Boolean, default=False)
 
     fields: Mapped[list["UserField"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
@@ -122,6 +126,8 @@ class Answer(Base):
     went_well: Mapped[str | None] = mapped_column(Text, nullable=True)
     to_improve: Mapped[str | None] = mapped_column(Text, nullable=True)
     example_answer: Mapped[str | None] = mapped_column(Text, nullable=True)
+    coaching: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # STAR check, missed points, answer outline
     flags: Mapped[list | None] = mapped_column(JSON, nullable=True)  # e.g. ["score_request_ignored"]
+    answered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     round: Mapped[Round] = relationship(back_populates="answers")

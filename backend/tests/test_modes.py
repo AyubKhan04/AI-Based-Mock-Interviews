@@ -227,3 +227,52 @@ def test_rounds_are_personalised_per_field(client):
     r = client.post("/practice", json={"field": "sales", "role": "Inside Sales", "round_type": "technical", "kind": "roleplay", "count": 3}, headers=h)
     assert r.status_code == 200 and r.json()["kind"] == "roleplay" and r.json()["coding"] is None
     assert client.post("/practice", json={"field": "sales", "role": "Inside Sales", "round_type": "technical", "kind": "coding", "count": 1}, headers=h).status_code == 422
+
+
+RESUME = """Ravi Kumar | ravi@example.com | +91 98765 43210 | linkedin.com/in/ravi
+Experience
+Data Analyst Intern, Acme Retail (2024)
+• Built a Power BI sales dashboard used by 40 store managers, cutting weekly reporting time by 6 hours
+• Automated invoice matching in Python, reducing errors by 30%
+Projects
+• Developed a churn prediction model with 82% accuracy on 50,000 customers
+Skills: SQL, Python, Excel"""
+
+
+def test_resume_questions_guest_streaks_and_coaching(client):
+    from app import achievements, questions
+    from datetime import date
+    h = login(client, "res@example.com")
+    me = client.put("/me/resume", json={"text": RESUME}, headers=h).json()
+    assert me["resume"]["chars"] > 50 and "ravi@example.com" not in me["resume"]["preview"] and "98765" not in me["resume"]["preview"]
+    iv = client.post("/interviews", json={"mode": "perform", "field": "tech", "role": "Data Analyst"}, headers=h).json()
+    with SessionLocal() as db:
+        from app.models import Question
+        scr = db.get(Interview, iv["interview_id"]).rounds[0]
+        texts = [db.get(Question, q).text for q in scr.question_ids]
+        assert len(texts) == 12 and sum(t.startswith(('Your resume', 'On your resume', 'Tell me more about \u201c', 'About \u201c')) for t in texts) == 3, texts
+    # private: nobody else's practice pool sees resume questions
+    h2 = login(client, "other@example.com")
+    r = client.post("/practice", json={"field": "tech", "role": "Data Analyst", "round_type": "screening", "count": 15}, headers=h2).json()
+    with SessionLocal() as db:
+        from app.models import Question
+        ids = db.get(Interview, r["interview_id"]).rounds[0].question_ids
+        assert all(db.get(Question, q).company == "any" for q in ids)
+    # practice coaching comes back after each answer
+    a = client.post(f"/interviews/{r['interview_id']}/answer", json={"text": "In my last internship the task was to speed up reports. I built a dashboard and as a result we saved 6 hours a week."}, headers=h2).json()
+    fb = a["feedback"]
+    assert fb["coaching"]["star"] == {"situation": True, "task": True, "action": True, "result": True} and fb["coaching"]["outline"]
+    assert fb["metrics"]["word_count"] > 10
+    assert client.get("/progress", headers=h2).json()["badges"][0]["earned"] is True
+    assert client.delete("/me/resume", headers=h).json()["resume"] is None
+    # streak maths
+    d = date(2026, 11, 26)
+    assert achievements.streaks({d, d.replace(day=25), d.replace(day=24), d.replace(day=20)}, d) == {"current": 3, "best": 3, "today_done": True}
+    assert achievements.streaks({d.replace(day=25)}, d)["current"] == 1
+    # guest: can practise, cannot book Perform, can upgrade
+    g = client.post("/auth/guest").json()
+    gh = {"Authorization": f"Bearer {g['token']}"}
+    assert g["user"]["is_guest"] is True
+    assert client.post("/interviews", json={"mode": "perform", "field": "tech", "role": "Data Analyst"}, headers=gh).status_code == 403
+    up = client.post("/auth/upgrade", json={"name": "Asha", "email": "asha.up@example.com", "password": "secret123"}, headers=gh).json()
+    assert up["user"]["is_guest"] is False and up["user"]["email"] == "asha.up@example.com"

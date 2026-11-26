@@ -8,13 +8,14 @@ import Stars from '../Stars'
 import { Camera, MicButton, useVoice } from '../Voice'
 import { BigCamera, ProctorOverlay, RulesGate, proctorSession, useProctor } from '../Proctor'
 import { SpeakerControls, useSpeaker } from '../Speaker'
-import { closing, preface } from '../interviewer'
+import { TIME_LIMIT, TIME_UP, acknowledge, closing, preface } from '../interviewer'
+import FeedbackCard from '../Coaching'
 
 export default function Interview() {
   const { id } = useParams()
   const nav = useNavigate()
   const { user } = useApp()
-  const name = (user?.name || '').split(' ')[0]
+  const name = user?.is_guest ? '' : (user?.name || '').split(' ')[0]
   const [st, setSt] = useState(null)
   const [err, setErr] = useState('')
   const [banner, setBanner] = useState(null)
@@ -147,17 +148,22 @@ function Answering({ st, setSt, id, name, speaker, stream, onRoundDone }) {
   const note = sessionStorage.getItem(`note-${id}`)
   const voice = useVoice((t) => setText((x) => (x ? x + ' ' : '') + t))
   useEffect(() => { box.current?.focus() }, [st])
+  const ack = useMemo(() => acknowledge(log.at(-1)?.raw, log.length), [st.question]) // eslint-disable-line react-hooks/exhaustive-deps
   const intro = useMemo(() => preface({ st, name, first: log.length === 0 }), [st.question]) // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { speaker.speak(`${intro} ${st.question}`) }, [st.question]) // eslint-disable-line react-hooks/exhaustive-deps
+  const spoken = [ack, `${intro} ${st.question}`]
+  useEffect(() => { speaker.speak(spoken) }, [st.question]) // eslint-disable-line react-hooks/exhaustive-deps
+  const timed = st.mode !== 'practice' && st.kind !== 'coding'
 
   async function submit() {
     if (!text.trim()) return
     setBusy(true); setErr('')
     try {
       const vm = voice.metrics()
-      const r = await api(`/interviews/${id}/answer`, { method: 'POST', body: { text, voice: vm } })
+      voice.stop?.(); speaker.stop()
+      // A real interviewer takes a moment before the next question.
+      const [r] = await Promise.all([api(`/interviews/${id}/answer`, { method: 'POST', body: { text, voice: vm } }), sleep(1200 + Math.random() * 900)])
       voice.reset()
-      setLog([...log, { q: st.question, a: (vm ? '🎤 ' : '') + text, followup: st.is_followup, score: r.last_score, rating: r.last_rating }])
+      setLog([...log, { q: st.question, a: (vm ? '🎤 ' : '') + text, raw: text, followup: st.is_followup, score: r.last_score, rating: r.last_rating, fb: r.feedback }])
       setText('')
       if (r.round_finished) onRoundDone(r)
       else setSt(r)
@@ -175,14 +181,17 @@ function Answering({ st, setSt, id, name, speaker, stream, onRoundDone }) {
         <div key={i} className="space-y-2 opacity-80">
           <Bubble who="ai" followup={m.followup}>{m.q}</Bubble>
           <Bubble who="me">{m.a}</Bubble>
-          {st.mode === 'practice' && <div className="text-right text-sm"><Stars rating={m.rating} score={m.score} /></div>}
+          {st.mode === 'practice' && (m.fb ? <FeedbackCard fb={m.fb} score={m.score} rating={m.rating} Stars={Stars} />
+            : <div className="text-right text-sm"><Stars rating={m.rating} score={m.score} /></div>)}
         </div>
       ))}
+      {busy && <Bubble who="ai"><span className="inline-flex items-center gap-1 text-slate-500" aria-label="The interviewer is thinking">
+        <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400" /><span className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:150ms]" /><span className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:300ms]" /></span></Bubble>}
 
-      <Bubble who="ai" followup={st.is_followup} speaking={speaker.speaking} controls={<SpeakerControls speaker={speaker} text={`${intro} ${st.question}`} />}>
-        {intro && <span className="mb-1 block text-sm italic text-slate-500">{intro}</span>}
+      {!busy && <Bubble who="ai" followup={st.is_followup} speaking={speaker.speaking} controls={<SpeakerControls speaker={speaker} text={spoken} />}>
+        {(ack || intro) && <span className="mb-1 block text-sm italic text-slate-500">{[ack, intro].filter(Boolean).join(' ')}</span>}
         {KIND_LABEL[st.kind] ? <><span className="mr-1 rounded bg-amber-100 px-1.5 text-xs text-amber-800">{KIND_LABEL[st.kind]}</span>{st.question}</> : st.question}
-      </Bubble>
+      </Bubble>}
       {st.kind === 'coding' ? (
         <CodeAnswer id={id} st={st} onAnswered={(r, summary) => {
           setLog([...log, { q: st.question, a: summary, followup: false, score: r.last_score, rating: r.last_rating }])
@@ -192,7 +201,8 @@ function Answering({ st, setSt, id, name, speaker, stream, onRoundDone }) {
         <textarea ref={box} className="input min-h-40" placeholder="Type your answer, or press 🎤 and speak it…" value={text} onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submit() }} />
         <div className="flex items-center justify-between text-sm text-slate-500">
-          <span className="flex items-center gap-3" onClickCapture={() => speaker.stop()}><MicButton voice={voice} /> {words} words · aim for about 80–200</span>
+          <span className="flex flex-wrap items-center gap-3" onClickCapture={() => speaker.stop()}><MicButton voice={voice} /> {words} words · aim for about 80–200
+            {timed && <AnswerTimer key={st.question} limit={TIME_LIMIT[st.kind] || 180} onTimeUp={() => speaker.speak(TIME_UP)} />}</span>
           <button className="btn" onClick={submit} disabled={busy || !text.trim()}>{busy ? 'Scoring…' : 'Submit answer'}</button>
         </div>
         {err && <p className="text-sm text-red-600">{err}</p>}
@@ -218,6 +228,30 @@ function Answering({ st, setSt, id, name, speaker, stream, onRoundDone }) {
         </div>
       ) : main}
     </div>
+  )
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+
+/** Optional per-question clock for Mock and Perform. It never submits for you; the interviewer asks you to wrap up. */
+function AnswerTimer({ limit, onTimeUp }) {
+  const [on, setOn] = useState(() => { try { return localStorage.getItem('answerTimer') !== 'off' } catch { return true } })
+  const [left, setLeft] = useState(limit)
+  const told = useRef(false)
+  useEffect(() => {
+    if (!on) return
+    const t = setInterval(() => setLeft((x) => Math.max(0, x - 1)), 1000)
+    return () => clearInterval(t)
+  }, [on])
+  useEffect(() => { if (on && left === 0 && !told.current) { told.current = true; onTimeUp() } }, [left, on]) // eslint-disable-line react-hooks/exhaustive-deps
+  function toggle() { const v = !on; setOn(v); try { localStorage.setItem('answerTimer', v ? 'on' : 'off') } catch { /* private mode */ } }
+  const mm = Math.floor(left / 60), ss = String(left % 60).padStart(2, '0')
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      {on && <span className={`rounded-md px-2 py-0.5 font-mono text-xs ${left === 0 ? 'bg-red-100 text-red-700' : left <= 30 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}`}
+        role="timer" aria-label={`${mm} minutes ${ss} seconds left`}>⏱ {left === 0 ? "Time's up, please wrap up" : `${mm}:${ss}`}</span>}
+      <button type="button" className="text-xs text-slate-400 hover:text-slate-700 hover:underline" onClick={toggle}>{on ? 'Hide timer' : '⏱ Show timer'}</button>
+    </span>
   )
 }
 
