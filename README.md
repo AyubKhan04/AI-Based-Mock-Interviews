@@ -147,7 +147,7 @@ Perform Mock Interview sends a reminder an hour before each round, and Mock inte
 
 > Free minutes: public repos have unlimited Actions minutes. A private repo gets 2,000 free minutes a month, and this job uses about 1,500. If you need fewer, change `*/30` to `0 * * * *` (hourly).
 
-**Live demo:** _add your Vercel URL here_
+**Live demo:** https://ai-based-mock-interviews-murex.vercel.app
 
 ## Honest notes
 
