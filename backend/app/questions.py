@@ -191,3 +191,60 @@ def resume_pick(db: Session, user, *, field: str, role: str, n: int, round_type:
     if out:
         db.flush()
     return out
+
+
+# ---------- job-description questions (cached in the questions table under company "jd:<hash>") ----------
+_JD_SKILL = re.compile(r"\b(experience (with|in)|knowledge of|proficien\w+ (in|with)|familiar\w* with|ability to|skilled in|hands-on|responsible for|you will)\s+([^.;\n]{4,90})", re.I)
+_JD_TEMPLATES = [
+    "This role asks for {x}. Tell me about a time you did that, and what the result was.",
+    "The job post mentions {x}. How would you approach it in your first month here?",
+    "How have you built your skills in {x}? Give me a concrete example.",
+    "Walk me through how you would handle {x} on a busy week.",
+]
+
+
+def jd_key(jd: str) -> str:
+    return "jd:" + hashlib.sha1(re.sub(r"\s+", " ", jd.strip().lower()).encode()).hexdigest()[:16]
+
+
+def jd_pick(db: Session, *, jd: str, field: str, role: str, n: int, round_type: str = "technical") -> tuple[list[Question], str | None]:
+    """Questions tailored to a pasted job description. The same job post is only sent to the AI once."""
+    if not jd or n <= 0:
+        return [], None
+    key = jd_key(jd)
+    have = list(db.scalars(select(Question).where(Question.company == key, Question.field == field)))
+    title = next((q.license.split("|", 1)[1] for q in have if "|" in q.license), None)
+    if len(have) < n:
+        out = ai.jd_questions(jd=jd, field=field, role=role, n=max(n, 4))
+        if out:
+            items, title = out["questions"], out["title"] or title
+        else:
+            found = []
+            for m in _JD_SKILL.finditer(jd):
+                x = re.sub(r"\s+", " ", m.group(4)).strip(" ,:-").rstrip(".")
+                if x and x.lower() not in (f.lower() for f in found):
+                    found.append(x)
+            items = [{"text": _JD_TEMPLATES[i % len(_JD_TEMPLATES)].format(x=x[0].lower() + x[1:]), "keywords": [w for w in re.findall(r"[a-z]{4,}", x.lower())][:4],
+                      "followups": ["What would you do differently if you had half the time?"]} for i, x in enumerate(found[:6])]
+        for it in items:
+            q = Question(field=field, role=role, company=key, round_type=round_type, difficulty="medium", text=it["text"],
+                         keywords=it.get("keywords", []), followups=it.get("followups", []), source="user",
+                         license="From your job description" + (f"|{title}" if title else ""))
+            db.add(q)
+            have.append(q)
+        db.flush()
+    return random.sample(have, min(n, len(have))), title
+
+
+REVERSE_TEXT = "We're nearly at the end. Before we finish, do you have any questions for us?"
+
+
+def reverse_question(db: Session, field: str) -> Question:
+    """The 'any questions for us?' moment at the end of the HR round, scored on the candidate's own questions."""
+    q = db.scalar(select(Question).where(Question.field == field, Question.kind == "reverse"))
+    if not q:
+        q = Question(field=field, role="any", company="any", round_type="hr", difficulty="medium", text=REVERSE_TEXT, kind="reverse",
+                     keywords=["team", "success", "challenge", "growth"], followups=[], source="seed", license="MIT (original, written for this project)")
+        db.add(q)
+        db.flush()
+    return q

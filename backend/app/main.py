@@ -10,7 +10,7 @@ from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from . import achievements, ai, emailer, flow, notify, questions, report, scoring
+from . import achievements, ai, certificates, emailer, flow, notify, questions, report, scoring
 from .config import CRON_SECRET, FRONTEND_ORIGINS
 from .db import Base, SessionLocal, add_missing_columns, engine, get_db
 from .models import Answer, Interview, Question, Round, User, UserField, now
@@ -88,6 +88,9 @@ class PracticeIn(BaseModel):
     count: Literal[1, 2, 3, 5, 10, 15] = 5
     kind: Literal["concept", "coding", "roleplay", "case", "scenario"] = "concept"
     use_resume: bool = True  # non-concept: the field's Technical-round special
+    persona: Literal["friendly", "neutral", "tough"] = "neutral"
+    panel: bool = False
+    jd: str = Field("", max_length=20000)
 
 
 class InterviewIn(BaseModel):
@@ -95,6 +98,9 @@ class InterviewIn(BaseModel):
     field: str = "tech"
     role: str
     company: str = "Any company"  # Mock mode only
+    persona: Literal["friendly", "neutral", "tough"] = "neutral"
+    panel: bool = False
+    jd: str = Field("", max_length=20000)  # optional job description to tailor the questions
 
 
 class CodeResult(BaseModel):
@@ -163,6 +169,8 @@ def state(iv: Interview) -> dict:
         "interview_id": iv.id, "mode": iv.mode, "status": iv.status, "field": iv.field, "role": iv.role,
         "company": iv.company, "expires_at": iso(iv.expires_at),
         "proctored": iv.mode != "practice", "disqualified_reason": iv.disqualified_reason,
+        "style": {"persona": "neutral", "panel": False, **(iv.style or {})},
+        "certificate": certificates.certificate_code(iv.id) if certificates.eligible(iv) else None,
         "integrity": {"tab": (iv.integrity or {}).get("tab", 0), "camera": (iv.integrity or {}).get("camera", 0), "chances": flow.CHANCES},
         "round_label": questions.round_label(iv.field, rnd.round_type) if rnd else None,
         "rounds": [{"order": r.order, "round_type": r.round_type, "label": questions.round_label(iv.field, r.round_type), "status": r.status, "score": r.score,
@@ -192,11 +200,17 @@ def evaluate(a: Answer, q: Question | None, iv: Interview, rnd: Round, raw: str,
     kw = (q.keywords if q else []) or []
     args = dict(question=a.question_text, answer=clean or "(no answer)", keywords=kw, round_type=rnd.round_type,
                 include_attitude="attitude" in weights)
-    res = ai.evaluate_answer(**args, role=iv.role, company=iv.company, example_style=prof["example_answer_style"]) \
-        if clean else None
+    reverse = bool(q and q.kind == "reverse")
+    res = None if reverse or not clean else \
+        ai.evaluate_answer(**args, role=iv.role, company=iv.company, example_style=prof["example_answer_style"])
     used_ai = res is not None
-    if not res:
+    if reverse:
+        res = scoring.reverse_eval(clean, "attitude" in weights)
+    elif not res:
         res = scoring.heuristic_eval(**args, example_style=prof["example_answer_style"])
+    persona = (iv.style or {}).get("persona", "neutral")  # a tough interviewer pushes for detail more often
+    if not reverse and persona != "neutral":
+        res["vague"] = metrics["word_count"] < scoring.PERSONA_FOLLOWUP[persona] or (persona == "tough" and res["vague"])
     sub = {k: res[k] for k in weights if k != "tone"}
     sub["tone"] = scoring.tone_score(metrics)
     a.subscores = sub
@@ -281,8 +295,8 @@ def catalog():
     return {"fields": [{"key": k, "label": p["label"], "roles": p["roles"], "special_round": p.get("special_round"),
                         "special_kind": p.get("special_kind"), "live": True,
                         "rounds": [{"type": rt, "label": questions.round_label(k, rt), "pass_mark": p["rounds"][rt]["pass_mark"],
-                                    "full": questions.describe_counts(flow.round_counts(p, rt, "perform"), k),
-                                    "mock": questions.describe_counts(flow.round_counts(p, rt, "mock"), k)} for rt in ROUNDS]} for k, p in profiles.items()],
+                                    "full": questions.describe_counts(flow.round_counts(p, rt, "perform"), k) + (" + your questions" if rt == "hr" else ""),
+                                    "mock": questions.describe_counts(flow.round_counts(p, rt, "mock"), k) + (" + your questions" if rt == "hr" else "")} for rt in ROUNDS]} for k, p in profiles.items()],
             "companies": list(questions.companies()), "rounds": ROUNDS,
             "pass_marks": {rt: c["pass_mark"] for rt, c in profiles["tech"]["rounds"].items()},
             "difficulties": ["easy", "medium", "hard"], "counts": [5, 10, 15],
@@ -410,8 +424,17 @@ def start_practice(body: PracticeIn, user: User = Depends(current_user), db: Ses
         qs = qs[:1] + mine + qs[1:len(qs) - len(mine)] if len(qs) > 1 else mine + qs
         if mine:
             note += " Some questions are about your resume."
+    title = None
+    if body.jd.strip() and body.round_type in ("screening", "technical") and kind == "concept":
+        tailored, title = questions.jd_pick(db, jd=body.jd, field=body.field, role=body.role, n=max(1, (body.count * 2) // 3),
+                                            round_type=body.round_type)
+        qs = (qs[:1] + tailored + qs[1:])[:max(body.count, len(tailored) + 1)]
+        note += " Questions are tailored to your job description."
+    if body.round_type == "hr":
+        qs = qs[:max(1, body.count - 1)] + [questions.reverse_question(db, body.field)]
     iv = Interview(user_id=user.id, mode="practice", field=body.field, role=body.role,
-                   company=body.company, difficulty=body.difficulty)
+                   company=body.company, difficulty=body.difficulty,
+                   style={"persona": body.persona, "panel": body.panel, "jd_title": title})
     rnd = Round(round_type=body.round_type, order=1, question_ids=[q.id for q in qs], status="in_progress", started_at=now())
     rnd.answers.append(Answer(question_id=qs[0].id, question_text=qs[0].text, modality="code" if kind == "coding" else "text"))
     iv.rounds.append(rnd)
@@ -428,7 +451,8 @@ def start_interview(body: InterviewIn, bg: BackgroundTasks, user: User = Depends
         raise HTTPException(422, "Unknown company")
     if body.mode == "perform" and user.is_guest:
         raise HTTPException(403, "Perform Mock Interview books rounds by email. Create a free account first (your guest progress is kept).")
-    iv = flow.create(db, db.merge(user), mode=body.mode, field=body.field, role=body.role, company=body.company)
+    iv = flow.create(db, db.merge(user), mode=body.mode, field=body.field, role=body.role, company=body.company,
+                     style={"persona": body.persona, "panel": body.panel}, jd=body.jd.strip())
     if body.mode == "perform":
         queue(bg, iv.id, [("scheduled", 1)])
     return state(iv)
@@ -626,6 +650,28 @@ def progress(user: User = Depends(current_user), db: Session = Depends(get_db)):
                   "passed": [sum(1 for i in ivs if i.mode == m and any(r.order == o and r.passed for r in i.rounds)) for o in (1, 2, 3, 4)]}
               for m in ("mock", "perform")}
     return {"timeline": timeline, "skills": skills, "by_round": by_round, "funnel": funnel, **achievements.summary(db, user)}
+
+
+@app.get("/interviews/{iid}/letter")
+def practice_letter(iid: int, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    iv = get_interview(db, iid, user)
+    if iv.mode == "practice" or iv.status not in ("completed", "failed"):
+        raise HTTPException(409, "The letter is ready when a Mock or Perform interview finishes")
+    return certificates.letter(iv, user, questions.field_profile(iv.field)["label"])
+
+
+@app.get("/certificates/{code}")
+def verify_certificate(code: str, db: Session = Depends(get_db)):
+    """Public: anyone with the link (e.g. from LinkedIn) can check the certificate is genuine."""
+    iid = certificates.parse_code(code.removesuffix(".pdf"))
+    iv = db.get(Interview, iid) if iid else None
+    if not iv or not certificates.eligible(iv):
+        raise HTTPException(404, "Certificate not found")
+    d = certificates.details(iv, db.get(User, iv.user_id), questions.field_profile(iv.field)["label"])
+    if code.endswith(".pdf"):
+        return Response(certificates.pdf(d), media_type="application/pdf",
+                        headers={"Content-Disposition": f'attachment; filename="certificate-{d["code"]}.pdf"'})
+    return d
 
 
 @app.get("/achievements")

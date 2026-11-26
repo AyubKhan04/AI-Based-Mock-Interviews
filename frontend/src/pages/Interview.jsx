@@ -8,7 +8,7 @@ import Stars from '../Stars'
 import { Camera, MicButton, useVoice } from '../Voice'
 import { BigCamera, ProctorOverlay, RulesGate, proctorSession, useProctor } from '../Proctor'
 import { SpeakerControls, useSpeaker } from '../Speaker'
-import { TIME_LIMIT, TIME_UP, acknowledge, closing, preface } from '../interviewer'
+import { TIME_LIMIT, TIME_UP, closing, personaAck, preface, speakerFor } from '../interviewer'
 import FeedbackCard from '../Coaching'
 
 export default function Interview() {
@@ -60,7 +60,7 @@ export default function Interview() {
         if (r.mode === 'practice') return nav(`/report/${id}`)
         if (st.proctored) endProctor()
         const done = r.rounds.find((x) => x.order === r.finished_round)
-        speaker.speak(closing({ round: done, status: r.status, name }))
+        speaker.speak(closing({ round: done, status: r.status, name }), false, speakerFor(st.style, 1))
         setBanner(done); setSt(r)
       }} />
     </>
@@ -113,7 +113,9 @@ function Hub({ st, id, banner, setSt, onProctoredStart }) {
           ✅ You passed the {roundName(banner)} round with {banner.score}/10. You are selected for the next round.
         </div>
       )}
-      {over && <div className={`rounded-lg p-4 ${END[st.status][0]}`}>{END[st.status][1]} <Link className="font-semibold underline" to={`/report/${id}`}>Open the report</Link></div>}
+      {over && <div className={`rounded-lg p-4 ${END[st.status][0]}`}>{END[st.status][1]} <Link className="font-semibold underline" to={`/report/${id}`}>Open the report</Link>
+        {(st.status === 'completed' || st.status === 'failed') && <> · <Link className="font-semibold underline" to={`/letter/${id}`}>{st.status === 'completed' ? 'Read your practice offer letter' : 'Read the decision letter'}</Link></>}
+        {st.certificate && <> · <Link className="font-semibold underline" to={`/certificate/${st.certificate}`}>🎓 Get your certificate</Link></>}</div>}
       <div className="space-y-3">
         {st.rounds.map((r) => {
           const [label, cls] = STATUS[r.status] || [r.status, '']
@@ -148,10 +150,11 @@ function Answering({ st, setSt, id, name, speaker, stream, onRoundDone }) {
   const note = sessionStorage.getItem(`note-${id}`)
   const voice = useVoice((t) => setText((x) => (x ? x + ' ' : '') + t))
   useEffect(() => { box.current?.focus() }, [st])
-  const ack = useMemo(() => acknowledge(log.at(-1)?.raw, log.length), [st.question]) // eslint-disable-line react-hooks/exhaustive-deps
+  const ack = useMemo(() => personaAck(st.style, log.at(-1)?.raw, log.length), [st.question]) // eslint-disable-line react-hooks/exhaustive-deps
+  const who = speakerFor(st.style, st.question_number, st.kind)
   const intro = useMemo(() => preface({ st, name, first: log.length === 0 }), [st.question]) // eslint-disable-line react-hooks/exhaustive-deps
   const spoken = [ack, `${intro} ${st.question}`]
-  useEffect(() => { speaker.speak(spoken) }, [st.question]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { speaker.speak(spoken, false, who) }, [st.question]) // eslint-disable-line react-hooks/exhaustive-deps
   const timed = st.mode !== 'practice' && st.kind !== 'coding'
 
   async function submit() {
@@ -163,7 +166,7 @@ function Answering({ st, setSt, id, name, speaker, stream, onRoundDone }) {
       // A real interviewer takes a moment before the next question.
       const [r] = await Promise.all([api(`/interviews/${id}/answer`, { method: 'POST', body: { text, voice: vm } }), sleep(1200 + Math.random() * 900)])
       voice.reset()
-      setLog([...log, { q: st.question, a: (vm ? '🎤 ' : '') + text, raw: text, followup: st.is_followup, score: r.last_score, rating: r.last_rating, fb: r.feedback }])
+      setLog([...log, { q: st.question, a: (vm ? '🎤 ' : '') + text, raw: text, by: who, followup: st.is_followup, score: r.last_score, rating: r.last_rating, fb: r.feedback }])
       setText('')
       if (r.round_finished) onRoundDone(r)
       else setSt(r)
@@ -179,7 +182,7 @@ function Answering({ st, setSt, id, name, speaker, stream, onRoundDone }) {
     <div className="space-y-4">
       {log.map((m, i) => (
         <div key={i} className="space-y-2 opacity-80">
-          <Bubble who="ai" followup={m.followup}>{m.q}</Bubble>
+          <Bubble who="ai" followup={m.followup} by={m.by}>{m.q}</Bubble>
           <Bubble who="me">{m.a}</Bubble>
           {st.mode === 'practice' && (m.fb ? <FeedbackCard fb={m.fb} score={m.score} rating={m.rating} Stars={Stars} />
             : <div className="text-right text-sm"><Stars rating={m.rating} score={m.score} /></div>)}
@@ -188,7 +191,7 @@ function Answering({ st, setSt, id, name, speaker, stream, onRoundDone }) {
       {busy && <Bubble who="ai"><span className="inline-flex items-center gap-1 text-slate-500" aria-label="The interviewer is thinking">
         <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400" /><span className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:150ms]" /><span className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:300ms]" /></span></Bubble>}
 
-      {!busy && <Bubble who="ai" followup={st.is_followup} speaking={speaker.speaking} controls={<SpeakerControls speaker={speaker} text={spoken} />}>
+      {!busy && <Bubble who="ai" followup={st.is_followup} by={who} speaking={speaker.speaking} controls={<SpeakerControls speaker={speaker} text={spoken} who={who} />}>
         {(ack || intro) && <span className="mb-1 block text-sm italic text-slate-500">{[ack, intro].filter(Boolean).join(' ')}</span>}
         {KIND_LABEL[st.kind] ? <><span className="mr-1 rounded bg-amber-100 px-1.5 text-xs text-amber-800">{KIND_LABEL[st.kind]}</span>{st.question}</> : st.question}
       </Bubble>}
@@ -202,7 +205,7 @@ function Answering({ st, setSt, id, name, speaker, stream, onRoundDone }) {
           onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submit() }} />
         <div className="flex items-center justify-between text-sm text-slate-500">
           <span className="flex flex-wrap items-center gap-3" onClickCapture={() => speaker.stop()}><MicButton voice={voice} /> {words} words · aim for about 80–200
-            {timed && <AnswerTimer key={st.question} limit={TIME_LIMIT[st.kind] || 180} onTimeUp={() => speaker.speak(TIME_UP)} />}</span>
+            {timed && <AnswerTimer key={st.question} limit={TIME_LIMIT[st.kind] || 180} onTimeUp={() => speaker.speak(TIME_UP, false, who)} />}</span>
           <button className="btn" onClick={submit} disabled={busy || !text.trim()}>{busy ? 'Scoring…' : 'Submit answer'}</button>
         </div>
         {err && <p className="text-sm text-red-600">{err}</p>}
@@ -255,12 +258,12 @@ function AnswerTimer({ limit, onTimeUp }) {
   )
 }
 
-export function Bubble({ who, followup, speaking, controls, children }) {
+export function Bubble({ who, followup, by, speaking, controls, children }) {
   const ai = who === 'ai'
   return (
     <div className={`flex ${ai ? '' : 'justify-end'}`}>
       <div className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 ${ai ? 'bg-white ring-1 ring-slate-200' : 'bg-indigo-600 text-white'}`}>
-        {ai && <div className="mb-1 flex flex-wrap items-center text-xs font-semibold text-indigo-600">{speaking && controls ? '🗣 ' : ''}{followup ? 'Interviewer · follow-up' : 'Interviewer'}{controls}</div>}
+        {ai && <div className="mb-1 flex flex-wrap items-center text-xs font-semibold text-indigo-600">{speaking && controls ? '🗣 ' : ''}{by?.name ? `${by.name} · ${by.title}` : 'Interviewer'}{followup ? ' · follow-up' : ''}{controls}</div>}
         {children}
       </div>
     </div>

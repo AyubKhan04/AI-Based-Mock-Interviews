@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../api'
 import { useApp } from '../App'
-import FieldRole, { defaultFieldRole } from '../FieldRole'
+import FieldRole, { StyleOptions, defaultFieldRole } from '../FieldRole'
 import { RULES } from './Mock'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -10,7 +10,7 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 export default function Perform() {
   const { user, catalog } = useApp()
   const nav = useNavigate()
-  const [form, setForm] = useState(() => defaultFieldRole(user, catalog))
+  const [form, setForm] = useState(() => ({ ...defaultFieldRole(user, catalog), persona: 'neutral', panel: false, jd: '' }))
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
   if (!catalog || catalog.error) return null
@@ -36,6 +36,7 @@ export default function Perform() {
           <b>Your availability:</b> {av.days.map((d) => DAYS[d]).join(', ')}, {av.start}–{av.end} ({av.tz}).{' '}
           <Link className="text-indigo-600" to="/profile">Change it</Link>
         </div>
+        <StyleOptions form={form} set={(p) => setForm({ ...form, ...p })} />
         <RULES field={form.field} mode="full" />
         <p className="text-xs text-slate-400">Follow-up questions come on top. If a round is not started within a day of its slot, the interview ends as incomplete.</p>
         {err && <p className="text-sm text-red-600">{err}</p>}

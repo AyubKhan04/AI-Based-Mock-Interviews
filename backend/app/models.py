@@ -83,6 +83,8 @@ class Interview(Base):
     # Only on/off events are stored; the camera image is never recorded or uploaded.
     integrity: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     disqualified_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Interviewer style: {"persona": "friendly" | "neutral" | "tough", "panel": bool, "jd_title": str | None}
+    style: Mapped[dict | None] = mapped_column(JSON, nullable=True)
 
     rounds: Mapped[list["Round"]] = relationship(back_populates="interview", cascade="all, delete-orphan", order_by="Round.order")
 

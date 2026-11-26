@@ -203,3 +203,37 @@ def coaching(*, answer: str, keywords: list[str], round_type: str, kind: str = "
         "missing": missing,
         "outline": _OUTLINE["star" if star else (kind if kind in _OUTLINE else "concept")].format(kw=kw),
     }
+
+
+# ---------- "Do you have any questions for us?" ----------
+_GOOD_Q = ["team", "success", "first 90", "first three months", "challenge", "growth", "learn", "mentor", "measure",
+           "expect", "culture", "priorit", "project", "customer", "feedback", "career", "goal", "next step", "day look",
+           "onboard", "roadmap", "strategy", "why is this role", "what does a"]
+_ONLY_PERKS = ["salary", "leave", "holiday", "work from home", "wfh", "bonus", "perks", "hike"]
+
+
+def reverse_eval(answer: str, include_attitude: bool) -> dict:
+    """Scores the candidate's own questions: asking thoughtful questions about the role shows interest."""
+    low = answer.lower()
+    asked = max(answer.count("?"), len(re.findall(r"\b(what|how|why|who|when|could you|can you|is there)\b", low)) // 2)
+    good = sum(1 for g in _GOOD_Q if g in low)
+    perks = sum(1 for g in _ONLY_PERKS if g in low)
+    none = asked == 0 or re.search(r"\b(no( questions)?|nothing|none|not really)\b", low) and asked == 0
+    base = 2.0 if none else min(10.0, 4 + 1.5 * min(asked, 3) + 0.8 * min(good, 4) - (1.5 if perks and good == 0 else 0))
+    res = {"content": round(base, 1), "communication": round(min(10, base + 0.5), 1), "thought_process": round(min(10, base), 1)}
+    if include_attitude:
+        res["attitude"] = round(min(10, base + 1), 1)
+    res.update({
+        "went_well": "You asked the panel real questions, which shows genuine interest." if not none else "You were polite and brief.",
+        "to_improve": "Always ask 2-3 questions. Good ones are about the team, how success is measured and the first 90 days."
+                      if none or asked < 2 else ("Lead with questions about the work before pay and leave." if perks and good == 0 else
+                                                 "Tie one question to something said in the interview, to show you were listening."),
+        "example_answer": "Yes, thank you. What would success look like in the first 90 days? What is the biggest challenge the team "
+                          "is facing right now? And how does the team give feedback and support people to grow?",
+        "vague": False, "followup": "",
+    })
+    return res
+
+
+# ---------- interviewer personas: how hard they push for a follow-up ----------
+PERSONA_FOLLOWUP = {"friendly": 15, "neutral": 25, "tough": 60}  # follow up when the answer is shorter than this (words)
