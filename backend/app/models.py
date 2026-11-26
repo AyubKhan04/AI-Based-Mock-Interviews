@@ -75,6 +75,10 @@ class Interview(Base):
     overall_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)  # Mock mode: 1 day
+    # Proctoring (Mock and Perform): {"tab": warnings used, "camera": warnings used, "events": [...]}.
+    # Only on/off events are stored; the camera image is never recorded or uploaded.
+    integrity: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    disqualified_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     rounds: Mapped[list["Round"]] = relationship(back_populates="interview", cascade="all, delete-orphan", order_by="Round.order")
 

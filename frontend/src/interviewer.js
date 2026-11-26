@@ -1,0 +1,37 @@
+/**
+ * What the AI interviewer says around each question, so the spoken voice sounds like a person
+ * running a real interview: a greeting, the round explained, transitions, follow-ups and a close.
+ */
+const ROUND_INTRO = {
+  screening: "This is the screening round. I'd like to understand your background, your motivation and whether this role is a good fit.",
+  technical: "This is the technical round. I'll ask about the core skills for the role. Think out loud and explain your reasoning, not just the answer.",
+  behavioural: "This is the behavioural round. I'll ask about real situations from your past. A good structure is situation, task, action and result.",
+  hr: "This is the HR round. We'll talk about expectations, culture fit and how you work with people.",
+  practice: "This is a practice session, so relax. I'll give you feedback after every answer.",
+}
+
+const NEXT = ['Thank you. Next question.', "Got it, thanks. Let's move on.", 'Okay, noted. Here is the next one.', "Alright. Let's go to the next question."]
+const FOLLOW = ["Interesting. Let me dig into that a little more.", "Okay. I'd like to follow up on that.", 'Thanks. Can you go a bit deeper on this?']
+const pick = (list, n) => list[Math.abs(n) % list.length]
+
+export function preface({ st, name, first }) {
+  const n = st.question_number || 1
+  const coding = st.kind === 'coding' ? ' This one is a coding question, so please write your solution in the editor below.' : ''
+  if (st.is_followup) return pick(FOLLOW, n) + coding
+  if (n === 1 && first) {
+    const hello = `Hello${name ? ` ${name}` : ''}, thanks for joining. I'll be your interviewer today.`
+    const round = ROUND_INTRO[st.mode === 'practice' ? 'practice' : st.round_type] || ''
+    return `${hello} ${round} We have ${st.total} questions. Take a moment before each answer if you need it. Let's begin. First question.${coding}`
+  }
+  if (first) return `Welcome back. Let's continue where we left off. Question ${n}.${coding}`
+  if (n === st.total) return `Thank you. This is the last question of this round.${coding}`
+  return `${pick(NEXT, n)} Question ${n}.${coding}`
+}
+
+export function closing({ round, status, name }) {
+  const thanks = `That's the end of this round. Thank you for your time${name ? `, ${name}` : ''}.`
+  if (!round) return thanks
+  if (status === 'completed') return `${thanks} Congratulations, you have cleared all the rounds. Your final report is ready, and a copy is on its way to your email.`
+  if (round.passed) return `${thanks} Good news, you have cleared this round with ${round.score} out of 10, and you are selected for the next round.`
+  return `${thanks} Unfortunately you did not clear this round this time. Your feedback report explains what went well and what to work on first.`
+}

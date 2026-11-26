@@ -93,7 +93,7 @@ export function Camera({ defaultOn }) {
   }
   return (
     <div className="flex items-center gap-3">
-      <video ref={video} autoPlay muted playsInline className={`h-20 w-28 rounded-lg bg-slate-900 object-cover ${on ? '' : 'hidden'}`} />
+      <video ref={video} autoPlay muted playsInline className={`h-36 w-48 rounded-xl bg-slate-900 object-cover ${on ? '' : 'hidden'}`} />
       <div className="text-xs text-slate-500">
         <button type="button" className="btn-ghost py-1 text-xs" onClick={toggle}>{on ? 'Camera off' : '📷 Camera on'}</button>
         <div className="mt-1 max-w-48">{err || 'Self-view only. Never recorded, uploaded or judged.'}</div>

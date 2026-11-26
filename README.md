@@ -24,6 +24,8 @@ More screenshots: [Mock interview](docs/screenshots/mock_hub.png) · [Perform Mo
 | **Coding round**: Python editor, Run to see the real error, fix or Skip, hidden tests on Submit, all in your browser with Pyodide | ✅ |
 | **Voice answers**: press 🎤 and speak; pace, long pauses and volume count toward Tone & delivery | ✅ |
 | **Camera** self-view in Behavioural rounds (never recorded, uploaded or judged) | ✅ |
+| **Proctored Mock and Perform rounds**: fullscreen, camera must stay on, 5 s / 10 s countdowns, 3 chances each, then disqualification | ✅ |
+| **AI interviewer voice**: greets you, explains the round, asks each question, follows up and closes, out loud | ✅ |
 | **Mock mode**: one company, all 4 rounds, ¼ of the questions, pass marks, finish within 1 day, as many as you like | ✅ |
 | **⭐ Perform Mock Interview**: common questions, full count, one round a day in your preferred slot, booking and reminder emails | ✅ |
 | Pass/fail emails that say exactly why, "selected for next round", "not selected", incomplete reports | ✅ |
@@ -34,6 +36,8 @@ More screenshots: [Mock interview](docs/screenshots/mock_hub.png) · [Perform Mo
 - Coding is scored on hidden tests passed, attempts, time taken, and how well you explain your approach.
 - **Voice** uses the browser's built-in speech recognition (Chrome and Edge; the browser may use its own speech service). The app never uploads audio. It only measures pace (words per minute), silences over 3 seconds and whether you're too quiet. Accent is never judged.
 - **Camera** is a self-view to make the round feel real. Nothing is recorded or analysed.
+- **Proctoring (Mock and Perform only, not Practice).** A rules screen comes first, then the round opens in fullscreen with a large camera view. Leaving the tab, the window or fullscreen starts a 5 second countdown ("Get back to interview tab or you are disqualified"). The camera going off starts a 10 second countdown. You get 3 chances for each; the 4th, or missing a countdown, disqualifies you and ends the interview as a fail with the reason in the report and email. Counts are stored on the server, so reloading the page doesn't reset them (a reload counts as leaving the tab). Only on/off events are saved, never the picture.
+- **Interviewer voice** uses the browser's built-in, free speechSynthesis with the most natural English voice your device has. There's no paid text-to-speech API. You can mute it or replay a question; the choice is remembered.
 
 ## How scoring works
 

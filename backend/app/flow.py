@@ -174,3 +174,31 @@ def expire_if_due(db: Session, iv: Interview) -> bool:
     iv.status, iv.overall_score = "expired", overall(iv)
     db.commit()
     return True
+
+
+CHANCES = 3  # warnings allowed for each of: leaving the tab/fullscreen, camera off
+LABEL = {"tab": "leaving the interview tab or fullscreen", "camera": "turning the camera off"}
+
+
+def record_violation(db: Session, iv: Interview, kind: str, timed_out: bool) -> dict:
+    """A proctoring issue during a Mock or Perform round. The first 3 of each kind are warnings;
+    a 4th, or not fixing it before the timer ends, disqualifies the candidate."""
+    rnd = active_round(iv)
+    if iv.mode == "practice" or iv.status != "in_progress" or not rnd:
+        raise HTTPException(409, "No proctored round is in progress")
+    data = dict(iv.integrity or {"tab": 0, "camera": 0, "events": []})
+    data["events"] = list(data.get("events", []))[-50:] + [{"kind": kind, "timed_out": timed_out, "at": now().isoformat(), "round": rnd.round_type}]
+    reason = None
+    if timed_out:
+        reason = f"Disqualified: did not come back in time after {LABEL[kind]}."
+    else:
+        data[kind] = data.get(kind, 0) + 1
+        if data[kind] > CHANCES:
+            reason = f"Disqualified: used all {CHANCES} chances for {LABEL[kind]}."
+    iv.integrity = data
+    if reason:
+        rnd.answers[:] = [a for a in rnd.answers if a.answer_text is not None]
+        rnd.status, rnd.passed, rnd.finished_at = "disqualified", False, now()
+        iv.status, iv.disqualified_reason, iv.overall_score = "failed", reason, overall(iv)
+    db.commit()
+    return {"tab": data["tab"], "camera": data["camera"], "chances": CHANCES, "disqualified": bool(reason), "reason": reason}

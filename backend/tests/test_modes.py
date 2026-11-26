@@ -163,3 +163,34 @@ def test_mock_technical_round_has_coding(client):
         iv = db.get(Interview, st["interview_id"])
         kinds = [db.get(Question, q).kind for q in iv.rounds[1].question_ids]
     assert kinds.count("coding") == 1 and kinds.count("concept") == 2
+
+
+def test_proctoring_strikes_and_disqualification(client, monkeypatch):
+    fixed_scores(monkeypatch, 9.0)
+    h = login(client, "proctor@example.com")
+    iid = client.post("/interviews", headers=h, json={"mode": "mock", "role": "Data Analyst"}).json()["interview_id"]
+    assert client.post(f"/interviews/{iid}/integrity", headers=h, json={"kind": "tab"}).status_code == 409  # no round yet
+    client.post(f"/interviews/{iid}/rounds/1/start", headers=h)
+    for n in (1, 2, 3):
+        r = client.post(f"/interviews/{iid}/integrity", headers=h, json={"kind": "tab"}).json()
+        assert r["tab"] == n and not r["disqualified"]
+    assert client.post(f"/interviews/{iid}/integrity", headers=h, json={"kind": "camera"}).json()["camera"] == 1  # counted separately
+    st = client.get(f"/interviews/{iid}", headers=h).json()
+    assert st["integrity"] == {"tab": 3, "camera": 1, "chances": 3}  # survives a reload
+    r = client.post(f"/interviews/{iid}/integrity", headers=h, json={"kind": "tab"}).json()
+    assert r["disqualified"] and "3 chances" in r["reason"]
+    st = client.get(f"/interviews/{iid}", headers=h).json()
+    assert st["status"] == "failed" and st["rounds"][0]["status"] == "disqualified"
+    assert any("disqualified" in s for s in SENT)
+    assert client.get(f"/interviews/{iid}/report", headers=h).json()["disqualified_reason"]
+
+    # not coming back before the timer ends disqualifies straight away
+    iid2 = client.post("/interviews", headers=h, json={"mode": "mock", "role": "Data Analyst"}).json()["interview_id"]
+    client.post(f"/interviews/{iid2}/rounds/1/start", headers=h)
+    r = client.post(f"/interviews/{iid2}/integrity", headers=h, json={"kind": "camera", "timed_out": True}).json()
+    assert r["disqualified"] and "in time" in r["reason"]
+
+    # practice is never proctored
+    p = client.post("/practice", headers=h, json={"role": "Data Analyst", "round_type": "hr"}).json()
+    assert p["proctored"] is False
+    assert client.post(f"/interviews/{p['interview_id']}/integrity", headers=h, json={"kind": "tab"}).status_code == 409
