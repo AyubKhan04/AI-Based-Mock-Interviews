@@ -4,6 +4,7 @@ import { api, downloadPdf } from '../api'
 import { Loading, useApp } from '../App'
 import Stars from '../Stars'
 import { ModelAnswer, SpeechStats, StarChips } from '../Coaching'
+import EmailPrompt from '../EmailPrompt'
 
 const PRI = {
   high: { dot: '🔴', label: 'High: fix first', cls: 'bg-red-50 ring-red-200' },
@@ -40,6 +41,10 @@ export default function Report() {
         </div>
       </div>
       {msg && <p className="text-sm text-slate-600">{msg}</p>}
+      {(rep.mode === 'practice' || rep.status !== 'in_progress') && (
+        <EmailPrompt id={id} mode={rep.mode} label={rep.mode === 'practice' ? 'practice feedback' : 'interview report'}
+          order={rep.mode === 'practice' ? 'final' : Math.max(0, ...(rep.rounds || []).filter((r) => r.status === 'completed' || r.status === 'disqualified').map((r) => r.order))} />
+      )}
 
       {rep.final && <Final f={rep.final} />}
 

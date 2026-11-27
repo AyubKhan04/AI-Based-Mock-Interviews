@@ -19,6 +19,7 @@ More screenshots: [Mock interview](docs/screenshots/mock_hub.png) · [Perform Mo
 | Scoring with per-round weights, 1–10 score and 1–5 stars | ✅ |
 | Report: per-question table, sub-scores, 🔴🟠🟢 ranked improvements, example answers, progress vs last attempt | ✅ |
 | PDF and Excel reports, on screen and emailed | ✅ |
+| **Email only when you say so** in Practice and Mock: after a session (and after each Mock round) a pop-up asks "Email you the feedback summary?" with **Send** / **Don't send**, asked once. Perform still emails automatically, since it books rounds by email | ✅ |
 | Dashboard with history, and a **progress page** (score chart, skill changes, results by round, how far you get) | ✅ |
 | **4 fields, each with its own second round**: Tech *Technical* (4 coding + 8 concept), Sales *Sales Skills* (4 role-play + 8 concept), Finance *Finance Technical* (4 case / calculation + 8 concept), HR *Functional HR* (4 scenario + 8 concept). Coding only appears in Tech. Screening, Behavioural and HR rounds ask field-specific questions first | ✅ |
 | **Coding round**: Python editor, Run to see the real error, fix or Skip, hidden tests on Submit, all in your browser with Pyodide | ✅ |

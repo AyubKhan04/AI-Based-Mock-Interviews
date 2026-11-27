@@ -10,6 +10,7 @@ import { BigCamera, ProctorOverlay, RulesGate, proctorSession, useProctor } from
 import { SpeakerControls, useSpeaker } from '../Speaker'
 import { TIME_LIMIT, TIME_UP, closing, personaAck, preface, speakerFor } from '../interviewer'
 import FeedbackCard from '../Coaching'
+import EmailPrompt from '../EmailPrompt'
 
 export default function Interview() {
   const { id } = useParams()
@@ -60,7 +61,7 @@ export default function Interview() {
         if (r.mode === 'practice') return nav(`/report/${id}`)
         if (st.proctored) endProctor()
         const done = r.rounds.find((x) => x.order === r.finished_round)
-        speaker.speak(closing({ round: done, status: r.status, name }), false, speakerFor(st.style, 1))
+        speaker.speak(closing({ round: done, status: r.status, name, mode: r.mode }), false, speakerFor(st.style, 1))
         setBanner(done); setSt(r)
       }} />
     </>
@@ -90,6 +91,8 @@ function Hub({ st, id, banner, setSt, onProctoredStart }) {
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
   const over = st.status !== 'in_progress'
+  const lastDone = Math.max(0, ...st.rounds.filter((r) => r.status === 'completed' || r.status === 'disqualified').map((r) => r.order))
+  const mailNote = st.mode === 'perform' ? ' and on its way to your email' : ''
   async function start(order) {
     if (st.proctored) return onProctoredStart(order)
     setErr(''); setBusy(true)
@@ -97,7 +100,7 @@ function Hub({ st, id, banner, setSt, onProctoredStart }) {
   }
   const title = st.mode === 'perform' ? '⭐ Perform Mock Interview' : `Mock interview · ${st.company === 'Any company' ? 'general' : st.company} style`
   const END = {
-    completed: ['bg-emerald-50 text-emerald-800', '🎉 You passed all four rounds. Your final report is ready and on its way to your email.'],
+    completed: ['bg-emerald-50 text-emerald-800', `🎉 You passed all four rounds. Your final report is ready${mailNote}.`],
     failed: ['bg-red-50 text-red-800', st.disqualified_reason ? `⛔ ${st.disqualified_reason} The interview has ended.` : 'You cannot proceed to the next round this time. Your feedback report shows exactly why, and what to fix first.'],
     expired: ['bg-slate-100 text-slate-700', 'This interview ended as incomplete. You have feedback on the rounds you finished. Start a new one any time.'],
   }
@@ -136,6 +139,7 @@ function Hub({ st, id, banner, setSt, onProctoredStart }) {
         })}
       </div>
       {err && <p className="text-sm text-red-600">{err}</p>}
+      {st.mode === 'mock' && <EmailPrompt id={id} mode="mock" order={lastDone} label={over ? 'interview report' : `${roundName(st.rounds.find((r) => r.order === lastDone) || {})} round feedback`} />}
       {st.rounds.some((r) => r.status === 'completed') && <Link className="btn-ghost" to={`/report/${id}`}>See feedback so far</Link>}
     </div>
   )

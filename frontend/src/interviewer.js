@@ -47,10 +47,10 @@ export function preface({ st, name, first }) {
   return `${pick(NEXT, n)} Question ${n}.${coding}`
 }
 
-export function closing({ round, status, name }) {
+export function closing({ round, status, name, mode }) {
   const thanks = `That's the end of this round. Thank you for your time${name ? `, ${name}` : ''}.`
   if (!round) return thanks
-  if (status === 'completed') return `${thanks} Congratulations, you have cleared all the rounds. Your final report is ready, and a copy is on its way to your email.`
+  if (status === 'completed') return `${thanks} Congratulations, you have cleared all the rounds. Your final report is ready${mode === 'perform' ? ', and a copy is on its way to your email' : ''}.`
   if (round.passed) return `${thanks} Good news, you have cleared this round with ${round.score} out of 10, and you are selected for the next round.`
   return `${thanks} Unfortunately you did not clear this round this time. Your feedback report explains what went well and what to work on first.`
 }
