@@ -35,14 +35,15 @@ def _link(iv: Interview, label: str = "Open your interview") -> str:
     return f"<p><a href='{FRONTEND_URL}/interview/{iv.id}' style='background:#4f46e5;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none'>{label}</a></p>"
 
 
-def send(iid: int, kind: str, order: int | None = None) -> bool:
-    """kind: practice | passed | failed | final | expired | disqualified | scheduled | reminder"""
+def send(iid: int, kind: str, order: int | None = None, force: bool = False) -> bool:
+    """kind: practice | passed | failed | final | expired | disqualified | scheduled | reminder.
+    force=True when the candidate pressed "Send" in the pop-up, so it ignores the notifications setting."""
     with SessionLocal() as db:
         iv = db.get(Interview, iid)
         user = db.get(User, iv.user_id)
         if user.is_guest:  # guests have no real email address
             return False
-        if not user.email_notifications and kind not in ("scheduled", "reminder"):
+        if not force and not user.email_notifications and kind not in ("scheduled", "reminder"):
             return False
         rnd = next((r for r in iv.rounds if r.order == order), None) if order else None
         title = "Perform Mock Interview" if iv.mode == "perform" else f"{iv.company}-style mock interview"

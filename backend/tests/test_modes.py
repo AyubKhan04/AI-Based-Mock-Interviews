@@ -15,6 +15,7 @@ SENT = []
 def client(monkeypatch):
     SENT.clear()
     monkeypatch.setattr(notify.emailer, "send", lambda to, subject, html, att=None: SENT.append(subject) or True)
+    monkeypatch.setattr(main.emailer, "enabled", lambda: True)
     with TestClient(main.app) as c:
         yield c
 
@@ -66,11 +67,15 @@ def test_mock_mode_passes_all_rounds(client, monkeypatch):
     assert client.post(f"/interviews/{iid}/rounds/2/start", headers=h).status_code == 409  # locked
     for order in (1, 2, 3, 4):
         r = play_round(client, h, iid, order)
+        assert not SENT  # Mock never emails on its own: the site asks "Send / Don't send"
+        assert client.post(f"/interviews/{iid}/email", headers=h).json() == {"sent": True}
+        assert len(SENT) == 1
+        last = SENT.pop()
+        assert ("Selected for" in last) if order < 4 else last.startswith("Final report")
     assert r["status"] == "completed"
     rep = client.get(f"/interviews/{iid}/report", headers=h).json()
     assert rep["final"]["complete"] and rep["final"]["band"] >= 8.0  # the HR "questions for us" is scored separately
     assert len(rep["final"]["strengths"]) == 3 and rep["final"]["practice_plan"]
-    assert sum("Selected for" in s for s in SENT) == 3 and any(s.startswith("Final report") for s in SENT)
     assert client.get(f"/interviews/{iid}/report.pdf", headers=h).content[:4] == b"%PDF"
     assert client.get(f"/interviews/{iid}/report.xlsx", headers=h).content[:2] == b"PK"
     prog = client.get("/progress", headers=h).json()
@@ -84,6 +89,8 @@ def test_mock_fail_stops_and_expiry(client, monkeypatch):
     iid = client.post("/interviews", headers=h, json={"mode": "mock", "role": "Data Analyst"}).json()["interview_id"]
     r = play_round(client, h, iid, 1)
     assert r["status"] == "failed" and r["rounds"][0]["passed"] is False
+    assert not SENT
+    assert client.post(f"/interviews/{iid}/email", headers=h).status_code == 200
     assert any("Screening round feedback" in s for s in SENT)
     assert client.post(f"/interviews/{iid}/rounds/2/start", headers=h).status_code == 409
 
@@ -181,6 +188,7 @@ def test_proctoring_strikes_and_disqualification(client, monkeypatch):
     assert r["disqualified"] and "3 chances" in r["reason"]
     st = client.get(f"/interviews/{iid}", headers=h).json()
     assert st["status"] == "failed" and st["rounds"][0]["status"] == "disqualified"
+    assert not SENT and client.post(f"/interviews/{iid}/email", headers=h).status_code == 200
     assert any("disqualified" in s for s in SENT)
     assert client.get(f"/interviews/{iid}/report", headers=h).json()["disqualified_reason"]
 

@@ -273,7 +273,11 @@ def score_round(iv: Interview, rnd: Round) -> None:
         rnd.passed = rnd.score >= rnd.pass_mark
 
 
-def queue(bg: BackgroundTasks, iid: int, events: list[tuple[str, int]]) -> None:
+def queue(bg: BackgroundTasks, iid: int, events: list[tuple[str, int]], mode: str = "perform") -> None:
+    """Perform emails everything automatically (it books rounds by email). Practice and Mock ask first:
+    the site shows a "Send / Don't send" pop-up and calls POST /interviews/{id}/email."""
+    if mode in ("practice", "mock"):
+        events = [e for e in events if e[0] == "expired"]
     for kind, order in events:
         bg.add_task(notify.send, iid, kind, order)
 
@@ -499,7 +503,7 @@ def integrity(iid: int, body: ViolationIn, bg: BackgroundTasks, user: User = Dep
     iv = get_interview(db, iid, user)
     res = flow.record_violation(db, iv, body.kind, body.timed_out)
     if res["disqualified"]:
-        queue(bg, iv.id, [("disqualified", 0)])
+        queue(bg, iv.id, [("disqualified", 0)], iv.mode)
     return res
 
 
@@ -537,7 +541,7 @@ def answer(iid: int, body: AnswerIn, bg: BackgroundTasks, user: User = Depends(c
             score_round(iv, rnd)
             events = flow.after_round(db, db.merge(user), iv, rnd)
     db.commit()
-    queue(bg, iv.id, events)
+    queue(bg, iv.id, events, iv.mode)
     # Practice coaches you after every answer; Mock and Perform keep it for the report, like a real interview.
     fb = {"went_well": a.went_well, "to_improve": a.to_improve, "example_answer": a.example_answer,
           "coaching": a.coaching, "metrics": a.metrics} if iv.mode == "practice" else None
@@ -560,7 +564,7 @@ def finish_early(iid: int, bg: BackgroundTasks, user: User = Depends(current_use
         score_round(iv, rnd)
         events = flow.after_round(db, user, iv, rnd)
         db.commit()
-        queue(bg, iv.id, events)
+        queue(bg, iv.id, events, iv.mode)
     return state(iv)
 
 
@@ -681,16 +685,19 @@ def get_achievements(user: User = Depends(current_user), db: Session = Depends(g
 
 @app.post("/interviews/{iid}/email")
 def email_report(iid: int, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    """Email the feedback summary when the candidate chooses "Send" (Practice and Mock ask instead of sending automatically)."""
     iv = get_interview(db, iid, user)
-    if iv.status == "in_progress":
-        raise HTTPException(409, "Finish the interview first")
+    order = max((r.order for r in iv.rounds if r.status == "completed"), default=0)
+    if iv.status == "in_progress" and not (iv.mode == "mock" and order):
+        raise HTTPException(409, "Finish the round first")
+    if user.is_guest:
+        raise HTTPException(409, "Create a free account to get reports by email")
     if not emailer.enabled():
         raise HTTPException(503, "Email is not set up on this server yet")
-    kind = {"practice": "practice"}.get(iv.mode) or ("disqualified" if iv.disqualified_reason else
-                                                    {"completed": "final", "failed": "failed", "expired": "expired"}[iv.status])
-    order = max((r.order for r in iv.rounds if r.status == "completed"), default=0)
-    if not notify.send(iv.id, kind, order):
-        raise HTTPException(502, "The email could not be sent. Check that email notifications are on in your profile.")
+    kind = "passed" if iv.status == "in_progress" else {"practice": "practice"}.get(iv.mode) or (
+        "disqualified" if iv.disqualified_reason else {"completed": "final", "failed": "failed", "expired": "expired"}[iv.status])
+    if not notify.send(iv.id, kind, order, force=True):
+        raise HTTPException(502, "The email could not be sent right now. Try again in a minute, or download the PDF instead.")
     return {"sent": True}
 
 
