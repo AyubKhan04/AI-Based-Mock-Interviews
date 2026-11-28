@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../api'
 import { useApp } from '../App'
+import { PageHeader } from '../ui'
 import FieldRole, { StyleOptions, defaultFieldRole } from '../FieldRole'
 import { RULES } from './Mock'
 
@@ -26,10 +27,7 @@ export default function Perform() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold">⭐ Perform Mock Interview</h1>
-        <p className="text-slate-500">The full experience: four rounds over four days, with the questions asked most often across many companies. Each round is booked in your preferred time and emailed to you, with a reminder an hour before. Pass a round and the next one is booked for the next available day.</p>
-      </div>
+      <PageHeader eyebrow="Full interview" title="Perform Mock Interview" sub="The full experience: four rounds over four days, with the questions asked most often across many companies. Each round is booked in your preferred time and emailed to you, with a reminder an hour before. Pass a round and the next one is booked for the next available day." />
       <div className="card space-y-5">
         <FieldRole form={form} set={(p) => setForm({ ...form, ...p })} />
         <div className="rounded-lg bg-slate-50 p-3 text-sm">

@@ -40,11 +40,12 @@ export default function Auth() {
 
   if (user) return <Navigate to={dest.current} replace />
   return (
-    <div className="mx-auto mt-10 max-w-md">
-      <h1 className="mb-1 text-center text-3xl font-bold text-indigo-700"><Link to="/">Mock Interview Coach</Link></h1>
-      <p className="mb-6 text-center text-slate-500">Practise interviews with an AI interviewer that scores you and tells you how to improve.</p>
-      <form onSubmit={submit} className="card space-y-4">
-        <h2 className="text-xl font-semibold">{signup ? 'Create your account' : 'Welcome back'}</h2>
+    <div className="mx-auto mt-6 max-w-[420px]">
+      <div className="mb-7 text-center">
+        <h1 className="text-[28px] font-bold">{signup ? 'Create your account' : 'Welcome back'}</h1>
+        <p className="mt-1.5 text-slate-500">{signup ? 'Free forever. Your first interview is two minutes away.' : 'Log in to continue your interview practice.'}</p>
+      </div>
+      <form onSubmit={submit} className="card space-y-4 p-7 shadow-lift">
         {signup && <div><label className="label">Name</label><input className="input" required value={form.name} onChange={set('name')} /></div>}
         <div><label className="label">Email</label><input className="input" type="email" required value={form.email} onChange={set('email')} /></div>
         <div><label className="label" htmlFor="pw">Password {signup && <span className="text-slate-400">(8+ characters)</span>}</label>
@@ -63,10 +64,10 @@ export default function Auth() {
         <button className="btn w-full" disabled={busy || (signup && form.confirm !== form.password)}>{busy ? 'Please wait…' : signup ? 'Sign up' : 'Log in'}</button>
         <p className="text-center text-sm text-slate-500">
           {signup ? 'Already have an account?' : 'New here?'}{' '}
-          <button type="button" className="text-indigo-600 hover:underline" onClick={() => { setSignup(!signup); setErr('') }}>{signup ? 'Log in' : 'Sign up'}</button>
+          <button type="button" className="font-semibold text-indigo-600 hover:text-indigo-800" onClick={() => { setSignup(!signup); setErr('') }}>{signup ? 'Log in' : 'Sign up'}</button>
         </p>
         <div className="border-t border-slate-100 pt-3 text-center">
-          <button type="button" className="text-sm font-medium text-indigo-700 hover:underline" onClick={guest} disabled={busy}>Just looking? Try it as a guest →</button>
+          <button type="button" className="text-sm font-medium text-slate-600 hover:text-slate-900" onClick={guest} disabled={busy}>Just looking? <span className="text-indigo-600">Try it as a guest →</span></button>
         </div>
       </form>
     </div>

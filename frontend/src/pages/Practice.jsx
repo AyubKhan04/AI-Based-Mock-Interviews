@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
 import { useApp } from '../App'
+import { PageHeader } from '../ui'
 import FieldRole, { StyleOptions, defaultFieldRole, fieldRounds } from '../FieldRole'
 
 export default function Practice() {
@@ -32,16 +33,13 @@ export default function Practice() {
 
   const Chips = ({ k, options, label = (x) => x }) => (
     <div className="flex flex-wrap gap-2">
-      {options.map((o) => <button key={o} type="button" onClick={() => set({ [k]: o })} className={form[k] === o ? 'btn py-1.5' : 'btn-ghost py-1.5'}>{label(o)}</button>)}
+      {options.map((o) => <button key={o} type="button" onClick={() => set({ [k]: o })} className={form[k] === o ? 'chip-on' : 'chip'}>{label(o)}</button>)}
     </div>
   )
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold">Practice mode</h1>
-        <p className="text-slate-500">One round at a time. No time limit, no pass or fail, a full report after every session.</p>
-      </div>
+      <PageHeader eyebrow="Practice" title="Practice mode" sub="One round at a time. No time limit, no pass or fail, a full report after every session." />
       <div className="card space-y-5">
         <FieldRole form={form} set={set} />
         <div><label className="label">Company style</label>
@@ -53,7 +51,7 @@ export default function Practice() {
           <div><label className="label">Question type</label>
             <div className="flex gap-2">
               {[['concept', 'Concept questions'], [special.key, KINDS[special.key] || special.label]].map(([k, l]) => (
-                <button key={k} type="button" onClick={() => set({ kind: k, count: k === 'concept' ? 5 : k === 'coding' ? 1 : 3 })} className={form.kind === k ? 'btn py-1.5' : 'btn-ghost py-1.5'}>{l}</button>
+                <button key={k} type="button" onClick={() => set({ kind: k, count: k === 'concept' ? 5 : k === 'coding' ? 1 : 3 })} className={form.kind === k ? 'chip-on' : 'chip'}>{l}</button>
               ))}
             </div></div>
         )}

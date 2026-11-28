@@ -1,3 +1,4 @@
+import { PageHeader } from '../ui'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api'
@@ -13,7 +14,7 @@ export default function Progress() {
   )
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Your progress</h1>
+      <PageHeader eyebrow="Progress" title="Your progress" sub="How your scores and skills are moving over time." />
       <section className="card">
         <h2 className="mb-1 font-semibold">Round scores over time</h2>
         <p className="mb-3 text-sm text-slate-500">Every finished round, oldest to newest. Hover a point for details.</p>
@@ -51,7 +52,7 @@ export default function Progress() {
           <h2 className="mb-3 font-semibold">How far you get in full interviews</h2>
           {['mock', 'perform'].map((m) => p.funnel[m]?.started ? (
             <div key={m} className="mb-3">
-              <div className="mb-1 text-sm font-medium">{m === 'mock' ? 'Mock interviews' : '⭐ Perform Mock Interview'} · {p.funnel[m].started} started</div>
+              <div className="mb-1 text-sm font-medium">{m === 'mock' ? 'Mock interviews' : 'Perform Mock Interview'} · {p.funnel[m].started} started</div>
               {p.funnel[m].passed.map((n, i) => (
                 <div key={i} className="mb-1 flex items-center gap-2 text-sm">
                   <span className="w-24 text-slate-500">Passed {['Screening', 'Technical', 'Behavioural', 'HR'][i]}</span>
