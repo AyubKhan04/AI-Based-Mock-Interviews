@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Moon, Sun } from 'lucide-react'
 
 const media = () => window.matchMedia('(prefers-color-scheme: dark)')
 const saved = () => { try { return localStorage.getItem('theme') } catch { return null } }
@@ -22,9 +23,9 @@ export default function ThemeToggle({ className = '' }) {
     try { localStorage.setItem('theme', d ? 'dark' : 'light') } catch { /* private mode */ }
   }
   return (
-    <button type="button" onClick={toggle} className={`rounded-md px-2 py-1.5 text-base hover:bg-slate-100 ${className}`}
+    <button type="button" onClick={toggle} className={`flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 ${className}`}
       aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'} title={dark ? 'Light mode' : 'Dark mode'}>
-      {dark ? '☀️' : '🌙'}
+      {dark ? <Sun size={18} /> : <Moon size={18} />}
     </button>
   )
 }

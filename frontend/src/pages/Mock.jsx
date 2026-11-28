@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
 import { useApp } from '../App'
+import { PageHeader } from '../ui'
 import FieldRole, { StyleOptions, defaultFieldRole, fieldRounds } from '../FieldRole'
 
 export const RULES = ({ field, mode }) => {
@@ -35,10 +36,7 @@ export default function Mock() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold">Mock mode</h1>
-        <p className="text-slate-500">A company-style interview with all four rounds and a quarter of the questions. Pass a round to unlock the next. Take breaks between rounds, but finish all four within one day. Start as many as you like, one at a time.</p>
-      </div>
+      <PageHeader eyebrow="Mock interview" title="Mock mode" sub="A company-style interview with all four rounds and a quarter of the questions. Pass a round to unlock the next. Take breaks between rounds, but finish all four within one day. Start as many as you like, one at a time." />
       <div className="card space-y-5">
         <FieldRole form={form} set={set} />
         <div><label className="label">Company</label>

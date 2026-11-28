@@ -98,7 +98,7 @@ function Hub({ st, id, banner, setSt, onProctoredStart }) {
     setErr(''); setBusy(true)
     try { setSt(await api(`/interviews/${id}/rounds/${order}/start`, { method: 'POST' })) } catch (e) { setErr(e.message) } finally { setBusy(false) }
   }
-  const title = st.mode === 'perform' ? '⭐ Perform Mock Interview' : `Mock interview · ${st.company === 'Any company' ? 'general' : st.company} style`
+  const title = st.mode === 'perform' ? 'Perform Mock Interview' : `Mock interview · ${st.company === 'Any company' ? 'general' : st.company} style`
   const END = {
     completed: ['bg-emerald-50 text-emerald-800', `🎉 You passed all four rounds. Your final report is ready${mailNote}.`],
     failed: ['bg-red-50 text-red-800', st.disqualified_reason ? `⛔ ${st.disqualified_reason} The interview has ended.` : 'You cannot proceed to the next round this time. Your feedback report shows exactly why, and what to fix first.'],

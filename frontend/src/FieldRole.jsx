@@ -46,7 +46,7 @@ export function StyleOptions({ form, set }) {
       <div><label className="label">Interviewer style</label>
         <div className="flex flex-wrap gap-2">
           {Object.entries(PERSONAS).map(([k, p]) => (
-            <button key={k} type="button" title={p.hint} onClick={() => set({ persona: k })} className={form.persona === k ? 'btn py-1.5' : 'btn-ghost py-1.5'}>{p.label}</button>
+            <button key={k} type="button" title={p.hint} onClick={() => set({ persona: k })} className={form.persona === k ? 'chip-on' : 'chip'}>{p.label}</button>
           ))}
         </div>
         <p className="mt-1 text-xs text-slate-400">{PERSONAS[form.persona]?.hint}</p>

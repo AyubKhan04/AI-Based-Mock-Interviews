@@ -7,9 +7,9 @@ import { ModelAnswer, SpeechStats, StarChips } from '../Coaching'
 import EmailPrompt from '../EmailPrompt'
 
 const PRI = {
-  high: { dot: '🔴', label: 'High: fix first', cls: 'bg-red-50 ring-red-200' },
-  medium: { dot: '🟠', label: 'Medium', cls: 'bg-orange-50 ring-orange-200' },
-  low: { dot: '🟢', label: 'Low: polish', cls: 'bg-emerald-50 ring-emerald-200' },
+  high: { dot: 'bg-red-500', label: 'High: fix first', cls: 'bg-red-50 ring-red-200' },
+  medium: { dot: 'bg-orange-500', label: 'Medium', cls: 'bg-orange-50 ring-orange-200' },
+  low: { dot: 'bg-emerald-500', label: 'Low: polish', cls: 'bg-emerald-50 ring-emerald-200' },
 }
 const ARROW = { up: '⬆', down: '⬇', same: '→' }
 
@@ -75,7 +75,7 @@ export default function Report() {
               <ul className="space-y-2">
                 {r.improvements.map((i, k) => (
                   <li key={k} className={`rounded-lg p-3 text-sm ring-1 ${PRI[i.priority].cls}`}>
-                    <div className="font-medium">{PRI[i.priority].dot} {PRI[i.priority].label} · {i.area}</div>
+                    <div className="flex items-center gap-2 font-semibold text-slate-900"><span className={`h-2 w-2 rounded-full ${PRI[i.priority].dot}`} />{PRI[i.priority].label} · {i.area}</div>
                     <div>{i.tip}</div>
                   </li>
                 ))}

@@ -1,3 +1,4 @@
+import { PageHeader } from '../ui'
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { api, token } from '../api'
@@ -28,7 +29,7 @@ export default function Profile() {
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       {params.get('welcome') && <div className="rounded-lg bg-indigo-50 p-3 text-indigo-800">Welcome! Pick the roles you are preparing for, then start practising.</div>}
-      <h1 className="text-2xl font-bold">Profile</h1>
+      <PageHeader eyebrow="Account" title="Profile" sub="Your details, target roles, resume and interview preferences." />
       {user.is_guest ? <SaveAccount /> : (
         <section className="card space-y-4">
           <div><label className="label">Name</label><input className="input" value={name} onChange={(e) => setName(e.target.value)} /></div>
@@ -55,18 +56,18 @@ export default function Profile() {
         <h2 className="font-semibold">Mode</h2>
         <div className="flex gap-2">
           {['practice', 'mock'].map((m) => (
-            <button key={m} onClick={() => setMode(m)} className={mode === m ? 'btn' : 'btn-ghost'}>{m === 'practice' ? 'Practice' : 'Mock'}</button>
+            <button key={m} onClick={() => setMode(m)} className={mode === m ? 'chip-on' : 'chip'}>{m === 'practice' ? 'Practice' : 'Mock'}</button>
           ))}
         </div>
         <p className="text-sm text-slate-500">{mode === 'mock' ? 'Mock mode: company interviews with all 4 rounds, pass or fail, finished within a day.' : 'Practice mode: one round at a time, no time limit, no pass or fail.'} Switch any time.</p>
         <label className="flex items-center gap-2"><input type="checkbox" checked={notify} onChange={(e) => setNotify(e.target.checked)} /> Email me my feedback reports</label>
       </section>
       <section className="card space-y-3">
-        <h2 className="font-semibold">Availability for ⭐ Perform Mock Interview</h2>
+        <h2 className="font-semibold">Availability for Perform Mock Interview</h2>
         <div className="flex flex-wrap gap-2">
           {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d, i) => (
             <button key={d} type="button" onClick={() => setAv({ ...av, days: av.days.includes(i) ? av.days.filter((x) => x !== i) : [...av.days, i].sort() })}
-              className={av.days.includes(i) ? 'btn py-1' : 'btn-ghost py-1'}>{d}</button>
+              className={av.days.includes(i) ? 'chip-on' : 'chip'}>{d}</button>
           ))}
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
@@ -142,7 +143,7 @@ function SaveAccount() {
   return (
     <form id="save" onSubmit={submit} className="card space-y-3 ring-2 ring-amber-300">
       <h2 className="font-semibold">Save your progress</h2>
-      <p className="text-sm text-slate-500">Create a free account to keep your sessions, streak and badges, get reports by email and book a ⭐ Perform Mock Interview.</p>
+      <p className="text-sm text-slate-500">Create a free account to keep your sessions, streak and badges, get reports by email and book a Perform Mock Interview.</p>
       <div className="grid gap-3 sm:grid-cols-3">
         <input className="input" placeholder="Name" required value={f.name} onChange={set('name')} />
         <input className="input" placeholder="Email" type="email" required value={f.email} onChange={set('email')} />
